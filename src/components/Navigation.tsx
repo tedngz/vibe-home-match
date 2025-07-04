@@ -13,11 +13,13 @@ export const Navigation = ({ currentView, setCurrentView, matchCount }: Navigati
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/20 px-4 py-3">
       <div className="flex items-center justify-between max-w-md mx-auto">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-            <Home className="w-4 h-4 text-white" />
-          </div>
+          <img 
+            src="/lovable-uploads/e6e36f1b-c1ac-4aa8-a584-dac48543e870.png" 
+            alt="Hausto Logo" 
+            className="w-8 h-8"
+          />
           <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-            VibeHome
+            Hausto
           </h1>
         </div>
         
