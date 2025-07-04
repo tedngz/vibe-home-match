@@ -1,10 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Home, MapPin, User, X } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { Badge } from '@/components/ui/badge';
+import { calculateVibeScore } from '@/utils/vibeScoring';
+import { VibeScore } from '@/components/VibeScore';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -69,6 +70,7 @@ export const SwipeInterface = ({ userPreferences, onMatch }: SwipeInterfaceProps
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 
   const currentApartment = MOCK_APARTMENTS[currentIndex];
+  const vibeScore = currentApartment ? calculateVibeScore(currentApartment, userPreferences) : null;
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (isAnimating) return;
@@ -117,6 +119,11 @@ export const SwipeInterface = ({ userPreferences, onMatch }: SwipeInterfaceProps
                 ${currentApartment.price}/mo
               </Badge>
             </div>
+            {vibeScore && (
+              <div className="absolute top-4 left-4">
+                <VibeScore score={vibeScore} size="sm" />
+              </div>
+            )}
           </div>
           
           <div className="p-6 space-y-4">
@@ -136,6 +143,10 @@ export const SwipeInterface = ({ userPreferences, onMatch }: SwipeInterfaceProps
                 {currentApartment.size.toUpperCase()}
               </span>
             </div>
+
+            {vibeScore && (
+              <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
+            )}
 
             <p className="text-gray-700 text-sm leading-relaxed">
               {currentApartment.description}

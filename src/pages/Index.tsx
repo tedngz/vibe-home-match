@@ -68,7 +68,10 @@ const Index = () => {
       )}
       
       {currentView === 'matches' && (
-        <MatchesView matches={matches} />
+        <MatchesView 
+          matches={matches} 
+          userPreferences={userPreferences}
+        />
       )}
     </div>
   );
