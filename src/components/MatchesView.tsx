@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, User, Heart } from 'lucide-react';
+import { MapPin, User, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Apartment } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
@@ -17,6 +17,23 @@ interface MatchesViewProps {
 
 export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
+  const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
+
+  const nextImage = (apartmentId: string, totalImages: number) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [apartmentId]: ((prev[apartmentId] || 0) + 1) % totalImages
+    }));
+  };
+
+  const prevImage = (apartmentId: string, totalImages: number) => {
+    setImageIndices(prev => ({
+      ...prev,
+      [apartmentId]: prev[apartmentId] === 0 || !prev[apartmentId] 
+        ? totalImages - 1 
+        : prev[apartmentId] - 1
+    }));
+  };
 
   if (matches.length === 0) {
     return (
@@ -32,7 +49,7 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
 
   return (
     <div className="pt-20 px-4 pb-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
             Your Matches
@@ -40,63 +57,132 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
           <p className="text-gray-600 mt-1">{matches.length} perfect vibe{matches.length !== 1 ? 's' : ''} found!</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-2">
           {matches.map((apartment) => {
             const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
+            const currentImageIndex = imageIndices[apartment.id] || 0;
             
             return (
-              <Card key={apartment.id} className="overflow-hidden bg-white/70 backdrop-blur-md hover:shadow-lg transition-shadow">
-                <div className="flex">
-                  <div className="relative">
-                    <img 
-                      src={apartment.images[0]} 
-                      alt={apartment.title}
-                      className="w-32 h-32 object-cover"
-                    />
-                    {vibeScore && (
-                      <div className="absolute top-2 left-2">
+              <Card key={apartment.id} className="overflow-hidden bg-white/70 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                <div className="relative">
+                  <img 
+                    src={apartment.images[currentImageIndex]} 
+                    alt={apartment.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  
+                  {/* Image navigation for multiple images */}
+                  {apartment.images.length > 1 && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
+                        onClick={() => prevImage(apartment.id, apartment.images.length)}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
+                        onClick={() => nextImage(apartment.id, apartment.images.length)}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Image dots indicator */}
+                  {apartment.images.length > 1 && (
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
+                      {apartment.images.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full ${
+                            index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-white/90 text-gray-800 font-semibold">
+                      ${apartment.price}/mo
+                    </Badge>
+                  </div>
+                  
+                  {/* Enhanced Vibe Score Display */}
+                  {vibeScore && (
+                    <div className="absolute top-3 left-3">
+                      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-lg">
                         <VibeScore score={vibeScore} size="sm" />
                       </div>
-                    )}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-5">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
+                      <div className="flex items-center text-gray-600 text-sm mt-1">
+                        <MapPin className="w-3 h-3 mr-1" />
+                        {apartment.location}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 p-4">
-                    <div className="flex justify-between items-start mb-2">
+
+                  <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-pink-100 text-orange-800 mb-3">
+                    {apartment.vibe}
+                  </Badge>
+
+                  {/* Enhanced Vibe Score Breakdown */}
+                  {vibeScore && (
+                    <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
+                      <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
+                    </div>
+                  )}
+
+                  <p className="text-gray-700 text-sm mb-4 line-clamp-3 leading-relaxed">
+                    {apartment.description}
+                  </p>
+
+                  {/* Key highlights */}
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-1">
+                      {apartment.highlights.slice(0, 3).map((highlight, index) => (
+                        <Badge key={index} variant="outline" className="text-xs bg-white/50">
+                          {highlight}
+                        </Badge>
+                      ))}
+                      {apartment.highlights.length > 3 && (
+                        <Badge variant="outline" className="text-xs bg-white/50">
+                          +{apartment.highlights.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
                       <div>
-                        <h3 className="font-bold text-lg">{apartment.title}</h3>
-                        <div className="flex items-center text-gray-600 text-sm">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {apartment.location}
-                        </div>
+                        <span className="text-sm font-medium text-gray-900">{apartment.realtor.name}</span>
+                        <p className="text-xs text-gray-500">Licensed Realtor</p>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 border-green-200">
-                        ${apartment.price}/mo
-                      </Badge>
                     </div>
-
-                    <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-pink-100 text-orange-800 mb-2">
-                      {apartment.vibe}
-                    </Badge>
-
-                    <p className="text-gray-700 text-sm mb-3 line-clamp-2">
-                      {apartment.description}
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                          <User className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-sm font-medium">{apartment.realtor.name}</span>
-                      </div>
-                      
-                      <Button 
-                        size="sm" 
-                        className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-                        onClick={() => setSelectedApartment(apartment)}
-                      >
-                        Contact
-                      </Button>
-                    </div>
+                    
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-md"
+                      onClick={() => setSelectedApartment(apartment)}
+                    >
+                      Contact
+                    </Button>
                   </div>
                 </div>
               </Card>
