@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
 import { SwipeInterface } from '@/components/SwipeInterface';
@@ -92,7 +93,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-pink-50 to-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && (
         <Navigation 
           currentView={currentView} 

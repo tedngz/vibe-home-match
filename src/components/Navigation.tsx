@@ -13,7 +13,7 @@ interface NavigationProps {
 
 export const Navigation = ({ currentView, setCurrentView, matchCount, userType, onSwitchUserType, onOpenAIChat }: NavigationProps) => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/20 px-4 py-3">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 px-4 py-3 shadow-sm">
       <div className="flex items-center justify-between max-w-md mx-auto">
         <div className="flex items-center space-x-2">
           <img 
@@ -22,11 +22,11 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
             className="w-8 h-8"
           />
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Hausto
             </h1>
             {userType === 'realtor' && (
-              <p className="text-xs text-gray-500">Realtor</p>
+              <p className="text-xs text-slate-500">Realtor</p>
             )}
           </div>
         </div>
@@ -38,7 +38,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant={currentView === 'swipe' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('swipe')}
-                className="relative"
+                className={currentView === 'swipe' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 'hover:bg-slate-100 text-slate-600'}
               >
                 <Home className="w-4 h-4" />
               </Button>
@@ -46,7 +46,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant={currentView === 'matches' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('matches')}
-                className="relative"
+                className={`relative ${currentView === 'matches' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
               >
                 <Heart className="w-4 h-4" />
                 {matchCount > 0 && (
@@ -59,7 +59,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant="ghost"
                 size="sm"
                 onClick={onOpenAIChat}
-                className="text-purple-600"
+                className="text-indigo-600 hover:bg-indigo-50"
               >
                 <Bot className="w-4 h-4" />
               </Button>
@@ -70,7 +70,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
             variant="ghost"
             size="sm"
             onClick={onSwitchUserType}
-            className="text-gray-600"
+            className="text-slate-600 hover:bg-slate-100"
           >
             <ArrowLeftRight className="w-4 h-4" />
           </Button>
