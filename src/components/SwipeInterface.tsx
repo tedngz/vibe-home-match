@@ -31,6 +31,7 @@ const MOCK_APARTMENTS: Apartment[] = [
     description: 'Step into your own urban retreat where industrial meets comfort. This stunning loft features soaring 12-foot ceilings, exposed brick walls that tell stories of Brooklyn\'s rich history, and floor-to-ceiling windows that flood the space with natural light throughout the day. The open-concept design seamlessly blends living, dining, and kitchen areas, perfect for both intimate evenings and entertaining friends. Premium hardwood floors warm the industrial elements, while the modern kitchen boasts stainless steel appliances and granite countertops. Located in the heart of Brooklyn Heights, you\'re just minutes from the waterfront promenade with breathtaking Manhattan skyline views.',
     highlights: ['12ft ceilings', 'Exposed brick walls', 'Floor-to-ceiling windows', 'Waterfront proximity', 'Hardwood floors', 'Modern kitchen'],
     realtor: {
+      id: 'realtor-1',
       name: 'Sarah Johnson',
       phone: '(555) 123-4567',
       email: 'sarah@homevibes.com'
@@ -52,6 +53,7 @@ const MOCK_APARTMENTS: Apartment[] = [
     description: 'Find your inner peace in this thoughtfully designed minimalist haven. Every element has been carefully curated to promote tranquility and mindful living. Clean lines, neutral tones, and strategic lighting create a serene atmosphere that feels like a daily retreat from the bustling city below. The studio maximizes every square foot with built-in storage solutions that maintain the clutter-free aesthetic. Premium bamboo flooring adds warmth while remaining sustainable. The spa-like bathroom features a rainfall shower and natural stone accents. Building amenities include a meditation garden, fitness center, and rooftop terrace - perfect for your wellness journey in the heart of Manhattan.',
     highlights: ['Bamboo flooring', 'Built-in storage', 'Spa-like bathroom', 'Meditation garden', 'Fitness center', 'Rooftop terrace'],
     realtor: {
+      id: 'realtor-2',
       name: 'Michael Chen',
       phone: '(555) 987-6543',
       email: 'michael@urbanspaces.com'
@@ -73,6 +75,7 @@ const MOCK_APARTMENTS: Apartment[] = [
     description: 'Unleash your creativity in this vibrant, eclectic sanctuary that celebrates artistic expression. Rich textures, warm earth tones, and carefully curated vintage pieces create an inspiring environment where imagination flourishes. The apartment features dramatic 14-foot ceilings, original hardwood floors, and oversized windows that frame your private garden oasis. The kitchen is a chef\'s dream with vintage-inspired fixtures and plenty of space for culinary creativity. Both bedrooms offer unique character with built-in reading nooks and custom shelving for your book collection. The private garden is your own secret escape - perfect for morning coffee, evening wine, or hosting intimate gatherings under string lights.',
     highlights: ['Private garden oasis', '14ft cathedral ceilings', 'Chef\'s kitchen', 'Reading nooks', 'Artist community', 'Vintage character'],
     realtor: {
+      id: 'realtor-3',
       name: 'Emma Rodriguez',
       phone: '(555) 456-7890',
       email: 'emma@creativeliving.com'

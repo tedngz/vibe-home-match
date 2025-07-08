@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
 import { SwipeInterface } from '@/components/SwipeInterface';
@@ -6,6 +5,7 @@ import { MatchesView } from '@/components/MatchesView';
 import { Navigation } from '@/components/Navigation';
 import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
+import { AIChatAgent } from '@/components/AIChatAgent';
 
 export type UserPreferences = {
   styles: string[];
@@ -51,6 +51,7 @@ const Index = () => {
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
   const [matches, setMatches] = useState<Apartment[]>([]);
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
   const handleUserTypeSelect = (type: 'renter' | 'realtor') => {
     setUserType(type);
@@ -99,6 +100,7 @@ const Index = () => {
           matchCount={matches.length}
           userType={userType}
           onSwitchUserType={switchUserType}
+          onOpenAIChat={() => setIsAIChatOpen(true)}
         />
       )}
       
@@ -130,6 +132,11 @@ const Index = () => {
           onSwitchUserType={switchUserType}
         />
       )}
+
+      <AIChatAgent 
+        isOpen={isAIChatOpen}
+        onClose={() => setIsAIChatOpen(false)}
+      />
     </div>
   );
 };

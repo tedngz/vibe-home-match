@@ -1,5 +1,5 @@
 
-import { Heart, Home, User, Building, ArrowLeftRight } from 'lucide-react';
+import { Heart, Home, User, Building, ArrowLeftRight, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface NavigationProps {
@@ -8,9 +8,10 @@ interface NavigationProps {
   matchCount: number;
   userType: 'renter' | 'realtor';
   onSwitchUserType: () => void;
+  onOpenAIChat?: () => void;
 }
 
-export const Navigation = ({ currentView, setCurrentView, matchCount, userType, onSwitchUserType }: NavigationProps) => {
+export const Navigation = ({ currentView, setCurrentView, matchCount, userType, onSwitchUserType, onOpenAIChat }: NavigationProps) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/20 px-4 py-3">
       <div className="flex items-center justify-between max-w-md mx-auto">
@@ -53,6 +54,14 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                     {matchCount}
                   </span>
                 )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenAIChat}
+                className="text-purple-600"
+              >
+                <Bot className="w-4 h-4" />
               </Button>
             </>
           )}
