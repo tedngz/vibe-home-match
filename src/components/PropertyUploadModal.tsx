@@ -10,10 +10,11 @@ import { X, Upload, Sparkles, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PropertyUploadModalProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export const PropertyUploadModal = ({ onClose }: PropertyUploadModalProps) => {
+export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProps) => {
   const [images, setImages] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
@@ -94,6 +95,8 @@ Experience the perfect harmony of design, comfort, and location that makes this 
     });
     onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
