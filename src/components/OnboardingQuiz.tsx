@@ -2,12 +2,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UserPreferences } from '@/pages/Index';
-import { ArrowUp, MapPin } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
+import { BudgetRangeSelector } from '@/components/BudgetRangeSelector';
+import { CityDistrictSelector } from '@/components/CityDistrictSelector';
 
 interface OnboardingQuizProps {
   onComplete: (preferences: UserPreferences) => void;
@@ -37,12 +38,6 @@ const ACTIVITY_OPTIONS = [
   { id: 'working', label: 'Remote work', emoji: '💻' },
   { id: 'exercising', label: 'Home workouts', emoji: '🏋️' },
   { id: 'relaxing', label: 'Relaxing', emoji: '🧘' },
-];
-
-const LOCATION_OPTIONS = [
-  { id: 'ho-chi-minh-city', label: 'Ho Chi Minh City', flag: '🇻🇳' },
-  { id: 'hanoi', label: 'Hanoi', flag: '🇻🇳' },
-  { id: 'da-nang', label: 'Da Nang', flag: '🇻🇳' },
 ];
 
 export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
@@ -195,23 +190,10 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
             </div>
             
             <div className="space-y-6">
-              <div className="space-y-4">
-                <Label className="text-base font-medium text-slate-900">Monthly Budget</Label>
-                <div className="px-3">
-                  <Slider
-                    value={preferences.priceRange || [1000, 3000]}
-                    onValueChange={(value) => setPreferences(prev => ({ ...prev, priceRange: value as [number, number] }))}
-                    max={5000}
-                    min={500}
-                    step={100}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-slate-600 mt-2 font-medium">
-                    <span>${preferences.priceRange?.[0] || 1000}</span>
-                    <span>${preferences.priceRange?.[1] || 3000}</span>
-                  </div>
-                </div>
-              </div>
+              <BudgetRangeSelector
+                value={preferences.priceRange || [1000, 3000]}
+                onChange={(value) => setPreferences(prev => ({ ...prev, priceRange: value }))}
+              />
 
               <div className="space-y-3">
                 <Label htmlFor="size" className="text-base font-medium text-slate-900">Preferred Size</Label>
@@ -240,27 +222,13 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
             
             <div className="space-y-6">
               <div className="space-y-3">
-                <Label className="text-base font-medium text-slate-900 flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
+                <Label className="text-base font-medium text-slate-900">
                   Preferred Location
                 </Label>
-                <div className="grid grid-cols-1 gap-3">
-                  {LOCATION_OPTIONS.map(location => (
-                    <Button
-                      key={location.id}
-                      variant={preferences.location === location.label ? 'default' : 'outline'}
-                      className={`w-full justify-start space-x-3 p-4 rounded-xl transition-all duration-200 ${
-                        preferences.location === location.label
-                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                          : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50'
-                      }`}
-                      onClick={() => setPreferences(prev => ({ ...prev, location: location.label }))}
-                    >
-                      <span className="text-lg">{location.flag}</span>
-                      <span className="font-medium">{location.label}</span>
-                    </Button>
-                  ))}
-                </div>
+                <CityDistrictSelector
+                  value={preferences.location || ''}
+                  onChange={(value) => setPreferences(prev => ({ ...prev, location: value }))}
+                />
               </div>
 
               <div className="space-y-3">

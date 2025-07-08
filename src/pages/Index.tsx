@@ -7,6 +7,7 @@ import { Navigation } from '@/components/Navigation';
 import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
+import { LoginModal, UserProfile } from '@/components/LoginModal';
 
 export type UserPreferences = {
   styles: string[];
@@ -53,14 +54,21 @@ const Index = () => {
   const [matches, setMatches] = useState<Apartment[]>([]);
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const handleUserTypeSelect = (type: 'renter' | 'realtor') => {
     setUserType(type);
     if (type === 'realtor') {
       setCurrentView('dashboard');
     } else {
-      setCurrentView('onboarding');
+      setIsLoginOpen(true);
     }
+  };
+
+  const handleLogin = (profile: UserProfile) => {
+    setUserProfile(profile);
+    setCurrentView('onboarding');
   };
 
   const handleOnboardingComplete = (preferences: UserPreferences) => {
@@ -90,6 +98,7 @@ const Index = () => {
     setUserPreferences(null);
     setMatches([]);
     setRealtorMatches([]);
+    setUserProfile(null);
   };
 
   return (
@@ -109,7 +118,7 @@ const Index = () => {
         <UserTypeSelector onSelect={handleUserTypeSelect} />
       )}
       
-      {userType === 'renter' && currentView === 'onboarding' && (
+      {userType === 'renter' && currentView === 'onboarding' && userProfile && (
         <OnboardingQuiz onComplete={handleOnboardingComplete} />
       )}
       
@@ -117,6 +126,7 @@ const Index = () => {
         <SwipeInterface 
           userPreferences={userPreferences}
           onMatch={handleMatch}
+          userProfile={userProfile}
         />
       )}
       
@@ -124,6 +134,7 @@ const Index = () => {
         <MatchesView 
           matches={matches} 
           userPreferences={userPreferences}
+          userProfile={userProfile}
         />
       )}
 
@@ -133,6 +144,12 @@ const Index = () => {
           onSwitchUserType={switchUserType}
         />
       )}
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLogin={handleLogin}
+      />
 
       <AIChatAgent 
         isOpen={isAIChatOpen}

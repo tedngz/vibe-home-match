@@ -9,13 +9,15 @@ import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { UserPreferences } from '@/pages/Index';
+import { UserProfile } from '@/components/LoginModal';
 
 interface MatchesViewProps {
   matches: Apartment[];
   userPreferences?: UserPreferences;
+  userProfile?: UserProfile;
 }
 
-export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
+export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesViewProps) => {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
 
@@ -51,7 +53,7 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
     <div className="pt-20 px-4 pb-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
             Your Matches
           </h2>
           <p className="text-gray-600 mt-1">{matches.length} perfect vibe{matches.length !== 1 ? 's' : ''} found!</p>
@@ -116,9 +118,7 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
                   {/* Enhanced Vibe Score Display */}
                   {vibeScore && (
                     <div className="absolute top-3 left-3">
-                      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-lg">
-                        <VibeScore score={vibeScore} size="sm" />
-                      </div>
+                      <VibeScore score={vibeScore} size="sm" />
                     </div>
                   )}
                 </div>
@@ -134,13 +134,13 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
                     </div>
                   </div>
 
-                  <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-pink-100 text-orange-800 mb-3">
+                  <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mb-3">
                     {apartment.vibe}
                   </Badge>
 
                   {/* Enhanced Vibe Score Breakdown */}
                   {vibeScore && (
-                    <div className="mb-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
+                    <div className="mb-4">
                       <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
                     </div>
                   )}
@@ -178,7 +178,7 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
                     
                     <Button 
                       size="sm" 
-                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-md"
+                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
                       onClick={() => setSelectedApartment(apartment)}
                     >
                       Contact
@@ -194,6 +194,7 @@ export const MatchesView = ({ matches, userPreferences }: MatchesViewProps) => {
       {selectedApartment && (
         <ContactModal 
           apartment={selectedApartment}
+          userProfile={userProfile}
           onClose={() => setSelectedApartment(null)}
         />
       )}

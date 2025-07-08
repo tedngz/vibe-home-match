@@ -6,18 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Apartment } from '@/pages/Index';
+import { UserProfile } from '@/components/LoginModal';
 import { useToast } from '@/hooks/use-toast';
 
 interface ContactModalProps {
   apartment: Apartment;
+  userProfile?: UserProfile;
   onClose: () => void;
 }
 
-export const ContactModal = ({ apartment, onClose }: ContactModalProps) => {
+export const ContactModal = ({ apartment, userProfile, onClose }: ContactModalProps) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: userProfile?.name || '',
+    email: userProfile?.email || '',
+    phone: userProfile?.phone || '',
     message: `Hi ${apartment.realtor.name}, I'm interested in viewing "${apartment.title}" in ${apartment.location}. Could we schedule a viewing?`
   });
   const { toast } = useToast();
@@ -117,7 +119,7 @@ export const ContactModal = ({ apartment, onClose }: ContactModalProps) => {
             </Button>
             <Button 
               type="submit" 
-              className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
             >
               Send Message
             </Button>
