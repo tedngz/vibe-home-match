@@ -20,7 +20,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
   const unreadMatches = matches.filter(match => !match.timestamp || new Date(match.timestamp).getTime() > Date.now() - 86400000);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -31,7 +31,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
               className="w-10 h-10"
             />
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                 Realtor Dashboard
               </h1>
               <p className="text-slate-600">Manage your properties and connect with renters</p>
@@ -41,7 +41,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
           <div className="flex space-x-3">
             <Button 
               onClick={() => setIsUploadModalOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Property
@@ -77,7 +77,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                 <p className="text-sm text-slate-600">New Today</p>
                 <p className="text-2xl font-bold text-slate-900">{unreadMatches.length}</p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
                 <MessageSquare className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -130,7 +130,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                           <Badge variant="secondary" className="bg-slate-100 text-slate-700">
                             ${match.apartment.price}/mo
                           </Badge>
-                          <Badge className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800">
+                          <Badge className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800">
                             {match.apartment.vibe}
                           </Badge>
                         </div>
@@ -149,7 +149,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                       <Button
                         size="sm"
                         onClick={() => setSelectedMatch(match)}
-                        className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg"
+                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
                       >
                         <MessageSquare className="w-4 h-4 mr-1" />
                         Message
@@ -164,12 +164,13 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
       </div>
 
       <PropertyUploadModal 
-        open={isUploadModalOpen}
-        onOpenChange={setIsUploadModalOpen}
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
       />
 
       {selectedMatch && (
         <MessagingModal 
+          selectedMatch={selectedMatch}
           matches={[selectedMatch]}
           onClose={() => setSelectedMatch(null)}
         />

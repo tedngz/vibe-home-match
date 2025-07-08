@@ -13,20 +13,20 @@ interface NavigationProps {
 
 export const Navigation = ({ currentView, setCurrentView, matchCount, userType, onSwitchUserType, onOpenAIChat }: NavigationProps) => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 px-4 py-3 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-200 px-4 py-4 shadow-sm">
       <div className="flex items-center justify-between max-w-md mx-auto">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <img 
             src="/lovable-uploads/e6e36f1b-c1ac-4aa8-a584-dac48543e870.png" 
             alt="Hausto Logo" 
-            className="w-8 h-8"
+            className="w-8 h-8 rounded-lg shadow-sm"
           />
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
               Hausto
             </h1>
             {userType === 'realtor' && (
-              <p className="text-xs text-slate-500">Realtor</p>
+              <p className="text-xs text-slate-500 font-medium">Realtor</p>
             )}
           </div>
         </div>
@@ -38,7 +38,11 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant={currentView === 'swipe' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('swipe')}
-                className={currentView === 'swipe' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 'hover:bg-slate-100 text-slate-600'}
+                className={`rounded-xl transition-all duration-200 ${
+                  currentView === 'swipe' 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:from-orange-600 hover:to-red-600' 
+                    : 'hover:bg-orange-50 text-slate-600 hover:text-orange-600'
+                }`}
               >
                 <Home className="w-4 h-4" />
               </Button>
@@ -46,11 +50,15 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant={currentView === 'matches' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('matches')}
-                className={`relative ${currentView === 'matches' ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white' : 'hover:bg-slate-100 text-slate-600'}`}
+                className={`relative rounded-xl transition-all duration-200 ${
+                  currentView === 'matches' 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:from-orange-600 hover:to-red-600' 
+                    : 'hover:bg-orange-50 text-slate-600 hover:text-orange-600'
+                }`}
               >
                 <Heart className="w-4 h-4" />
                 {matchCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                     {matchCount}
                   </span>
                 )}
@@ -59,7 +67,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
                 variant="ghost"
                 size="sm"
                 onClick={onOpenAIChat}
-                className="text-indigo-600 hover:bg-indigo-50"
+                className="text-orange-600 hover:bg-orange-50 rounded-xl transition-all duration-200"
               >
                 <Bot className="w-4 h-4" />
               </Button>
@@ -70,7 +78,7 @@ export const Navigation = ({ currentView, setCurrentView, matchCount, userType, 
             variant="ghost"
             size="sm"
             onClick={onSwitchUserType}
-            className="text-slate-600 hover:bg-slate-100"
+            className="text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200"
           >
             <ArrowLeftRight className="w-4 h-4" />
           </Button>
