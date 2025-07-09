@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, X, MapPin, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
 import { sampleProperties } from '@/data/sampleProperties';
@@ -14,13 +14,15 @@ interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
   onMatch: (apartment: Apartment) => void;
   userProfile?: UserProfile;
+  onRestartOnboarding?: () => void;
 }
 
-export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeInterfaceProps) => {
+export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestartOnboarding }: SwipeInterfaceProps) => {
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const [currentApartmentIndex, setCurrentApartmentIndex] = useState(0);
   const [likedApartmentIds, setLikedApartmentIds] = useState<string[]>([]);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     // Filter apartments based on user preferences and vibe score > 40%
@@ -90,10 +92,19 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
   if (apartments.length === 0) {
     return (
       <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
-        <Card className="p-8 text-center bg-white/70 backdrop-blur-md">
+        <Card className="p-8 text-center bg-white/70 backdrop-blur-md max-w-md">
           <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">No good matches found</h3>
-          <p className="text-gray-600">We couldn't find any apartments with a strong vibe match (&gt;40%) in your selected areas. Try adjusting your preferences or exploring different districts!</p>
+          <p className="text-gray-600 mb-6">We couldn't find any apartments with a strong vibe match (&gt;40%) in your selected areas. Try adjusting your preferences or exploring different districts!</p>
+          {onRestartOnboarding && (
+            <Button 
+              onClick={onRestartOnboarding}
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Restart Preferences Quiz
+            </Button>
+          )}
         </Card>
       </div>
     );
@@ -102,7 +113,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
   const currentApartment = apartments[currentApartmentIndex];
   const vibeScore = calculateVibeScore(currentApartment, userPreferences);
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
-  const { formatPrice } = useCurrency();
 
   return (
     <div className="pt-20 px-4">

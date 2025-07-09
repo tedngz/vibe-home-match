@@ -36,7 +36,7 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
     {
       id: '1',
       type: 'agent',
-      content: "🏠 Hi! I'm your AI housing assistant. I can help you find apartments by analyzing descriptions, images, and tags from our property database. Try asking me something like 'Show me modern apartments with a balcony' or 'Find places perfect for working from home'.",
+      content: "🏠 Hi! I'm Hausto AI, your intelligent housing assistant. I can help you find apartments by analyzing descriptions, images, and tags from our property database. Try asking me something like 'Show me modern apartments with a balcony' or 'Find places perfect for working from home'.",
       suggestions: [
         "Show me apartments with a balcony",
         "Find modern loft spaces",
@@ -232,7 +232,7 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">AI Housing Assistant</h3>
+                <h3 className="font-semibold text-gray-900">Hausto AI</h3>
                 <p className="text-xs text-gray-500">Powered by intelligent property analysis</p>
               </div>
             </div>

@@ -11,6 +11,7 @@ interface NavigationProps {
   userType: 'renter' | 'realtor';
   onSwitchUserType: () => void;
   onOpenAIChat: () => void;
+  onRestartOnboarding?: () => void;
 }
 
 export const Navigation = ({ 
@@ -19,7 +20,8 @@ export const Navigation = ({
   matchCount, 
   userType, 
   onSwitchUserType,
-  onOpenAIChat 
+  onOpenAIChat,
+  onRestartOnboarding
 }: NavigationProps) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -27,7 +29,7 @@ export const Navigation = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              VibeNest
+              Hausto
             </h1>
             <CurrencySelector />
           </div>
@@ -65,8 +67,20 @@ export const Navigation = ({
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
             >
               <Bot className="w-4 h-4 mr-2" />
-              AI Assistant
+              Hausto AI
             </Button>
+
+            {onRestartOnboarding && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onRestartOnboarding}
+                className="text-orange-600 hover:text-orange-700 border-orange-200 hover:bg-orange-50"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Restart Quiz
+              </Button>
+            )}
             
             <Button
               variant="outline"

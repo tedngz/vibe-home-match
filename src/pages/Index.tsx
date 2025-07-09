@@ -76,6 +76,12 @@ const Index = () => {
     setCurrentView('swipe');
   };
 
+  const handleRestartOnboarding = () => {
+    setUserPreferences(null);
+    setCurrentView('onboarding');
+    setMatches([]);
+  };
+
   const handleMatch = (apartment: Apartment) => {
     setMatches(prev => [...prev, apartment]);
     
@@ -112,6 +118,7 @@ const Index = () => {
             userType={userType}
             onSwitchUserType={switchUserType}
             onOpenAIChat={() => setIsAIChatOpen(true)}
+            onRestartOnboarding={userType === 'renter' ? handleRestartOnboarding : undefined}
           />
         )}
         
@@ -128,6 +135,7 @@ const Index = () => {
             userPreferences={userPreferences}
             onMatch={handleMatch}
             userProfile={userProfile}
+            onRestartOnboarding={handleRestartOnboarding}
           />
         )}
         
