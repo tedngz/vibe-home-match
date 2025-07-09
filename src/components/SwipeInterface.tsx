@@ -22,13 +22,31 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    // Simulate fetching apartments based on user preferences
-    // In a real app, this would be an API call
+    // Filter apartments based on user preferences and vibe score > 40%
     const filteredApartments = sampleProperties.filter(apartment => {
-      // Basic filtering logic (can be expanded)
-      const locationMatch = userPreferences.location.some(loc => apartment.location.includes(loc));
-      return locationMatch;
+      // Basic filtering logic
+      const locationMatch = userPreferences.location.some(loc => 
+        apartment.location.toLowerCase().includes(loc.toLowerCase())
+      );
+      
+      // Calculate vibe score and only show apartments with score > 40%
+      const vibeScore = calculateVibeScore(apartment, userPreferences);
+      const hasGoodVibeMatch = vibeScore.overall > 40;
+      
+      // Check if price is within reasonable range (allow some flexibility)
+      const [minPrice, maxPrice] = userPreferences.priceRange;
+      const priceInRange = apartment.price <= maxPrice * 1.2; // Allow 20% over budget
+      
+      return locationMatch && hasGoodVibeMatch && priceInRange;
+    })
+    .sort((a, b) => {
+      // Sort by vibe score (highest first)
+      const scoreA = calculateVibeScore(a, userPreferences).overall;
+      const scoreB = calculateVibeScore(b, userPreferences).overall;
+      return scoreB - scoreA;
     });
+    
+    console.log(`Found ${filteredApartments.length} apartments with vibe score > 40%`);
     setApartments(filteredApartments);
   }, [userPreferences]);
 
@@ -73,8 +91,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
       <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
         <Card className="p-8 text-center bg-white/70 backdrop-blur-md">
           <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No apartments found</h3>
-          <p className="text-gray-600">We couldn't find any apartments matching your preferences. Please adjust your preferences and try again.</p>
+          <h3 className="text-xl font-semibold mb-2">No good matches found</h3>
+          <p className="text-gray-600">We couldn't find any apartments with a strong vibe match (&gt;40%) in your selected areas. Try adjusting your preferences or exploring different districts!</p>
         </Card>
       </div>
     );
