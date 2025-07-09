@@ -10,11 +10,18 @@ interface BudgetRangeSelectorProps {
 }
 
 const PRESET_RANGES = [
-  { label: 'Budget', range: [500, 1500] as [number, number] },
-  { label: 'Mid-range', range: [1500, 3000] as [number, number] },
-  { label: 'Premium', range: [3000, 5000] as [number, number] },
-  { label: 'Luxury', range: [5000, 8000] as [number, number] },
+  { label: 'Budget', range: [3000000, 8000000] as [number, number] }, // 3-8M VND
+  { label: 'Mid-range', range: [8000000, 15000000] as [number, number] }, // 8-15M VND
+  { label: 'Premium', range: [15000000, 25000000] as [number, number] }, // 15-25M VND
+  { label: 'Luxury', range: [25000000, 40000000] as [number, number] }, // 25-40M VND
 ];
+
+const formatVND = (amount: number) => {
+  if (amount >= 1000000) {
+    return `${(amount / 1000000).toFixed(1)}M`;
+  }
+  return `${(amount / 1000).toFixed(0)}K`;
+};
 
 export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProps) => {
   const [activePreset, setActivePreset] = useState<string | null>(null);
@@ -48,7 +55,7 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
             >
               <div className="text-center">
                 <div className="font-medium">{preset.label}</div>
-                <div className="text-xs opacity-75">${preset.range[0]}-${preset.range[1]}</div>
+                <div className="text-xs opacity-75">{formatVND(preset.range[0])}-{formatVND(preset.range[1])}</div>
               </div>
             </Button>
           ))}
@@ -56,19 +63,19 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
       </div>
 
       <div className="space-y-4">
-        <Label className="text-base font-medium text-slate-900">Custom Range</Label>
+        <Label className="text-base font-medium text-slate-900">Custom Range (VND)</Label>
         <div className="px-3">
           <Slider
             value={value}
             onValueChange={handleSliderChange}
-            max={8000}
-            min={500}
-            step={100}
+            max={40000000}
+            min={3000000}
+            step={500000}
             className="w-full"
           />
           <div className="flex justify-between text-sm text-slate-600 mt-2 font-medium">
-            <span>${value[0]}</span>
-            <span>${value[1]}</span>
+            <span>{formatVND(value[0])}</span>
+            <span>{formatVND(value[1])}</span>
           </div>
         </div>
       </div>

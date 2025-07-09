@@ -15,7 +15,7 @@ export type UserPreferences = {
   activities: string[];
   priceRange: [number, number];
   size: string;
-  location: string;
+  location: string[]; // Changed to array to support multiple districts
   moveInDate: string;
 };
 

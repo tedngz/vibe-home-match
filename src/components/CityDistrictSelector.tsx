@@ -1,32 +1,42 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { MapPin, ChevronRight } from 'lucide-react';
 
 interface CityDistrictSelectorProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
 }
 
 const CITIES_WITH_DISTRICTS = {
   'Ho Chi Minh City': [
-    'District 1', 'District 2', 'District 3', 'District 4', 'District 5',
-    'District 7', 'District 10', 'Binh Thanh', 'Tan Binh', 'Thu Duc'
+    { name: 'District 1', vibe: 'Business hub with luxury shopping, fine dining, and vibrant nightlife' },
+    { name: 'District 2', vibe: 'Modern expat area with international schools and riverside living' },
+    { name: 'District 3', vibe: 'Local culture mix with cafes, street food, and affordable living' },
+    { name: 'District 4', vibe: 'Authentic local life with traditional markets and riverside views' },
+    { name: 'District 7', vibe: 'Family-friendly with malls, parks, and modern apartments' },
+    { name: 'Binh Thanh', vibe: 'Emerging trendy area with young professionals and creative spaces' },
+    { name: 'Thu Duc', vibe: 'Tech hub with universities, startups, and modern developments' }
   ],
   'Hanoi': [
-    'Ba Dinh', 'Hoan Kiem', 'Hai Ba Trung', 'Dong Da', 'Tay Ho',
-    'Cau Giay', 'Thanh Xuan', 'Hoang Mai', 'Long Bien', 'Nam Tu Liem'
+    { name: 'Hoan Kiem', vibe: 'Historic charm with lakes, temples, and cultural attractions' },
+    { name: 'Ba Dinh', vibe: 'Political center with museums, wide boulevards, and green spaces' },
+    { name: 'Cau Giay', vibe: 'Modern business district with shopping centers and office buildings' },
+    { name: 'Tay Ho', vibe: 'Expat favorite with lakeside living and international atmosphere' },
+    { name: 'Dong Da', vibe: 'Student area near universities with affordable housing and cafes' }
   ],
   'Da Nang': [
-    'Hai Chau', 'Thanh Khe', 'Son Tra', 'Ngu Hanh Son', 'Lien Chieu',
-    'Cam Le', 'Hoa Vang'
+    { name: 'Hai Chau', vibe: 'City center with beaches, business district, and urban convenience' },
+    { name: 'Son Tra', vibe: 'Peninsula living with beaches, nature, and luxury resorts' },
+    { name: 'Ngu Hanh Son', vibe: 'Tourist area with marble mountains and beachfront properties' }
   ]
 };
 
 const CITY_FLAGS = {
-  'Ho Chi Minh City': '🇻🇳',
-  'Hanoi': '🇻🇳',
-  'Da Nang': '🇻🇳'
+  'Ho Chi Minh City': '🏙️',
+  'Hanoi': '🏛️',
+  'Da Nang': '🏖️'
 };
 
 export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorProps) => {
@@ -38,9 +48,15 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
     setShowDistricts(true);
   };
 
-  const handleDistrictClick = (district: string) => {
-    onChange(`${district}, ${selectedCity}`);
-    setShowDistricts(false);
+  const handleDistrictToggle = (district: string) => {
+    const districtWithCity = `${district}, ${selectedCity}`;
+    const isSelected = value.includes(districtWithCity);
+    
+    if (isSelected) {
+      onChange(value.filter(d => d !== districtWithCity));
+    } else {
+      onChange([...value, districtWithCity]);
+    }
   };
 
   const handleBack = () => {
@@ -48,40 +64,65 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
     setSelectedCity(null);
   };
 
+  const getSelectedCount = () => {
+    return value.filter(v => v.includes(selectedCity || '')).length;
+  };
+
   if (showDistricts && selectedCity) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBack}
-            className="p-2"
-          >
-            <ChevronRight className="w-4 h-4 rotate-180" />
-          </Button>
-          <div>
-            <h4 className="font-medium text-slate-900">Select District in {selectedCity}</h4>
-            <p className="text-sm text-slate-600">Choose your preferred area</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="p-2"
+            >
+              <ChevronRight className="w-4 h-4 rotate-180" />
+            </Button>
+            <div>
+              <h4 className="font-medium text-slate-900">Select Districts in {selectedCity}</h4>
+              <p className="text-sm text-slate-600">Choose multiple preferred areas</p>
+            </div>
           </div>
+          {getSelectedCount() > 0 && (
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              {getSelectedCount()} selected
+            </Badge>
+          )}
         </div>
         
-        <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto">
-          {CITIES_WITH_DISTRICTS[selectedCity as keyof typeof CITIES_WITH_DISTRICTS].map(district => (
-            <Button
-              key={district}
-              variant={value.includes(district) ? 'default' : 'outline'}
-              className={`justify-start p-3 transition-all duration-200 ${
-                value.includes(district)
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md'
-                  : 'hover:bg-orange-50 hover:border-orange-300'
-              }`}
-              onClick={() => handleDistrictClick(district)}
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              {district}
-            </Button>
-          ))}
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {CITIES_WITH_DISTRICTS[selectedCity as keyof typeof CITIES_WITH_DISTRICTS].map(district => {
+            const districtWithCity = `${district.name}, ${selectedCity}`;
+            const isSelected = value.includes(districtWithCity);
+            
+            return (
+              <div
+                key={district.name}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${
+                  isSelected
+                    ? 'border-orange-300 bg-orange-50'
+                    : 'border-gray-200 hover:border-orange-200 hover:bg-orange-25'
+                }`}
+                onClick={() => handleDistrictToggle(district.name)}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <MapPin className="w-4 h-4 text-orange-600" />
+                      <span className="font-medium text-slate-900">{district.name}</span>
+                      {isSelected && (
+                        <Badge className="bg-orange-500 text-white text-xs">Selected</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-600 leading-relaxed">{district.vibe}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -92,6 +133,13 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
       <div>
         <h4 className="font-medium text-slate-900 mb-2">Select City</h4>
         <p className="text-sm text-slate-600 mb-4">Choose your preferred location</p>
+        {value.length > 0 && (
+          <div className="mb-3">
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              {value.length} area{value.length !== 1 ? 's' : ''} selected
+            </Badge>
+          </div>
+        )}
       </div>
       
       <div className="grid grid-cols-1 gap-3">
