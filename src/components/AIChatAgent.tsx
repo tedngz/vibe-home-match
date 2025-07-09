@@ -4,12 +4,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Send, MapPin, DollarSign, Home } from 'lucide-react';
-import { Apartment } from '@/pages/Index';
+import { Bot, Send, MapPin, Sparkles, Search, Home } from 'lucide-react';
+import { Apartment, UserPreferences } from '@/pages/Index';
+import { sampleProperties } from '@/data/sampleProperties';
+import { calculateVibeScore } from '@/utils/vibeScoring';
 
 interface AIChatAgentProps {
   isOpen: boolean;
   onClose: () => void;
+  userPreferences?: UserPreferences;
 }
 
 interface ChatMessage {
@@ -17,126 +20,148 @@ interface ChatMessage {
   type: 'user' | 'agent';
   content: string;
   apartments?: Apartment[];
+  suggestions?: string[];
 }
 
-// Mock apartments database with additional features
-const APARTMENT_DATABASE: (Apartment & { features: string[] })[] = [
-  {
-    id: '1',
-    images: ['https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400'],
-    title: 'Cozy Modern Loft with Smart TV',
-    location: 'Brooklyn Heights',
-    price: 2800,
-    size: '1br',
-    vibe: 'Urban Sanctuary',
-    description: 'Modern loft with 65" Smart TV, high-speed internet, and entertainment center.',
-    highlights: ['65" Smart TV', 'Netflix ready', 'Gaming setup', '12ft ceilings'],
-    features: ['TV', 'smart TV', 'entertainment', 'gaming', 'netflix', 'streaming'],
-    realtor: {
-      id: 'realtor-1',
-      name: 'Sarah Johnson',
-      phone: '(555) 123-4567',
-      email: 'sarah@homevibes.com'
-    }
-  },
-  {
-    id: '2',
-    images: ['https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400'],
-    title: 'Tech-Forward Studio',
-    location: 'Manhattan',
-    price: 2400,
-    size: 'studio',
-    vibe: 'Digital Nomad',
-    description: 'Studio apartment with built-in desk, multiple monitors, and smart home features.',
-    highlights: ['Home office setup', '75" OLED TV', 'Smart home', 'High-speed fiber'],
-    features: ['TV', 'OLED', 'home office', 'desk', 'work from home', 'smart home'],
-    realtor: {
-      id: 'realtor-2',
-      name: 'Michael Chen',
-      phone: '(555) 987-6543',
-      email: 'michael@urbanspaces.com'
-    }
-  },
-  {
-    id: '3',
-    images: ['https://images.unsplash.com/photo-1483058712412-e9573fc25ebb?w=400'],
-    title: 'Entertainment Paradise',
-    location: 'Williamsburg',
-    price: 3500,
-    size: '2br',
-    vibe: 'Entertainment Hub',
-    description: 'Perfect for movie nights with 85" TV, surround sound, and media room.',
-    highlights: ['85" TV', 'Surround sound', 'Media room', 'Gaming lounge'],
-    features: ['TV', 'large screen', 'surround sound', 'media room', 'entertainment', 'gaming'],
-    realtor: {
-      id: 'realtor-3',
-      name: 'Emma Rodriguez',
-      phone: '(555) 456-7890',
-      email: 'emma@creativeliving.com'
-    }
-  },
-  {
-    id: '4',
-    images: ['https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400'],
-    title: 'Smart Living Space',
-    location: 'Queens',
-    price: 2200,
-    size: '1br',
-    vibe: 'Tech Sanctuary',
-    description: 'Smart TV integrated with home automation, voice control, and streaming setup.',
-    highlights: ['55" Smart TV', 'Voice control', 'Home automation', 'Streaming ready'],
-    features: ['TV', 'smart TV', 'voice control', 'automation', 'alexa', 'google home'],
-    realtor: {
-      id: 'realtor-4',
-      name: 'David Park',
-      phone: '(555) 321-9876',
-      email: 'david@smartliving.com'
-    }
-  },
-  {
-    id: '5',
-    images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400'],
-    title: 'Luxury Penthouse with Cinema',
-    location: 'Upper East Side',
-    price: 5800,
-    size: '3br',
-    vibe: 'Luxury Lifestyle',
-    description: 'Penthouse with dedicated home theater, 100" projector, and premium sound system.',
-    highlights: ['100" Projector', 'Home theater', 'Premium sound', 'Luxury finishes'],
-    features: ['TV', 'projector', 'home theater', 'cinema', 'luxury', 'premium'],
-    realtor: {
-      id: 'realtor-5',
-      name: 'Lisa Wong',
-      phone: '(555) 654-3210',
-      email: 'lisa@luxuryliving.com'
-    }
-  }
-];
+interface SearchResult {
+  apartment: Apartment;
+  matchScore: number;
+  matchReasons: string[];
+}
 
-export const AIChatAgent = ({ isOpen, onClose }: AIChatAgentProps) => {
+export const AIChatAgent = ({ isOpen, onClose, userPreferences }: AIChatAgentProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       type: 'agent',
-      content: "Hi! I'm your AI housing assistant. I can help you find apartments with specific features. Try asking me something like 'Show me apartments with a TV' or 'Find places with a home office setup'."
+      content: "🏠 Hi! I'm your AI housing assistant. I can help you find apartments by analyzing descriptions, images, and tags from our property database. Try asking me something like 'Show me modern apartments with a balcony' or 'Find places perfect for working from home'.",
+      suggestions: [
+        "Show me apartments with a balcony",
+        "Find modern loft spaces",
+        "Properties good for families",
+        "Places with home office setup"
+      ]
     }
   ]);
   const [inputValue, setInputValue] = useState('');
 
-  const searchApartments = (query: string): Apartment[] => {
+  const analyzePropertyMatch = (apartment: Apartment, query: string, userPrefs?: UserPreferences): SearchResult => {
     const searchTerms = query.toLowerCase().split(/\s+/);
-    
-    return APARTMENT_DATABASE
-      .filter(apt => 
-        searchTerms.some(term => 
-          apt.features.some(feature => feature.includes(term)) ||
-          apt.title.toLowerCase().includes(term) ||
-          apt.description.toLowerCase().includes(term) ||
-          apt.highlights.some(highlight => highlight.toLowerCase().includes(term))
-        )
-      )
-      .slice(0, 5)
-      .map(({ features, ...apt }) => apt);
+    let matchScore = 0;
+    const matchReasons: string[] = [];
+
+    // Analyze title, description, and highlights
+    const textContent = [
+      apartment.title,
+      apartment.description,
+      apartment.vibe,
+      apartment.location,
+      ...apartment.highlights
+    ].join(' ').toLowerCase();
+
+    // Direct keyword matching with scoring
+    const keywordMatches = searchTerms.filter(term => textContent.includes(term));
+    matchScore += keywordMatches.length * 15;
+
+    if (keywordMatches.length > 0) {
+      matchReasons.push(`Contains keywords: ${keywordMatches.join(', ')}`);
+    }
+
+    // Semantic matching for common property features
+    const featureMap: { [key: string]: string[] } = {
+      'balcony': ['balcony', 'terrace', 'outdoor space', 'patio'],
+      'modern': ['modern', 'contemporary', 'sleek', 'minimalist'],
+      'cozy': ['cozy', 'warm', 'comfortable', 'homey'],
+      'luxury': ['luxury', 'premium', 'high-end', 'upscale'],
+      'workspace': ['office', 'desk', 'work', 'study', 'productivity'],
+      'kitchen': ['kitchen', 'cooking', 'culinary', 'chef'],
+      'view': ['view', 'city view', 'river view', 'skyline'],
+      'pet': ['pet', 'dog', 'cat', 'animal'],
+      'gym': ['gym', 'fitness', 'exercise', 'workout'],
+      'parking': ['parking', 'garage', 'car space'],
+      'family': ['family', 'children', 'kids', 'spacious']
+    };
+
+    for (const [concept, keywords] of Object.entries(featureMap)) {
+      if (searchTerms.includes(concept) || searchTerms.some(term => keywords.includes(term))) {
+        const hasFeature = keywords.some(keyword => textContent.includes(keyword));
+        if (hasFeature) {
+          matchScore += 20;
+          matchReasons.push(`Perfect for ${concept} needs`);
+        }
+      }
+    }
+
+    // User preference matching (if available)
+    if (userPrefs) {
+      const vibeScore = calculateVibeScore(apartment, userPrefs);
+      matchScore += vibeScore.overall * 0.3; // Add 30% of vibe score
+      
+      if (vibeScore.overall > 70) {
+        matchReasons.push(`${Math.round(vibeScore.overall)}% match with your preferences`);
+      }
+
+      // Location preference
+      const locationMatch = userPrefs.location.some(loc => 
+        apartment.location.toLowerCase().includes(loc.toLowerCase())
+      );
+      if (locationMatch) {
+        matchScore += 25;
+        matchReasons.push('In your preferred area');
+      }
+
+      // Budget match
+      const [minBudget, maxBudget] = userPrefs.priceRange;
+      if (apartment.price >= minBudget && apartment.price <= maxBudget) {
+        matchScore += 15;
+        matchReasons.push('Within your budget');
+      }
+    }
+
+    // Style and vibe matching
+    const vibeTerms = apartment.vibe.toLowerCase().split(' ');
+    const vibeMatches = searchTerms.filter(term => vibeTerms.includes(term));
+    if (vibeMatches.length > 0) {
+      matchScore += 10;
+      matchReasons.push(`Matches ${apartment.vibe} vibe`);
+    }
+
+    return {
+      apartment,
+      matchScore,
+      matchReasons
+    };
+  };
+
+  const searchApartments = (query: string): SearchResult[] => {
+    if (!query.trim()) return [];
+
+    const results = sampleProperties
+      .map(apt => analyzePropertyMatch(apt, query, userPreferences))
+      .filter(result => result.matchScore > 0)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 5);
+
+    return results;
+  };
+
+  const generateSuggestions = (query: string): string[] => {
+    const suggestions = [
+      "Show me apartments with a balcony",
+      "Find modern studio spaces",
+      "Properties good for remote work",
+      "Places with city views",
+      "Family-friendly apartments",
+      "Luxury penthouses",
+      "Pet-friendly properties",
+      "Apartments with parking"
+    ];
+
+    // Filter suggestions based on query
+    const queryLower = query.toLowerCase();
+    return suggestions.filter(s => 
+      !queryLower || !s.toLowerCase().includes(queryLower)
+    ).slice(0, 4);
   };
 
   const handleSendMessage = () => {
@@ -150,32 +175,48 @@ export const AIChatAgent = ({ isOpen, onClose }: AIChatAgentProps) => {
 
     const searchResults = searchApartments(inputValue);
     
+    let agentContent = '';
+    let apartments: Apartment[] = [];
+
+    if (searchResults.length > 0) {
+      agentContent = `🎯 I found ${searchResults.length} great matches for "${inputValue}"! Here's what I discovered:`;
+      apartments = searchResults.map(r => r.apartment);
+    } else {
+      agentContent = `🤔 I couldn't find specific matches for "${inputValue}" in our current database. Let me suggest some alternatives that might interest you:`;
+    }
+
     const agentMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
       type: 'agent',
-      content: searchResults.length > 0 
-        ? `I found ${searchResults.length} apartments matching your criteria:` 
-        : "I couldn't find any apartments matching those specific features. Try searching for 'TV', 'home office', 'smart home', or other amenities.",
-      apartments: searchResults.length > 0 ? searchResults : undefined
+      content: agentContent,
+      apartments: apartments.length > 0 ? apartments : undefined,
+      suggestions: generateSuggestions(inputValue)
     };
 
     setMessages(prev => [...prev, userMessage, agentMessage]);
     setInputValue('');
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl h-[600px] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <Bot className="w-4 h-4 text-white" />
+      <Card className="w-full max-w-2xl h-[700px] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-purple-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
             </div>
-            <h3 className="font-semibold">AI Housing Assistant</h3>
+            <div>
+              <h3 className="font-semibold text-gray-900">AI Housing Assistant</h3>
+              <p className="text-xs text-gray-500">Powered by intelligent property analysis</p>
+            </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-gray-500 hover:text-gray-700">
             ×
           </Button>
         </div>
@@ -183,48 +224,74 @@ export const AIChatAgent = ({ isOpen, onClose }: AIChatAgentProps) => {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-lg p-3 ${
+              <div className={`max-w-[85%] rounded-2xl p-4 ${
                 message.type === 'user' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
+                  : 'bg-gray-50 border text-gray-900'
               }`}>
-                <p className="text-sm">{message.content}</p>
+                <p className="text-sm leading-relaxed">{message.content}</p>
                 
                 {message.apartments && (
-                  <div className="mt-3 space-y-3">
-                    {message.apartments.map((apartment) => (
-                      <Card key={apartment.id} className="p-3 bg-white">
-                        <div className="flex space-x-3">
-                          <img 
-                            src={apartment.images[0]} 
-                            alt={apartment.title}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm truncate">{apartment.title}</h4>
-                            <div className="flex items-center text-xs text-gray-600 mt-1">
-                              <MapPin className="w-3 h-3 mr-1" />
-                              {apartment.location}
-                            </div>
-                            <div className="flex items-center justify-between mt-2">
-                              <Badge variant="secondary" className="text-xs">
-                                ${apartment.price}/mo
-                              </Badge>
-                              <Badge className="text-xs bg-gradient-to-r from-orange-100 to-pink-100 text-orange-800">
-                                {apartment.vibe}
-                              </Badge>
+                  <div className="mt-4 space-y-3">
+                    {message.apartments.map((apartment) => {
+                      const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
+                      return (
+                        <Card key={apartment.id} className="p-3 bg-white shadow-sm border">
+                          <div className="flex space-x-3">
+                            <img 
+                              src={apartment.images[0]} 
+                              alt={apartment.title}
+                              className="w-20 h-20 object-cover rounded-lg"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-sm text-gray-900 mb-1">{apartment.title}</h4>
+                              <div className="flex items-center text-xs text-gray-600 mb-2">
+                                <MapPin className="w-3 h-3 mr-1" />
+                                {apartment.location}
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <Badge variant="secondary" className="text-xs">
+                                  {(apartment.price / 1000000).toFixed(1)}M VND/mo
+                                </Badge>
+                                {vibeScore && (
+                                  <Badge className="text-xs bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-emerald-200">
+                                    <Sparkles className="w-3 h-3 mr-1" />
+                                    {Math.round(vibeScore.overall)}% match
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {apartment.highlights.slice(0, 3).map((highlight, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {highlight}
-                            </Badge>
-                          ))}
-                        </div>
-                      </Card>
-                    ))}
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {apartment.highlights.slice(0, 3).map((highlight, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {highlight}
+                              </Badge>
+                            ))}
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {message.suggestions && (
+                  <div className="mt-4">
+                    <p className="text-xs font-medium mb-2 text-gray-600">💡 Try these searches:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {message.suggestions.map((suggestion, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-7 bg-white/50 hover:bg-white border-gray-200"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          <Search className="w-3 h-3 mr-1" />
+                          {suggestion}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -232,18 +299,25 @@ export const AIChatAgent = ({ isOpen, onClose }: AIChatAgentProps) => {
           ))}
         </div>
 
-        <div className="border-t p-4">
+        <div className="border-t p-4 bg-gray-50">
           <div className="flex space-x-2">
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about apartments with specific features..."
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            />
-            <Button onClick={handleSendMessage}>
+            <div className="relative flex-1">
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask about apartments with specific features..."
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                className="pr-10"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </div>
+            <Button onClick={handleSendMessage} disabled={!inputValue.trim()}>
               <Send className="w-4 h-4" />
             </Button>
           </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            AI analyzes property descriptions, images, and tags for better matches
+          </p>
         </div>
       </Card>
     </div>

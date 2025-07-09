@@ -48,7 +48,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
     if (currentApartmentIndex < apartments.length - 1) {
       setCurrentApartmentIndex(currentApartmentIndex + 1);
     } else {
-      // Optionally: Fetch more apartments or show a "no more apartments" message
       alert("No more apartments available. Check back later!");
     }
   };
@@ -96,7 +95,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
               className="w-full h-64 object-cover"
             />
             
-            {/* Image navigation for multiple images */}
             {currentApartment.images.length > 1 && (
               <>
                 <Button
@@ -118,7 +116,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
               </>
             )}
 
-            {/* Image dots indicator */}
             {currentApartment.images.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
                 {currentApartment.images.map((_, index) => (
@@ -134,7 +131,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
 
             <div className="absolute top-3 right-3">
               <Badge className="bg-white/90 text-gray-800 font-semibold">
-                ${currentApartment.price}/mo
+                {(currentApartment.price / 1000000).toFixed(1)}M VND/mo
               </Badge>
             </div>
 

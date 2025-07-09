@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
     styles: [],
     colors: [],
     activities: [],
-    priceRange: [8000000, 15000000], // Updated for Vietnam pricing
+    priceRange: [8000000, 15000000],
     size: '',
     location: [],
     moveInDate: ''
@@ -182,73 +183,97 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 py-12">
-      <div className="max-w-3xl mx-auto px-4">
-        <Card className="bg-white/80 backdrop-blur-lg shadow-xl rounded-2xl p-8">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-orange-700 mb-2">{currentStepData.title}</h2>
-            <p className="text-lg text-gray-600">{currentStepData.subtitle}</p>
-            <Progress value={(currentStep / totalSteps) * 100} className="mt-4 h-2" />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center py-8 px-4">
+      <div className="w-full max-w-4xl">
+        <Card className="bg-white/90 backdrop-blur-lg shadow-xl rounded-2xl p-6 md:p-8">
+          <div className="mb-8">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-orange-700 mb-2">{currentStepData.title}</h2>
+              <p className="text-sm md:text-lg text-gray-600">{currentStepData.subtitle}</p>
+            </div>
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+              <span>Step {currentStep + 1} of {totalSteps}</span>
+              <span>{Math.round(((currentStep + 1) / totalSteps) * 100)}%</span>
+            </div>
+            <Progress value={((currentStep + 1) / totalSteps) * 100} className="h-2" />
           </div>
 
-          {isMultiSelect(currentStepData) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {currentStepData.options.map(option => (
-                <Button
-                  key={option.id}
-                  variant={((preferences[currentStepData.key] as string[]) || []).includes(option.id) ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-                  onClick={() => handleMultiSelect(option.id, currentStepData.key)}
-                >
-                  <span className="text-4xl mb-2">{option.emoji}</span>
-                  <span className="text-lg font-semibold">{option.label}</span>
-                  <span className="text-sm text-gray-500">{option.description}</span>
-                </Button>
-              ))}
-            </div>
-          )}
-
-          {isSingleSelect(currentStepData) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {currentStepData.options.map(option => (
-                <Button
-                  key={option.id}
-                  variant={(preferences[currentStepData.key] === option.id) ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-                  onClick={() => handleSingleSelect(option.id, currentStepData.key)}
-                >
-                  <span className="text-4xl mb-2">{option.emoji}</span>
-                  <span className="text-lg font-semibold">{option.label}</span>
-                  <span className="text-sm text-gray-500">{option.description}</span>
-                </Button>
-              ))}
-            </div>
-          )}
-
-          {isBudgetStep(currentStepData) && (
-            <BudgetRangeSelector
-              value={preferences.priceRange as [number, number]}
-              onChange={handleBudgetChange}
-            />
-          )}
-
-          {isLocationStep(currentStepData) && (
-            <CityDistrictSelector
-              value={preferences.location as string[]}
-              onChange={handleLocationChange}
-            />
-          )}
-
-          <div className="flex justify-between mt-8">
-            {currentStep > 0 && (
-              <Button variant="secondary" onClick={handleBack}>
-                Previous
-              </Button>
+          <div className="min-h-[400px] flex items-center justify-center">
+            {isMultiSelect(currentStepData) && (
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
+                {currentStepData.options.map(option => (
+                  <Button
+                    key={option.id}
+                    variant={((preferences[currentStepData.key] as string[]) || []).includes(option.id) ? 'default' : 'outline'}
+                    className="h-auto p-4 flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition-all duration-200"
+                    onClick={() => handleMultiSelect(option.id, currentStepData.key)}
+                  >
+                    <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                    <span className="font-semibold text-sm md:text-base">{option.label}</span>
+                    <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                  </Button>
+                ))}
+              </div>
             )}
+
+            {isSingleSelect(currentStepData) && (
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-4xl">
+                {currentStepData.options.map(option => (
+                  <Button
+                    key={option.id}
+                    variant={(preferences[currentStepData.key] === option.id) ? 'default' : 'outline'}
+                    className="h-auto p-4 flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition-all duration-200"
+                    onClick={() => handleSingleSelect(option.id, currentStepData.key)}
+                  >
+                    <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                    <span className="font-semibold text-sm md:text-base">{option.label}</span>
+                    <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {isBudgetStep(currentStepData) && (
+              <div className="w-full max-w-2xl">
+                <BudgetRangeSelector
+                  value={preferences.priceRange as [number, number]}
+                  onChange={handleBudgetChange}
+                />
+              </div>
+            )}
+
+            {isLocationStep(currentStepData) && (
+              <div className="w-full max-w-2xl">
+                <CityDistrictSelector
+                  value={preferences.location as string[]}
+                  onChange={handleLocationChange}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+            <Button 
+              variant="secondary" 
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="min-w-[100px]"
+            >
+              Previous
+            </Button>
+            
+            <div className="text-sm text-gray-500">
+              {currentStep + 1} / {totalSteps}
+            </div>
+
             {currentStep < totalSteps - 1 ? (
-              <Button onClick={handleNext}>Next</Button>
+              <Button onClick={handleNext} className="min-w-[100px]">
+                Next
+              </Button>
             ) : (
-              <Button onClick={handleSubmit}>Complete</Button>
+              <Button onClick={handleSubmit} className="min-w-[100px]">
+                Complete
+              </Button>
             )}
           </div>
         </Card>

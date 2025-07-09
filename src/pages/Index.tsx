@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
 import { SwipeInterface } from '@/components/SwipeInterface';
@@ -154,6 +153,7 @@ const Index = () => {
       <AIChatAgent 
         isOpen={isAIChatOpen}
         onClose={() => setIsAIChatOpen(false)}
+        userPreferences={userPreferences}
       />
     </div>
   );
