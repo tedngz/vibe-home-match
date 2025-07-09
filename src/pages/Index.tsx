@@ -7,6 +7,7 @@ import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
 import { LoginModal, UserProfile } from '@/components/LoginModal';
+import { CurrencyProvider } from '@/contexts/CurrencyContext';
 
 export type UserPreferences = {
   styles: string[];
@@ -101,61 +102,64 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && (
-        <Navigation 
-          currentView={currentView} 
-          setCurrentView={setCurrentView}
-          matchCount={matches.length}
-          userType={userType}
-          onSwitchUserType={switchUserType}
-          onOpenAIChat={() => setIsAIChatOpen(true)}
+    <CurrencyProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && (
+          <Navigation 
+            currentView={currentView} 
+            setCurrentView={setCurrentView}
+            matchCount={matches.length}
+            userType={userType}
+            onSwitchUserType={switchUserType}
+            onOpenAIChat={() => setIsAIChatOpen(true)}
+          />
+        )}
+        
+        {!userType && (
+          <UserTypeSelector onSelect={handleUserTypeSelect} />
+        )}
+        
+        {userType === 'renter' && currentView === 'onboarding' && userProfile && (
+          <OnboardingQuiz onComplete={handleOnboardingComplete} />
+        )}
+        
+        {userType === 'renter' && currentView === 'swipe' && userPreferences && (
+          <SwipeInterface 
+            userPreferences={userPreferences}
+            onMatch={handleMatch}
+            userProfile={userProfile}
+          />
+        )}
+        
+        {userType === 'renter' && currentView === 'matches' && (
+          <MatchesView 
+            matches={matches} 
+            userPreferences={userPreferences}
+            userProfile={userProfile}
+          />
+        )}
+
+        {userType === 'realtor' && currentView === 'dashboard' && (
+          <RealtorDashboard 
+            matches={realtorMatches}
+            onSwitchUserType={switchUserType}
+          />
+        )}
+
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+          onLogin={handleLogin}
         />
-      )}
-      
-      {!userType && (
-        <UserTypeSelector onSelect={handleUserTypeSelect} />
-      )}
-      
-      {userType === 'renter' && currentView === 'onboarding' && userProfile && (
-        <OnboardingQuiz onComplete={handleOnboardingComplete} />
-      )}
-      
-      {userType === 'renter' && currentView === 'swipe' && userPreferences && (
-        <SwipeInterface 
+
+        <AIChatAgent 
+          isOpen={isAIChatOpen}
+          onClose={() => setIsAIChatOpen(false)}
           userPreferences={userPreferences}
           onMatch={handleMatch}
-          userProfile={userProfile}
         />
-      )}
-      
-      {userType === 'renter' && currentView === 'matches' && (
-        <MatchesView 
-          matches={matches} 
-          userPreferences={userPreferences}
-          userProfile={userProfile}
-        />
-      )}
-
-      {userType === 'realtor' && currentView === 'dashboard' && (
-        <RealtorDashboard 
-          matches={realtorMatches}
-          onSwitchUserType={switchUserType}
-        />
-      )}
-
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onLogin={handleLogin}
-      />
-
-      <AIChatAgent 
-        isOpen={isAIChatOpen}
-        onClose={() => setIsAIChatOpen(false)}
-        userPreferences={userPreferences}
-      />
-    </div>
+      </div>
+    </CurrencyProvider>
   );
 };
 

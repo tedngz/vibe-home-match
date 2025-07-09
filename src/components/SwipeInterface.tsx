@@ -8,6 +8,7 @@ import { UserProfile } from '@/components/LoginModal';
 import { sampleProperties } from '@/data/sampleProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -101,6 +102,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
   const currentApartment = apartments[currentApartmentIndex];
   const vibeScore = calculateVibeScore(currentApartment, userPreferences);
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
+  const { formatPrice } = useCurrency();
 
   return (
     <div className="pt-20 px-4">
@@ -149,7 +151,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile }: SwipeI
 
             <div className="absolute top-3 right-3">
               <Badge className="bg-white/90 text-gray-800 font-semibold">
-                {(currentApartment.price / 1000000).toFixed(1)}M VND/mo
+                {formatPrice(currentApartment.price)}/mo
               </Badge>
             </div>
 
