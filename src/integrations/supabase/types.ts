@@ -41,6 +41,51 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          created_at: string
+          description: string | null
+          highlights: string[] | null
+          id: string
+          images: string[] | null
+          location: string
+          price: number
+          realtor_id: string
+          size: string | null
+          title: string
+          updated_at: string
+          vibe: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          highlights?: string[] | null
+          id?: string
+          images?: string[] | null
+          location: string
+          price: number
+          realtor_id: string
+          size?: string | null
+          title: string
+          updated_at?: string
+          vibe?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          highlights?: string[] | null
+          id?: string
+          images?: string[] | null
+          location?: string
+          price?: number
+          realtor_id?: string
+          size?: string | null
+          title?: string
+          updated_at?: string
+          vibe?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

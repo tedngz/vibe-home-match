@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { X, Upload, Sparkles, MapPin } from 'lucide-react';
+import { useProperties } from '@/hooks/useProperties';
 import { useToast } from '@/hooks/use-toast';
 
 interface PropertyUploadModalProps {
@@ -15,7 +15,8 @@ interface PropertyUploadModalProps {
 }
 
 export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProps) => {
-  const [images, setImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [price, setPrice] = useState('');
@@ -23,6 +24,8 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
   const [description, setDescription] = useState('');
   const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const { createProperty, isCreating } = useProperties();
   const { toast } = useToast();
 
   const vibeOptions = [
@@ -34,11 +37,14 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      Array.from(files).forEach(file => {
+      const newFiles = Array.from(files);
+      setImageFiles(prev => [...prev, ...newFiles]);
+      
+      newFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
           if (e.target?.result) {
-            setImages(prev => [...prev, e.target!.result as string]);
+            setImagePreviews(prev => [...prev, e.target!.result as string]);
           }
         };
         reader.readAsDataURL(file);
@@ -80,19 +86,30 @@ Experience the perfect harmony of design, comfort, and location that makes this 
   };
 
   const handleSubmit = () => {
-    if (!title || !location || !price || images.length === 0) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields and upload at least one image.",
-        variant: "destructive"
-      });
+    if (!title || !location || !price || imageFiles.length === 0) {
       return;
     }
 
-    toast({
-      title: "Property Listed!",
-      description: "Your property has been successfully added to the platform.",
+    createProperty({
+      title,
+      description,
+      location,
+      price: parseFloat(price),
+      size,
+      vibe: selectedVibes[0] || null,
+      highlights: selectedVibes,
+      imageFiles,
     });
+
+    // Reset form
+    setTitle('');
+    setLocation('');
+    setPrice('');
+    setSize('');
+    setDescription('');
+    setSelectedVibes([]);
+    setImageFiles([]);
+    setImagePreviews([]);
     onClose();
   };
 
@@ -130,9 +147,9 @@ Experience the perfect harmony of design, comfort, and location that makes this 
                   onChange={handleImageUpload}
                 />
               </label>
-              {images.length > 0 && (
+              {imagePreviews.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-4">
-                  {images.map((img, index) => (
+                  {imagePreviews.map((img, index) => (
                     <img key={index} src={img} alt={`Property ${index + 1}`} className="w-full h-20 object-cover rounded" />
                   ))}
                 </div>
@@ -247,9 +264,10 @@ Experience the perfect harmony of design, comfort, and location that makes this 
             </Button>
             <Button 
               onClick={handleSubmit}
+              disabled={isCreating || !title || !location || !price || imageFiles.length === 0}
               className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
             >
-              List Property
+              {isCreating ? 'Listing...' : 'List Property'}
             </Button>
           </div>
         </div>
