@@ -1,8 +1,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageSquare, RotateCcw, Bot } from 'lucide-react';
+import { Heart, MessageSquare, RotateCcw, Bot, LogOut } from 'lucide-react';
 import { CurrencySelector } from '@/components/CurrencySelector';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface NavigationProps {
   currentView: 'swipe' | 'matches';
@@ -23,6 +25,14 @@ export const Navigation = ({
   onOpenAIChat,
   onRestartOnboarding
 }: NavigationProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-3">
@@ -90,6 +100,16 @@ export const Navigation = ({
             >
               <RotateCcw className="w-4 h-4 mr-2" />
               Switch to {userType === 'renter' ? 'Realtor' : 'Renter'}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSignOut}
+              className="text-gray-600 hover:text-gray-700"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
             </Button>
           </div>
         </div>

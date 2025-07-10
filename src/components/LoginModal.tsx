@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface UserProfile {
   name: string;
@@ -20,94 +20,49 @@ interface LoginModalProps {
 }
 
 export const LoginModal = ({ isOpen, onClose, onLogin }: LoginModalProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  });
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.phone) {
+  // If user is authenticated, auto-populate and call onLogin
+  useState(() => {
+    if (user && isOpen) {
+      const profile: UserProfile = {
+        name: user.user_metadata?.name || '',
+        email: user.email || '',
+        phone: user.user_metadata?.phone || ''
+      };
+      onLogin(profile);
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields.",
-        variant: "destructive"
+        title: "Welcome back!",
+        description: `Hi ${profile.name || 'there'}, you're already signed in.`,
       });
-      return;
+      onClose();
     }
+  });
 
-    onLogin(formData);
-    toast({
-      title: "Welcome!",
-      description: `Hi ${formData.name}, you're now logged in.`,
-    });
-    onClose();
-  };
-
+  // This modal is now handled by the main auth system
+  // but keeping for backward compatibility
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <User className="w-5 h-5" />
-            <span>Sign In</span>
+            <span>Authentication Required</span>
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="text-sm font-medium">Full Name</Label>
-            <Input
-              id="name"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter your full name"
-              className="mt-1"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="Enter your email"
-              className="mt-1"
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
-            <Input
-              id="phone"
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-              placeholder="Enter your phone number"
-              className="mt-1"
-            />
-          </div>
-          
-          <div className="flex space-x-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-            >
-              Sign In
-            </Button>
-          </div>
-        </form>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            You're already signed in! Redirecting...
+          </p>
+          <Button 
+            onClick={onClose}
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+          >
+            Continue
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
 import { SwipeInterface } from '@/components/SwipeInterface';
 import { MatchesView } from '@/components/MatchesView';
@@ -6,8 +7,10 @@ import { Navigation } from '@/components/Navigation';
 import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
-import { LoginModal, UserProfile } from '@/components/LoginModal';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Loader2, LogOut } from 'lucide-react';
 
 export type UserPreferences = {
   styles: string[];
@@ -48,27 +51,28 @@ export type Match = {
 };
 
 const Index = () => {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [userType, setUserType] = useState<'renter' | 'realtor' | null>(null);
   const [currentView, setCurrentView] = useState<'onboarding' | 'swipe' | 'matches' | 'dashboard'>('onboarding');
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
   const [matches, setMatches] = useState<Apartment[]>([]);
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
 
   const handleUserTypeSelect = (type: 'renter' | 'realtor') => {
     setUserType(type);
     if (type === 'realtor') {
       setCurrentView('dashboard');
     } else {
-      setIsLoginOpen(true);
+      setCurrentView('onboarding');
     }
-  };
-
-  const handleLogin = (profile: UserProfile) => {
-    setUserProfile(profile);
-    setCurrentView('onboarding');
   };
 
   const handleOnboardingComplete = (preferences: UserPreferences) => {
@@ -104,8 +108,27 @@ const Index = () => {
     setUserPreferences(null);
     setMatches([]);
     setRealtorMatches([]);
-    setUserProfile(null);
   };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-orange-500" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // This will redirect to auth page
+  }
 
   return (
     <CurrencyProvider>
@@ -122,11 +145,26 @@ const Index = () => {
           />
         )}
         
+        {/* Add sign out button in top right when not on navigation pages */}
+        {(!userType || currentView === 'onboarding' || currentView === 'dashboard') && (
+          <div className="absolute top-4 right-4 z-50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSignOut}
+              className="bg-white/80 backdrop-blur-sm"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        )}
+        
         {!userType && (
           <UserTypeSelector onSelect={handleUserTypeSelect} />
         )}
         
-        {userType === 'renter' && currentView === 'onboarding' && userProfile && (
+        {userType === 'renter' && currentView === 'onboarding' && (
           <OnboardingQuiz onComplete={handleOnboardingComplete} />
         )}
         
@@ -134,7 +172,7 @@ const Index = () => {
           <SwipeInterface 
             userPreferences={userPreferences}
             onMatch={handleMatch}
-            userProfile={userProfile}
+            userProfile={{ name: user.user_metadata?.name || '', email: user.email || '', phone: user.user_metadata?.phone || '' }}
             onRestartOnboarding={handleRestartOnboarding}
           />
         )}
@@ -143,7 +181,7 @@ const Index = () => {
           <MatchesView 
             matches={matches} 
             userPreferences={userPreferences}
-            userProfile={userProfile}
+            userProfile={{ name: user.user_metadata?.name || '', email: user.email || '', phone: user.user_metadata?.phone || '' }}
           />
         )}
 
@@ -153,12 +191,6 @@ const Index = () => {
             onSwitchUserType={switchUserType}
           />
         )}
-
-        <LoginModal
-          isOpen={isLoginOpen}
-          onClose={() => setIsLoginOpen(false)}
-          onLogin={handleLogin}
-        />
 
         <AIChatAgent 
           isOpen={isAIChatOpen}
