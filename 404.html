@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-g" />
+    <title>Vibe Home Match - Redirecting...</title>
+    <script type="text/javascript">
+      // Get the current path from the URL.
+      const path = window.location.pathname;
+
+      // Save the path to sessionStorage.
+      // We use sessionStorage so it's cleared when the browser tab closes.
+      sessionStorage.setItem('redirectPath', path);
+
+      // Redirect to the root index.html page.
+      window.location.href = '/vibe-home-match/';
+    </script>
+  </head>
+  <body></body>
+</html>

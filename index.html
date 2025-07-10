@@ -15,6 +15,21 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <script type="text/javascript">
+  // Check for the saved path in sessionStorage.
+  const redirectPath = sessionStorage.getItem('redirectPath');
+
+  // If a path was saved, clear it from storage.
+  if (redirectPath) {
+    sessionStorage.removeItem('redirectPath');
+
+    // Use the History API to update the URL to the correct path
+    // without a full page reload.
+    window.history.replaceState(null, '', redirectPath);
+  }
+</script>
+    
     <script type="module" crossorigin src="/vibe-home-match/assets/index-DSYFDejo.js"></script>
     <link rel="stylesheet" crossorigin href="/vibe-home-match/assets/index-C8moCABT.css">
   </head>
