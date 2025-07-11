@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
   const totalSteps = 7;
 
-  const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string }[] } => {
+  const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string, image?: string }[] } => {
     return step.type === "multi-select";
   };
 
@@ -107,12 +106,48 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       type: "multi-select" as const,
       key: "styles" as keyof UserPreferences,
       options: [
-        { id: 'modern', label: 'Modern', emoji: '🏢', description: 'Clean lines, minimalist' },
-        { id: 'cozy', label: 'Cozy', emoji: '🏠', description: 'Warm, comfortable' },
-        { id: 'industrial', label: 'Industrial', emoji: '🏭', description: 'Raw, urban feel' },
-        { id: 'bohemian', label: 'Bohemian', emoji: '🌸', description: 'Artistic, eclectic' },
-        { id: 'scandinavian', label: 'Scandinavian', emoji: '❄️', description: 'Light, functional' },
-        { id: 'minimalist', label: 'Minimalist', emoji: '⚪', description: 'Simple, uncluttered' }
+        { 
+          id: 'modern', 
+          label: 'Modern', 
+          emoji: '🏢', 
+          description: 'Clean lines, minimalist',
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop'
+        },
+        { 
+          id: 'cozy', 
+          label: 'Cozy', 
+          emoji: '🏠', 
+          description: 'Warm, comfortable',
+          image: 'https://images.unsplash.com/photo-1586227740560-8cf2732c1531?w=400&h=300&fit=crop'
+        },
+        { 
+          id: 'industrial', 
+          label: 'Industrial', 
+          emoji: '🏭', 
+          description: 'Raw, urban feel',
+          image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop'
+        },
+        { 
+          id: 'bohemian', 
+          label: 'Bohemian', 
+          emoji: '🌸', 
+          description: 'Artistic, eclectic',
+          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
+        },
+        { 
+          id: 'scandinavian', 
+          label: 'Scandinavian', 
+          emoji: '❄️', 
+          description: 'Light, functional',
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop'
+        },
+        { 
+          id: 'minimalist', 
+          label: 'Minimalist', 
+          emoji: '⚪', 
+          description: 'Simple, uncluttered',
+          image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop'
+        }
       ]
     },
     {
@@ -154,10 +189,10 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       type: "single-select" as const,
       key: "size" as keyof UserPreferences,
       options: [
-        { id: 'studio', label: 'Studio', emoji: '🏠', description: '25-35 sqm, compact living' },
-        { id: '1br', label: '1 Bedroom', emoji: '🛏️', description: '40-60 sqm, separate bedroom' },
-        { id: '2br', label: '2 Bedroom', emoji: '🏡', description: '70-90 sqm, extra room' },
-        { id: '3br+', label: '3+ Bedroom', emoji: '🏘️', description: '100+ sqm, family sized' }
+        { id: 'studio', label: 'Studio', emoji: '🏠', description: '25-35 m², compact living' },
+        { id: '1br', label: '1 Bedroom', emoji: '🛏️', description: '40-60 m², separate bedroom' },
+        { id: '2br', label: '2 Bedroom', emoji: '🏡', description: '70-90 m², extra room' },
+        { id: '3br+', label: '3+ Bedroom', emoji: '🏘️', description: '100+ m², family sized' }
       ]
     },
     {
@@ -182,6 +217,22 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
   const currentStepData = steps[currentStep];
 
+  const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string, image?: string }[] } => {
+    return step.type === "multi-select";
+  };
+
+  const isSingleSelect = (step: any): step is { type: "single-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string }[] } => {
+    return step.type === "single-select";
+  };
+
+  const isBudgetStep = (step: any): step is { type: "budget", key: keyof UserPreferences } => {
+    return step.type === "budget";
+  };
+
+  const isLocationStep = (step: any): step is { type: "location", key: keyof UserPreferences } => {
+    return step.type === "location";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center py-8 px-4">
       <div className="w-full max-w-4xl">
@@ -205,12 +256,29 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
                   <Button
                     key={option.id}
                     variant={((preferences[currentStepData.key] as string[]) || []).includes(option.id) ? 'default' : 'outline'}
-                    className="h-auto p-4 flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition-all duration-200"
+                    className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-md transition-all duration-200"
                     onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                   >
-                    <span className="text-2xl md:text-3xl">{option.emoji}</span>
-                    <span className="font-semibold text-sm md:text-base">{option.label}</span>
-                    <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                    {option.image ? (
+                      <div className="w-full h-32 relative">
+                        <img 
+                          src={option.image} 
+                          alt={option.label}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-32 flex items-center justify-center bg-gray-100">
+                        <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                      </div>
+                    )}
+                    <div className="p-4 space-y-2">
+                      <span className="font-semibold text-sm md:text-base">{option.label}</span>
+                      <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                    </div>
                   </Button>
                 ))}
               </div>

@@ -1,14 +1,16 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw, MessageCircle } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
 import { sampleProperties } from '@/data/sampleProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useProperties } from '@/hooks/useProperties';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -22,36 +24,81 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [currentApartmentIndex, setCurrentApartmentIndex] = useState(0);
   const [likedApartmentIds, setLikedApartmentIds] = useState<string[]>([]);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
+  const [noMatchReason, setNoMatchReason] = useState<string>('');
   const { formatPrice } = useCurrency();
+  const { data: realProperties, isLoading } = useProperties();
 
   useEffect(() => {
-    // Filter apartments based on user preferences and vibe score > 40%
-    const filteredApartments = sampleProperties.filter(apartment => {
+    // Prioritize real properties from database, then fall back to sample data
+    const allProperties = [...(realProperties || []), ...sampleProperties];
+    
+    // Filter apartments based on user preferences
+    const filteredApartments = allProperties.filter(apartment => {
       // Basic filtering logic
       const locationMatch = userPreferences.location.some(loc => 
         apartment.location.toLowerCase().includes(loc.toLowerCase())
       );
       
-      // Calculate vibe score and only show apartments with score > 40%
+      // Calculate vibe score and only show apartments with good matches
       const vibeScore = calculateVibeScore(apartment, userPreferences);
-      const hasGoodVibeMatch = vibeScore.overall > 40;
+      const hasGoodVibeMatch = vibeScore.overall > 35; // Slightly lower threshold
       
       // Check if price is within reasonable range (allow some flexibility)
       const [minPrice, maxPrice] = userPreferences.priceRange;
-      const priceInRange = apartment.price <= maxPrice * 1.2; // Allow 20% over budget
+      const priceInRange = apartment.price <= maxPrice * 1.3; // Allow 30% over budget
       
       return locationMatch && hasGoodVibeMatch && priceInRange;
     })
     .sort((a, b) => {
-      // Sort by vibe score (highest first)
+      // Sort by vibe score (highest first), and prioritize real properties
       const scoreA = calculateVibeScore(a, userPreferences).overall;
       const scoreB = calculateVibeScore(b, userPreferences).overall;
+      
+      // If one is from realProperties and other from sample, prioritize real property
+      const aIsReal = realProperties?.some(p => p.id === a.id) || false;
+      const bIsReal = realProperties?.some(p => p.id === b.id) || false;
+      
+      if (aIsReal && !bIsReal) return -1;
+      if (!aIsReal && bIsReal) return 1;
+      
       return scoreB - scoreA;
     });
     
-    console.log(`Found ${filteredApartments.length} apartments with vibe score > 40%`);
+    console.log(`Found ${filteredApartments.length} apartments matching preferences`);
+    console.log(`Real properties: ${realProperties?.length || 0}, Sample properties: ${sampleProperties.length}`);
+    
     setApartments(filteredApartments);
-  }, [userPreferences]);
+    
+    // Set appropriate no-match reason
+    if (filteredApartments.length === 0) {
+      if (!realProperties || realProperties.length === 0) {
+        setNoMatchReason('limited-listings');
+      } else if (!userPreferences.location.length) {
+        setNoMatchReason('no-location');
+      } else {
+        const locationMatch = allProperties.filter(apartment => 
+          userPreferences.location.some(loc => 
+            apartment.location.toLowerCase().includes(loc.toLowerCase())
+          )
+        );
+        
+        if (locationMatch.length === 0) {
+          setNoMatchReason('no-location-match');
+        } else {
+          const [minPrice, maxPrice] = userPreferences.priceRange;
+          const budgetMatch = locationMatch.filter(apartment => 
+            apartment.price <= maxPrice * 1.3
+          );
+          
+          if (budgetMatch.length === 0) {
+            setNoMatchReason('budget-mismatch');
+          } else {
+            setNoMatchReason('style-mismatch');
+          }
+        }
+      }
+    }
+  }, [userPreferences, realProperties]);
 
   const handleLike = () => {
     if (apartments.length === 0) return;
@@ -89,22 +136,93 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     }));
   };
 
+  const getNoMatchMessage = () => {
+    switch (noMatchReason) {
+      case 'limited-listings':
+        return {
+          title: "Limited listings available",
+          message: "We're still building our network of trusted realtors in your area. New properties are added regularly, so check back soon!",
+          suggestion: "Try expanding your search to nearby districts or ask Hausto AI for personalized recommendations."
+        };
+      case 'no-location':
+        return {
+          title: "Location not specified",
+          message: "You haven't selected any preferred locations. We need to know where you'd like to live to find suitable properties.",
+          suggestion: "Restart your preferences to select your preferred areas."
+        };
+      case 'no-location-match':
+        return {
+          title: "No properties in selected areas",
+          message: "We couldn't find any properties in your selected districts. Our realtor network is expanding to cover more areas.",
+          suggestion: "Try selecting additional districts or ask Hausto AI about upcoming listings in your preferred areas."
+        };
+      case 'budget-mismatch':
+        return {
+          title: "Budget constraints",
+          message: "Available properties in your selected areas are outside your budget range. Consider adjusting your budget or exploring different districts.",
+          suggestion: "Restart your preferences to adjust your budget or ask Hausto AI for budget-friendly alternatives."
+        };
+      case 'style-mismatch':
+        return {
+          title: "Style preferences too specific",
+          message: "Your style and lifestyle preferences are quite specific. While we have properties in your area and budget, none match your vibe preferences closely enough.",
+          suggestion: "Consider broadening your style preferences or ask Hausto AI to find properties that might surprise you."
+        };
+      default:
+        return {
+          title: "No matches found",
+          message: "We couldn't find properties that match all your criteria. This could be due to limited inventory or very specific preferences.",
+          suggestion: "Try adjusting your preferences or ask Hausto AI for personalized recommendations."
+        };
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
+        <Card className="p-8 text-center bg-white/70 backdrop-blur-md max-w-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <h3 className="text-xl font-semibold mb-2">Finding your perfect match</h3>
+          <p className="text-gray-600">Searching through available properties...</p>
+        </Card>
+      </div>
+    );
+  }
+
   if (apartments.length === 0) {
+    const noMatchInfo = getNoMatchMessage();
+    
     return (
       <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
         <Card className="p-8 text-center bg-white/70 backdrop-blur-md max-w-md">
           <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No good matches found</h3>
-          <p className="text-gray-600 mb-6">We couldn't find any apartments with a strong vibe match (&gt;40%) in your selected areas. Try adjusting your preferences or exploring different districts!</p>
-          {onRestartOnboarding && (
+          <h3 className="text-xl font-semibold mb-2">{noMatchInfo.title}</h3>
+          <p className="text-gray-600 mb-6 leading-relaxed">{noMatchInfo.message}</p>
+          <p className="text-sm text-orange-600 mb-6 font-medium">{noMatchInfo.suggestion}</p>
+          
+          <div className="space-y-3">
+            {onRestartOnboarding && (
+              <Button 
+                onClick={onRestartOnboarding}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white w-full"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Adjust Preferences
+              </Button>
+            )}
+            
             <Button 
-              onClick={onRestartOnboarding}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+              variant="outline"
+              className="w-full border-orange-300 text-orange-600 hover:bg-orange-50"
+              onClick={() => {
+                // This would trigger the AI chat agent
+                console.log('Opening Hausto AI chat');
+              }}
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Restart Preferences Quiz
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Ask Hausto AI
             </Button>
-          )}
+          </div>
         </Card>
       </div>
     );
@@ -113,6 +231,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const currentApartment = apartments[currentApartmentIndex];
   const vibeScore = calculateVibeScore(currentApartment, userPreferences);
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
+  const isRealProperty = realProperties?.some(p => p.id === currentApartment.id) || false;
 
   return (
     <div className="pt-20 px-4">
@@ -124,6 +243,15 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               alt={currentApartment.title}
               className="w-full h-64 object-cover"
             />
+            
+            {/* Real Property Badge */}
+            {isRealProperty && (
+              <div className="absolute top-3 left-3">
+                <Badge className="bg-green-500 text-white text-xs">
+                  ✓ Verified Listing
+                </Badge>
+              </div>
+            )}
             
             {currentApartment.images.length > 1 && (
               <>
@@ -165,7 +293,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               </Badge>
             </div>
 
-            <div className="absolute top-3 left-3">
+            <div className="absolute bottom-3 left-3">
               <VibeScore score={vibeScore} size="sm" />
             </div>
           </div>
