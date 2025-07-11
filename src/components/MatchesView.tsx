@@ -1,14 +1,12 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, User, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Apartment } from '@/pages/Index';
+import { Apartment, UserPreferences } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
-import { UserPreferences } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
 
 interface MatchesViewProps {
