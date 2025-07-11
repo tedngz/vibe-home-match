@@ -9,7 +9,7 @@ import { sampleProperties } from '@/data/sampleProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { useProperties } from '@/hooks/useProperties';
+import { useProperties, Property } from '@/hooks/useProperties';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -27,8 +27,31 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const { formatPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
 
+  // Transform Property to Apartment
+  const transformPropertyToApartment = (property: Property): Apartment => {
+    return {
+      id: property.id,
+      images: property.images || [],
+      title: property.title,
+      location: property.location,
+      price: Number(property.price),
+      size: property.size || '',
+      vibe: property.vibe || '',
+      description: property.description || '',
+      highlights: property.highlights || [],
+      realtor: {
+        id: property.realtor_id,
+        name: 'Licensed Realtor', // Default name since we don't have realtor details
+        phone: '+1-234-567-8900', // Default phone
+        email: 'contact@realtor.com' // Default email
+      }
+    };
+  };
+
   useEffect(() => {
-    const allProperties = [...(realProperties || []), ...sampleProperties];
+    // Transform real properties to apartments
+    const transformedRealProperties = (realProperties || []).map(transformPropertyToApartment);
+    const allProperties = [...transformedRealProperties, ...sampleProperties];
     
     const filteredApartments = allProperties.filter(apartment => {
       const locationMatch = userPreferences.location.some(loc => 
