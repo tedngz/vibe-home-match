@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw, MessageCircle } from 'lucide-react';
+import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
 import { sampleProperties } from '@/data/sampleProperties';
@@ -24,7 +25,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [likedApartmentIds, setLikedApartmentIds] = useState<string[]>([]);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [noMatchReason, setNoMatchReason] = useState<string>('');
-  const { formatPrice } = useCurrency();
+  const [expandedDescription, setExpandedDescription] = useState(false);
+  const { formatPrice, convertPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
 
   // Transform Property to Apartment
@@ -129,8 +131,10 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const nextApartment = () => {
     if (currentApartmentIndex < apartments.length - 1) {
       setCurrentApartmentIndex(currentApartmentIndex + 1);
+      setExpandedDescription(false);
     } else {
-      alert("No more apartments available. Check back later!");
+      // No more apartments available
+      setNoMatchReason('no-more-matches');
     }
   };
 
@@ -152,6 +156,12 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
   const getNoMatchMessage = () => {
     switch (noMatchReason) {
+      case 'no-more-matches':
+        return {
+          title: "You've seen all available matches!",
+          message: "You've reviewed all properties that match your current preferences. Great job exploring your options!",
+          suggestion: "Consider adjusting your preferences to discover more properties, or ask Hausto AI for personalized recommendations."
+        };
       case 'limited-listings':
         return {
           title: "Limited listings available",
@@ -203,7 +213,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     );
   }
 
-  if (apartments.length === 0) {
+  if (apartments.length === 0 || currentApartmentIndex >= apartments.length) {
     const noMatchInfo = getNoMatchMessage();
     
     return (
@@ -245,6 +255,9 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const vibeScore = calculateVibeScore(currentApartment, userPreferences);
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
   const isRealProperty = realProperties?.some(p => p.id === currentApartment.id) || false;
+  
+  // Convert price to current currency
+  const convertedPrice = convertPrice(currentApartment.price);
 
   return (
     <div className="pt-20 px-4">
@@ -301,12 +314,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
             <div className="absolute top-3 right-3">
               <Badge className="bg-white/90 text-gray-800 font-semibold">
-                {formatPrice(currentApartment.price)}/mo
+                {formatPrice(convertedPrice)}/mo
               </Badge>
             </div>
 
             <div className="absolute bottom-3 left-3">
-              <VibeScore score={vibeScore} size="sm" />
+              <div className="bg-white/90 rounded-full p-2 shadow-lg border-2 border-orange-200">
+                <VibeScore score={vibeScore} size="sm" />
+              </div>
             </div>
           </div>
 
@@ -324,9 +339,33 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
             </div>
 
-            <p className="text-gray-700 text-sm mt-4 line-clamp-3 leading-relaxed">
-              {currentApartment.description}
-            </p>
+            <div className="mt-4">
+              <div className={`text-gray-700 text-sm leading-relaxed ${
+                expandedDescription ? '' : 'line-clamp-3'
+              }`}>
+                {currentApartment.description}
+              </div>
+              {currentApartment.description && currentApartment.description.length > 150 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-2"
+                  onClick={() => setExpandedDescription(!expandedDescription)}
+                >
+                  {expandedDescription ? (
+                    <>
+                      <ChevronUp className="w-3 h-3 mr-1" />
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-3 h-3 mr-1" />
+                      Read more
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
 
             <div className="flex flex-wrap gap-1 mt-4">
               {currentApartment.highlights.slice(0, 3).map((highlight, index) => (

@@ -25,23 +25,6 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
   const totalSteps = 7;
 
-  // Type guard functions - only declared once
-  const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string, image?: string }[] } => {
-    return step.type === "multi-select";
-  };
-
-  const isSingleSelect = (step: any): step is { type: "single-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string }[] } => {
-    return step.type === "single-select";
-  };
-
-  const isBudgetStep = (step: any): step is { type: "budget", key: keyof UserPreferences } => {
-    return step.type === "budget";
-  };
-
-  const isLocationStep = (step: any): step is { type: "location", key: keyof UserPreferences } => {
-    return step.type === "location";
-  };
-
   const handleNext = () => {
     setCurrentStep(currentStep + 1);
   };
@@ -112,43 +95,43 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
           id: 'modern', 
           label: 'Modern', 
           emoji: '🏢', 
-          description: 'Clean lines, minimalist',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop'
+          description: 'Clean lines, minimalist design',
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'cozy', 
           label: 'Cozy', 
           emoji: '🏠', 
-          description: 'Warm, comfortable',
-          image: 'https://images.unsplash.com/photo-1586227740560-8cf2732c1531?w=400&h=300&fit=crop'
+          description: 'Warm, comfortable atmosphere',
+          image: 'https://images.unsplash.com/photo-1586227740560-8cf2732c1531?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'industrial', 
           label: 'Industrial', 
           emoji: '🏭', 
-          description: 'Raw, urban feel',
-          image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop'
+          description: 'Raw materials, urban aesthetic',
+          image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'bohemian', 
           label: 'Bohemian', 
           emoji: '🌸', 
-          description: 'Artistic, eclectic',
-          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
+          description: 'Artistic, eclectic mix',
+          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'scandinavian', 
           label: 'Scandinavian', 
           emoji: '❄️', 
-          description: 'Light, functional',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop'
+          description: 'Light colors, functional design',
+          image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'minimalist', 
           label: 'Minimalist', 
           emoji: '⚪', 
-          description: 'Simple, uncluttered',
-          image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop'
+          description: 'Simple, uncluttered spaces',
+          image: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=400&h=300&fit=crop&auto=format'
         }
       ]
     },
@@ -225,10 +208,10 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
         <Card className="bg-white/90 backdrop-blur-lg shadow-xl rounded-2xl p-6 md:p-8">
           <div className="mb-8">
             <div className="text-center mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-orange-700 mb-2">{currentStepData.title}</h2>
-              <p className="text-sm md:text-lg text-gray-600">{currentStepData.subtitle}</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-orange-700 mb-3">{currentStepData.title}</h2>
+              <p className="text-base md:text-lg text-gray-600">{currentStepData.subtitle}</p>
             </div>
-            <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
               <span>Step {currentStep + 1} of {totalSteps}</span>
               <span>{Math.round(((currentStep + 1) / totalSteps) * 100)}%</span>
             </div>
@@ -236,58 +219,60 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
           </div>
 
           <div className="min-h-[400px] flex items-center justify-center">
-            {isMultiSelect(currentStepData) && (
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
+            {currentStepData.type === "multi-select" && (
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
                 {currentStepData.options.map(option => (
                   <Button
                     key={option.id}
                     variant={((preferences[currentStepData.key] as string[]) || []).includes(option.id) ? 'default' : 'outline'}
-                    className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-md transition-all duration-200"
+                    className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-lg transition-all duration-200 border-2"
                     onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                   >
                     {option.image ? (
-                      <div className="w-full h-32 relative">
+                      <div className="w-full h-40 relative">
                         <img 
                           src={option.image} 
                           alt={option.label}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                          <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <span className="text-3xl">{option.emoji}</span>
                         </div>
                       </div>
                     ) : (
-                      <div className="w-full h-32 flex items-center justify-center bg-gray-100">
-                        <span className="text-2xl md:text-3xl">{option.emoji}</span>
+                      <div className="w-full h-40 flex items-center justify-center bg-gray-100">
+                        <span className="text-3xl">{option.emoji}</span>
                       </div>
                     )}
-                    <div className="p-4 space-y-2">
-                      <span className="font-semibold text-sm md:text-base">{option.label}</span>
-                      <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                    <div className="p-4 space-y-2 w-full">
+                      <span className="font-semibold text-base">{option.label}</span>
+                      <div className="text-xs text-gray-500 leading-relaxed">
+                        {option.emoji} {option.description}
+                      </div>
                     </div>
                   </Button>
                 ))}
               </div>
             )}
 
-            {isSingleSelect(currentStepData) && (
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-4xl">
+            {currentStepData.type === "single-select" && (
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-4xl">
                 {currentStepData.options.map(option => (
                   <Button
                     key={option.id}
                     variant={(preferences[currentStepData.key] === option.id) ? 'default' : 'outline'}
-                    className="h-auto p-4 flex flex-col items-center justify-center text-center space-y-2 hover:shadow-md transition-all duration-200"
+                    className="h-auto p-6 flex flex-col items-center justify-center text-center space-y-3 hover:shadow-lg transition-all duration-200 border-2"
                     onClick={() => handleSingleSelect(option.id, currentStepData.key)}
                   >
-                    <span className="text-2xl md:text-3xl">{option.emoji}</span>
-                    <span className="font-semibold text-sm md:text-base">{option.label}</span>
-                    <span className="text-xs text-gray-500 leading-tight">{option.description}</span>
+                    <span className="text-3xl">{option.emoji}</span>
+                    <span className="font-semibold text-base">{option.label}</span>
+                    <span className="text-xs text-gray-500 leading-relaxed">{option.description}</span>
                   </Button>
                 ))}
               </div>
             )}
 
-            {isBudgetStep(currentStepData) && (
+            {currentStepData.type === "budget" && (
               <div className="w-full max-w-2xl">
                 <BudgetRangeSelector
                   value={preferences.priceRange as [number, number]}
@@ -296,7 +281,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
               </div>
             )}
 
-            {isLocationStep(currentStepData) && (
+            {currentStepData.type === "location" && (
               <div className="w-full max-w-2xl">
                 <CityDistrictSelector
                   value={preferences.location as string[]}

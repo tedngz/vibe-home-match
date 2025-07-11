@@ -78,27 +78,37 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
         </div>
       </div>
 
-      {/* Custom Slider */}
+      {/* Custom Slider with Enhanced Styling */}
       <div className="space-y-6">
         <Label className="text-base font-medium text-slate-900 block text-center">Custom Range</Label>
         <div className="px-4">
           <div className="relative">
-            <Slider
-              value={value}
-              onValueChange={handleSliderChange}
-              max={40000000}
-              min={3000000}
-              step={500000}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-slate-600 mt-3 font-medium">
+            <div className="relative">
+              {/* Custom styled slider container */}
+              <div className="relative">
+                <Slider
+                  value={value}
+                  onValueChange={handleSliderChange}
+                  max={40000000}
+                  min={3000000}
+                  step={500000}
+                  className="w-full [&_.slider-track]:h-3 [&_.slider-track]:rounded-full [&_.slider-track]:bg-gray-200 [&_.slider-range]:bg-gradient-to-r [&_.slider-range]:from-orange-500 [&_.slider-range]:to-red-500 [&_.slider-thumb]:w-6 [&_.slider-thumb]:h-6 [&_.slider-thumb]:bg-white [&_.slider-thumb]:border-4 [&_.slider-thumb]:border-orange-500 [&_.slider-thumb]:shadow-lg"
+                />
+                {/* Start circle */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 rounded-full -translate-x-2"></div>
+                {/* End circle */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 rounded-full translate-x-2"></div>
+              </div>
+            </div>
+            
+            <div className="flex justify-between text-sm text-slate-600 mt-4 font-medium">
               <div className="text-center">
-                <div className="font-semibold">{formatPrice(value[0])}</div>
-                <div className="text-xs opacity-75">Minimum</div>
+                <div className="font-semibold text-orange-600">{formatPrice(value[0])}</div>
+                <div className="text-xs opacity-75 mt-1">Minimum</div>
               </div>
               <div className="text-center">
-                <div className="font-semibold">{formatPrice(value[1])}</div>
-                <div className="text-xs opacity-75">Maximum</div>
+                <div className="font-semibold text-orange-600">{formatPrice(value[1])}</div>
+                <div className="text-xs opacity-75 mt-1">Maximum</div>
               </div>
             </div>
           </div>
