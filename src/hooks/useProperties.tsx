@@ -132,11 +132,112 @@ export const useProperties = () => {
     },
   });
 
+  // Update property mutation
+  const updatePropertyMutation = useMutation({
+    mutationFn: async (propertyData: {
+      id: string;
+      title: string;
+      description: string;
+      location: string;
+      price: number;
+      size?: string;
+      vibe?: string;
+      highlights: string[];
+      newImageFiles?: File[];
+      existingImages?: string[];
+    }) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      let imageUrls = propertyData.existingImages || [];
+
+      // Upload new images if any
+      if (propertyData.newImageFiles && propertyData.newImageFiles.length > 0) {
+        const newImageUrls = await Promise.all(
+          propertyData.newImageFiles.map(file => uploadImage(file))
+        );
+        imageUrls = [...imageUrls, ...newImageUrls];
+      }
+
+      // Update property record
+      const { data, error } = await supabase
+        .from('properties')
+        .update({
+          title: propertyData.title,
+          description: propertyData.description,
+          location: propertyData.location,
+          price: propertyData.price,
+          size: propertyData.size,
+          vibe: propertyData.vibe,
+          highlights: propertyData.highlights,
+          images: imageUrls,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', propertyData.id)
+        .eq('realtor_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['realtor-properties'] });
+      toast({
+        title: "Property Updated!",
+        description: "Your property has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating property:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update property. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete property mutation
+  const deletePropertyMutation = useMutation({
+    mutationFn: async (propertyId: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', propertyId)
+        .eq('realtor_id', user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['realtor-properties'] });
+      toast({
+        title: "Property Deleted!",
+        description: "Your property has been successfully removed.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting property:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete property. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   return {
     properties,
     realtorProperties,
     isLoading,
     createProperty: createPropertyMutation.mutate,
     isCreating: createPropertyMutation.isPending,
+    updateProperty: updatePropertyMutation.mutate,
+    isUpdating: updatePropertyMutation.isPending,
+    deleteProperty: deletePropertyMutation.mutate,
+    isDeleting: deletePropertyMutation.isPending,
   };
 };

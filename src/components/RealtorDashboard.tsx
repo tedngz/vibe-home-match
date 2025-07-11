@@ -3,12 +3,15 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2, Eye } from 'lucide-react';
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
+import { PropertyEditModal } from '@/components/PropertyEditModal';
+import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
 import { MessagingModal } from '@/components/MessagingModal';
-import { useProperties } from '@/hooks/useProperties';
+import { useProperties, Property } from '@/hooks/useProperties';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { Match } from '@/pages/Index';
+import { useToast } from '@/hooks/use-toast';
 
 interface RealtorDashboardProps {
   matches: Match[];
@@ -17,11 +20,31 @@ interface RealtorDashboardProps {
 
 export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboardProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const { realtorProperties, isLoading } = useProperties();
+  const { realtorProperties, isLoading, deleteProperty, isDeleting } = useProperties();
   const { formatPrice } = useCurrency();
+  const { toast } = useToast();
 
   const unreadMatches = matches.filter(match => !match.timestamp || new Date(match.timestamp).getTime() > Date.now() - 86400000);
+
+  const handleEdit = (property: Property) => {
+    setSelectedProperty(property);
+    setIsEditModalOpen(true);
+  };
+
+  const handlePreview = (property: Property) => {
+    setSelectedProperty(property);
+    setIsPreviewModalOpen(true);
+  };
+
+  const handleDelete = (property: Property) => {
+    if (window.confirm(`Are you sure you want to delete "${property.title}"? This action cannot be undone.`)) {
+      deleteProperty(property.id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -148,12 +171,30 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                         </Badge>
                       )}
                       <div className="flex justify-between items-center">
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline">
+                        <div className="flex space-x-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handlePreview(property)}
+                          >
+                            <Eye className="w-3 h-3 mr-1" />
+                            Preview
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleEdit(property)}
+                          >
                             <Edit className="w-3 h-3 mr-1" />
                             Edit
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDelete(property)}
+                            disabled={isDeleting}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
                             <Trash2 className="w-3 h-3 mr-1" />
                             Delete
                           </Button>
@@ -237,6 +278,24 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
       <PropertyUploadModal 
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
+      />
+
+      <PropertyEditModal 
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedProperty(null);
+        }}
+        property={selectedProperty}
+      />
+
+      <PropertyPreviewModal 
+        isOpen={isPreviewModalOpen}
+        onClose={() => {
+          setIsPreviewModalOpen(false);
+          setSelectedProperty(null);
+        }}
+        property={selectedProperty}
       />
 
       {selectedMatch && (
