@@ -1,13 +1,15 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, User, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, User, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Apartment, UserPreferences } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { UserProfile } from '@/components/LoginModal';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface MatchesViewProps {
   matches: Apartment[];
@@ -18,6 +20,8 @@ interface MatchesViewProps {
 export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesViewProps) => {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
+  const { formatPrice } = useCurrency();
 
   const nextImage = (apartmentId: string, totalImages: number) => {
     setImageIndices(prev => ({
@@ -32,6 +36,13 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
       [apartmentId]: prev[apartmentId] === 0 || !prev[apartmentId] 
         ? totalImages - 1 
         : prev[apartmentId] - 1
+    }));
+  };
+
+  const toggleDescription = (apartmentId: string) => {
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [apartmentId]: !prev[apartmentId]
     }));
   };
 
@@ -61,6 +72,7 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
           {matches.map((apartment) => {
             const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
             const currentImageIndex = imageIndices[apartment.id] || 0;
+            const isExpanded = expandedDescriptions[apartment.id] || false;
             
             return (
               <Card key={apartment.id} className="overflow-hidden bg-white/70 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
@@ -109,14 +121,16 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
 
                   <div className="absolute top-3 right-3">
                     <Badge className="bg-white/90 text-gray-800 font-semibold">
-                      ${apartment.price}/mo
+                      {formatPrice(apartment.price)}/mo
                     </Badge>
                   </div>
                   
                   {/* Enhanced Vibe Score Display */}
                   {vibeScore && (
                     <div className="absolute top-3 left-3">
-                      <VibeScore score={vibeScore} size="sm" />
+                      <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-white/20">
+                        <VibeScore score={vibeScore} size="sm" />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -124,8 +138,8 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
-                      <div className="flex items-center text-gray-600 text-sm mt-1">
+                      <h3 className="font-bold text-lg text-gray-900 mb-2">{apartment.title}</h3>
+                      <div className="flex items-center text-gray-600 text-sm mb-3">
                         <MapPin className="w-3 h-3 mr-1" />
                         {apartment.location}
                       </div>
@@ -143,9 +157,33 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                     </div>
                   )}
 
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-3 leading-relaxed">
-                    {apartment.description}
-                  </p>
+                  <div className="mb-4">
+                    <div className={`text-gray-700 text-sm leading-relaxed ${
+                      isExpanded ? '' : 'line-clamp-3'
+                    }`}>
+                      {apartment.description}
+                    </div>
+                    {apartment.description && apartment.description.length > 150 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-2"
+                        onClick={() => toggleDescription(apartment.id)}
+                      >
+                        {isExpanded ? (
+                          <>
+                            <ChevronUp className="w-3 h-3 mr-1" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-3 h-3 mr-1" />
+                            Read more
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
 
                   {/* Key highlights */}
                   <div className="mb-4">

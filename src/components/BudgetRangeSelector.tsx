@@ -12,7 +12,7 @@ interface BudgetRangeSelectorProps {
 }
 
 export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProps) => {
-  const { formatPrice, convertPrice } = useCurrency();
+  const { formatPrice } = useCurrency();
   const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const PRESET_RANGES = [
@@ -86,18 +86,20 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
             <div className="relative">
               {/* Custom styled slider container */}
               <div className="relative">
+                {/* Start circle */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full -translate-x-2 z-10 shadow-md"></div>
+                
                 <Slider
                   value={value}
                   onValueChange={handleSliderChange}
                   max={40000000}
                   min={3000000}
                   step={500000}
-                  className="w-full [&_.slider-track]:h-3 [&_.slider-track]:rounded-full [&_.slider-track]:bg-gray-200 [&_.slider-range]:bg-gradient-to-r [&_.slider-range]:from-orange-500 [&_.slider-range]:to-red-500 [&_.slider-thumb]:w-6 [&_.slider-thumb]:h-6 [&_.slider-thumb]:bg-white [&_.slider-thumb]:border-4 [&_.slider-thumb]:border-orange-500 [&_.slider-thumb]:shadow-lg"
+                  className="w-full [&>span]:h-3 [&>span]:rounded-full [&>span]:bg-gray-200 [&>span>span]:bg-gradient-to-r [&>span>span]:from-orange-500 [&>span>span]:to-red-500 [&>span>span]:rounded-full [&_[role=slider]]:w-6 [&_[role=slider]]:h-6 [&_[role=slider]]:bg-white [&_[role=slider]]:border-4 [&_[role=slider]]:border-orange-500 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-all [&_[role=slider]]:hover:scale-110"
                 />
-                {/* Start circle */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 rounded-full -translate-x-2"></div>
+                
                 {/* End circle */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 rounded-full translate-x-2"></div>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full translate-x-2 z-10 shadow-md"></div>
               </div>
             </div>
             

@@ -93,43 +93,37 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       options: [
         { 
           id: 'modern', 
-          label: 'Modern', 
-          emoji: '🏢', 
+          label: '🏢 Modern', 
           description: 'Clean lines, minimalist design',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'cozy', 
-          label: 'Cozy', 
-          emoji: '🏠', 
+          label: '🏠 Cozy', 
           description: 'Warm, comfortable atmosphere',
-          image: 'https://images.unsplash.com/photo-1586227740560-8cf2732c1531?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'industrial', 
-          label: 'Industrial', 
-          emoji: '🏭', 
+          label: '🏭 Industrial', 
           description: 'Raw materials, urban aesthetic',
           image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'bohemian', 
-          label: 'Bohemian', 
-          emoji: '🌸', 
+          label: '🌸 Bohemian', 
           description: 'Artistic, eclectic mix',
           image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'scandinavian', 
-          label: 'Scandinavian', 
-          emoji: '❄️', 
+          label: '❄️ Scandinavian', 
           description: 'Light colors, functional design',
           image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'minimalist', 
-          label: 'Minimalist', 
-          emoji: '⚪', 
+          label: '⚪ Minimalist', 
           description: 'Simple, uncluttered spaces',
           image: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=400&h=300&fit=crop&auto=format'
         }
@@ -228,26 +222,24 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
                     className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-lg transition-all duration-200 border-2"
                     onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                   >
-                    {option.image ? (
+                    {currentStep === 0 && option.image ? (
                       <div className="w-full h-40 relative">
                         <img 
                           src={option.image} 
                           alt={option.label}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <span className="text-3xl">{option.emoji}</span>
-                        </div>
+                        <div className="absolute inset-0 bg-black/20"></div>
                       </div>
-                    ) : (
+                    ) : option.emoji ? (
                       <div className="w-full h-40 flex items-center justify-center bg-gray-100">
                         <span className="text-3xl">{option.emoji}</span>
                       </div>
-                    )}
+                    ) : null}
                     <div className="p-4 space-y-2 w-full">
                       <span className="font-semibold text-base">{option.label}</span>
                       <div className="text-xs text-gray-500 leading-relaxed">
-                        {option.emoji} {option.description}
+                        {option.description}
                       </div>
                     </div>
                   </Button>

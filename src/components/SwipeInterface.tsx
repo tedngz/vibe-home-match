@@ -26,7 +26,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [noMatchReason, setNoMatchReason] = useState<string>('');
   const [expandedDescription, setExpandedDescription] = useState(false);
-  const { formatPrice, convertPrice } = useCurrency();
+  const { formatPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
 
   // Transform Property to Apartment
@@ -255,9 +255,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const vibeScore = calculateVibeScore(currentApartment, userPreferences);
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
   const isRealProperty = realProperties?.some(p => p.id === currentApartment.id) || false;
-  
-  // Convert price to current currency
-  const convertedPrice = convertPrice(currentApartment.price);
 
   return (
     <div className="pt-20 px-4">
@@ -314,32 +311,32 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
             <div className="absolute top-3 right-3">
               <Badge className="bg-white/90 text-gray-800 font-semibold">
-                {formatPrice(convertedPrice)}/mo
+                {formatPrice(currentApartment.price)}/mo
               </Badge>
             </div>
 
             <div className="absolute bottom-3 left-3">
-              <div className="bg-white/90 rounded-full p-2 shadow-lg border-2 border-orange-200">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-white/20">
                 <VibeScore score={vibeScore} size="sm" />
               </div>
             </div>
           </div>
 
           <div className="p-5">
-            <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
-            <div className="flex items-center text-gray-600 text-sm mt-1">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{currentApartment.title}</h2>
+            <div className="flex items-center text-gray-600 text-sm mb-3">
               <MapPin className="w-3 h-3 mr-1" />
               {currentApartment.location}
             </div>
-            <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mt-3">
+            <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mb-4">
               {currentApartment.vibe}
             </Badge>
 
-            <div className="mt-4">
+            <div className="mb-4">
               <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
             </div>
 
-            <div className="mt-4">
+            <div className="mb-4">
               <div className={`text-gray-700 text-sm leading-relaxed ${
                 expandedDescription ? '' : 'line-clamp-3'
               }`}>
@@ -367,7 +364,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               )}
             </div>
 
-            <div className="flex flex-wrap gap-1 mt-4">
+            <div className="flex flex-wrap gap-1 mb-5">
               {currentApartment.highlights.slice(0, 3).map((highlight, index) => (
                 <Badge key={index} variant="outline" className="text-xs bg-white/50">
                   {highlight}
@@ -380,7 +377,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               )}
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-gray-200 mt-5">
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
