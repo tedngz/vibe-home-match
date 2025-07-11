@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,35 +25,28 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [noMatchReason, setNoMatchReason] = useState<string>('');
   const { formatPrice } = useCurrency();
-  const { data: realProperties, isLoading } = useProperties();
+  const { properties: realProperties, isLoading } = useProperties();
 
   useEffect(() => {
-    // Prioritize real properties from database, then fall back to sample data
     const allProperties = [...(realProperties || []), ...sampleProperties];
     
-    // Filter apartments based on user preferences
     const filteredApartments = allProperties.filter(apartment => {
-      // Basic filtering logic
       const locationMatch = userPreferences.location.some(loc => 
         apartment.location.toLowerCase().includes(loc.toLowerCase())
       );
       
-      // Calculate vibe score and only show apartments with good matches
       const vibeScore = calculateVibeScore(apartment, userPreferences);
-      const hasGoodVibeMatch = vibeScore.overall > 35; // Slightly lower threshold
+      const hasGoodVibeMatch = vibeScore.overall > 35;
       
-      // Check if price is within reasonable range (allow some flexibility)
       const [minPrice, maxPrice] = userPreferences.priceRange;
-      const priceInRange = apartment.price <= maxPrice * 1.3; // Allow 30% over budget
+      const priceInRange = apartment.price <= maxPrice * 1.3;
       
       return locationMatch && hasGoodVibeMatch && priceInRange;
     })
     .sort((a, b) => {
-      // Sort by vibe score (highest first), and prioritize real properties
       const scoreA = calculateVibeScore(a, userPreferences).overall;
       const scoreB = calculateVibeScore(b, userPreferences).overall;
       
-      // If one is from realProperties and other from sample, prioritize real property
       const aIsReal = realProperties?.some(p => p.id === a.id) || false;
       const bIsReal = realProperties?.some(p => p.id === b.id) || false;
       
@@ -69,7 +61,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     
     setApartments(filteredApartments);
     
-    // Set appropriate no-match reason
     if (filteredApartments.length === 0) {
       if (!realProperties || realProperties.length === 0) {
         setNoMatchReason('limited-listings');
@@ -215,7 +206,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               variant="outline"
               className="w-full border-orange-300 text-orange-600 hover:bg-orange-50"
               onClick={() => {
-                // This would trigger the AI chat agent
                 console.log('Opening Hausto AI chat');
               }}
             >
@@ -244,7 +234,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               className="w-full h-64 object-cover"
             />
             
-            {/* Real Property Badge */}
             {isRealProperty && (
               <div className="absolute top-3 left-3">
                 <Badge className="bg-green-500 text-white text-xs">

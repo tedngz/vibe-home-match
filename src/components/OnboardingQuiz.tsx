@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
   const totalSteps = 7;
 
+  // Type guard functions - only declared once
   const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string, image?: string }[] } => {
     return step.type === "multi-select";
   };
@@ -216,22 +218,6 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
   ];
 
   const currentStepData = steps[currentStep];
-
-  const isMultiSelect = (step: any): step is { type: "multi-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string, image?: string }[] } => {
-    return step.type === "multi-select";
-  };
-
-  const isSingleSelect = (step: any): step is { type: "single-select", key: keyof UserPreferences, options: { id: string, label: string, emoji: string, description: string }[] } => {
-    return step.type === "single-select";
-  };
-
-  const isBudgetStep = (step: any): step is { type: "budget", key: keyof UserPreferences } => {
-    return step.type === "budget";
-  };
-
-  const isLocationStep = (step: any): step is { type: "location", key: keyof UserPreferences } => {
-    return step.type === "location";
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center py-8 px-4">
