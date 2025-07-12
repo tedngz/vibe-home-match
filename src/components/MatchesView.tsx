@@ -119,15 +119,9 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                     </div>
                   )}
 
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-white/90 text-gray-800 font-semibold">
-                      {formatPrice(apartment.price)}/mo
-                    </Badge>
-                  </div>
-                  
-                  {/* Enhanced Vibe Score Display */}
+                  {/* Vibe Score on image */}
                   {vibeScore && (
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 right-3">
                       <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-white/20">
                         <VibeScore score={vibeScore} size="sm" />
                       </div>
@@ -146,16 +140,16 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                     </div>
                   </div>
 
+                  {/* Price section moved here */}
+                  <div className="mb-3">
+                    <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold text-lg px-3 py-1">
+                      {formatPrice(apartment.price)}/mo
+                    </Badge>
+                  </div>
+
                   <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mb-3">
                     {apartment.vibe}
                   </Badge>
-
-                  {/* Enhanced Vibe Score Breakdown */}
-                  {vibeScore && (
-                    <div className="mb-4">
-                      <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
-                    </div>
-                  )}
 
                   <div className="mb-4">
                     <div className={`text-gray-700 text-sm leading-relaxed ${

@@ -1,72 +1,64 @@
 
-import { useState, useRef, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Bot, User } from 'lucide-react';
+import { X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { useChat } from '@/hooks/useChat';
-import { UserPreferences, Apartment } from '@/pages/Index';
 
 interface AIChatAgentProps {
   isOpen: boolean;
   onClose: () => void;
-  userPreferences?: UserPreferences | null;
-  onMatch?: (apartment: Apartment) => void;
-  userType?: 'renter' | 'realtor';
+  userType: 'renter' | 'realtor';
+  userPreferences?: any;
   propertyImages?: string[];
 }
 
 export const AIChatAgent = ({ 
   isOpen, 
   onClose, 
-  userPreferences, 
-  onMatch, 
-  userType = 'renter',
+  userType, 
+  userPreferences,
   propertyImages 
 }: AIChatAgentProps) => {
-  const [inputMessage, setInputMessage] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const {
-    conversations,
-    messages,
-    currentConversationId,
+  const [message, setMessage] = useState('');
+  const { 
+    conversations, 
+    messages, 
+    currentConversationId, 
     setCurrentConversationId,
-    createConversation,
-    isCreatingConversation,
-    sendMessage,
-    isSendingMessage,
+    createConversation, 
+    sendMessage, 
+    isSendingMessage 
   } = useChat();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    if (isOpen && !currentConversationId && conversations.length === 0) {
-      const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
-      createConversation(title);
+    let conversationId = currentConversationId;
+    
+    // Create new conversation if none exists
+    if (!conversationId) {
+      await createConversation('New Chat');
+      // Wait for the conversation to be created
+      const latestConversation = conversations[0];
+      if (latestConversation) {
+        conversationId = latestConversation.id;
+        setCurrentConversationId(conversationId);
+      }
     }
-  }, [isOpen, currentConversationId, conversations.length, createConversation, userType]);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim() || !currentConversationId) return;
-
-    // Enhanced message with context for different user types
-    const messageData = {
-      message: inputMessage,
-      conversationId: currentConversationId,
-      userType,
-      userPreferences: userType === 'renter' ? userPreferences : undefined,
-      propertyImages: userType === 'realtor' ? propertyImages : undefined,
-    };
-
-    sendMessage(messageData);
-    setInputMessage('');
+    if (conversationId) {
+      sendMessage({
+        message,
+        conversationId,
+        userType,
+        userPreferences,
+        propertyImages
+      });
+      setMessage('');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -76,125 +68,107 @@ export const AIChatAgent = ({
     }
   };
 
-  const getTitle = () => {
-    if (userType === 'realtor') {
-      return 'Hausto AI - Property Marketing Assistant';
-    }
-    return 'Hausto AI - Property Assistant';
-  };
-
-  const getPlaceholder = () => {
-    if (userType === 'realtor') {
-      return 'Ask me to help create property descriptions, titles, or marketing content...';
-    }
-    return 'Ask me about rental properties...';
-  };
-
-  const getWelcomeMessage = () => {
-    if (userType === 'realtor') {
-      return {
-        title: "Hi! I'm Hausto AI, your property marketing assistant.",
-        subtitle: "I can help you create compelling property descriptions, catchy titles, and marketing content that highlights your listings' best features!"
-      };
-    }
-    return {
-      title: "Hi! I'm Hausto AI, your rental property assistant.",
-      subtitle: "Ask me about properties, neighborhoods, or anything rental-related!"
-    };
-  };
-
-  const welcomeMessage = getWelcomeMessage();
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[600px] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <Bot className="w-5 h-5 text-blue-500" />
-            <span>{getTitle()}</span>
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="flex-1 flex flex-col space-y-4">
-          <ScrollArea className="flex-1 p-4 border rounded-lg">
-            <div className="space-y-4">
-              {messages.length === 0 && (
-                <div className="text-center text-gray-500 py-8">
-                  <Bot className="w-12 h-12 mx-auto mb-4 text-blue-500" />
-                  <p>{welcomeMessage.title}</p>
-                  <p className="text-sm mt-2">{welcomeMessage.subtitle}</p>
-                </div>
-              )}
-              
-              {messages.map((message) => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl h-[600px] bg-white/95 backdrop-blur-md flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <Bot className="w-5 h-5 text-orange-500" />
+            <h3 className="font-semibold text-gray-900">
+              Hausto AI {userType === 'realtor' ? '- Property Assistant' : '- Home Finder'}
+            </h3>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <ScrollArea className="flex-1 p-4">
+          <div className="space-y-4">
+            {messages.length === 0 ? (
+              <div className="text-center py-8">
+                <Bot className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                <h4 className="font-medium text-gray-900 mb-2">
+                  {userType === 'realtor' 
+                    ? 'Property Listing Assistant' 
+                    : 'Your Personal Home Finder'
+                  }
+                </h4>
+                <p className="text-gray-600 text-sm max-w-md mx-auto">
+                  {userType === 'realtor'
+                    ? 'Upload property images and I\'ll help you create compelling titles and descriptions that highlight unique features.'
+                    : 'Tell me what you\'re looking for in a home, and I\'ll help you find the perfect match from available properties.'
+                  }
+                </p>
+              </div>
+            ) : (
+              messages.map((msg) => (
                 <div
-                  key={message.id}
-                  className={`flex items-start space-x-3 ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
+                  key={msg.id}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-4 h-4 text-blue-600" />
-                    </div>
-                  )}
-                  
                   <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.role === 'user'
-                        ? 'bg-orange-500 text-white ml-auto'
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white ml-auto'
                         : 'bg-gray-100 text-gray-900'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  </div>
-                  
-                  {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-orange-600" />
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {isSendingMessage && (
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="flex items-start space-x-2">
+                      {msg.role === 'assistant' && (
+                        <Bot className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
+                      )}
+                      {msg.role === 'user' && (
+                        <User className="w-4 h-4 mt-0.5 text-white flex-shrink-0" />
+                      )}
+                      <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {msg.content}
+                      </div>
                     </div>
                   </div>
                 </div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-          
+              ))
+            )}
+            {isSendingMessage && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-lg p-3">
+                  <div className="flex items-center space-x-2">
+                    <Bot className="w-4 h-4 text-orange-500" />
+                    <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                    <span className="text-sm text-gray-500">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+
+        <div className="p-4 border-t border-gray-200">
           <div className="flex space-x-2">
             <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={getPlaceholder()}
-              disabled={isSendingMessage || !currentConversationId}
+              placeholder={
+                userType === 'realtor'
+                  ? 'Describe your property or ask for help with listings...'
+                  : 'What kind of home are you looking for?'
+              }
+              disabled={isSendingMessage}
               className="flex-1"
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isSendingMessage || !currentConversationId}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              disabled={!message.trim() || isSendingMessage}
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
             >
               <Send className="w-4 h-4" />
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Card>
+    </div>
   );
 };
