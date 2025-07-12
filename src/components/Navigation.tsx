@@ -1,10 +1,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageSquare, RotateCcw, Bot, LogOut } from 'lucide-react';
+import { Heart, MessageSquare } from 'lucide-react';
 import { CurrencySelector } from '@/components/CurrencySelector';
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { UserMenu } from '@/components/UserMenu';
 
 interface NavigationProps {
   currentView: 'swipe' | 'matches';
@@ -25,14 +24,6 @@ export const Navigation = ({
   onOpenAIChat,
   onRestartOnboarding
 }: NavigationProps) => {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-3">
@@ -70,47 +61,11 @@ export const Navigation = ({
               )}
             </Button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onOpenAIChat}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            >
-              <Bot className="w-4 h-4 mr-2" />
-              Hausto AI
-            </Button>
-
-            {onRestartOnboarding && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRestartOnboarding}
-                className="text-orange-600 hover:text-orange-700 border-orange-200 hover:bg-orange-50"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Restart Quiz
-              </Button>
-            )}
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onSwitchUserType}
-              className="text-gray-600 hover:text-gray-700"
-            >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Switch to {userType === 'renter' ? 'Realtor' : 'Renter'}
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-gray-600 hover:text-gray-700"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <UserMenu 
+              userType={userType}
+              onSwitchUserType={onSwitchUserType}
+              onRestartOnboarding={onRestartOnboarding}
+            />
           </div>
         </div>
       </div>

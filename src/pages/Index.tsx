@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
@@ -8,6 +7,7 @@ import { Navigation } from '@/components/Navigation';
 import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
+import { FloatingAIButton } from '@/components/FloatingAIButton';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -191,6 +191,11 @@ const Index = () => {
             matches={realtorMatches}
             onSwitchUserType={switchUserType}
           />
+        )}
+
+        {/* Floating AI Button for renters */}
+        {userType === 'renter' && (currentView === 'swipe' || currentView === 'matches') && (
+          <FloatingAIButton onClick={() => setIsAIChatOpen(true)} />
         )}
 
         <AIChatAgent 

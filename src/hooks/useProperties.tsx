@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +15,7 @@ export interface Property {
   vibe: string | null;
   highlights: string[] | null;
   images: string[] | null;
+  vibe_analysis: any | null;
   created_at: string;
   updated_at: string;
 }
@@ -75,7 +75,22 @@ export const useProperties = () => {
     return data.publicUrl;
   };
 
-  // Create property mutation
+  // Analyze image vibes using AI
+  const analyzeImageVibes = async (imageUrls: string[]): Promise<any> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-vibe', {
+        body: { imageUrls }
+      });
+
+      if (error) throw error;
+      return data.analysis || {};
+    } catch (error) {
+      console.error('Error analyzing image vibes:', error);
+      return {};
+    }
+  };
+
+  // Create property mutation with vibe analysis
   const createPropertyMutation = useMutation({
     mutationFn: async (propertyData: {
       title: string;
@@ -94,6 +109,9 @@ export const useProperties = () => {
         propertyData.imageFiles.map(file => uploadImage(file))
       );
 
+      // Analyze vibes from uploaded images
+      const vibeAnalysis = await analyzeImageVibes(imageUrls);
+
       // Create property record
       const { data, error } = await supabase
         .from('properties')
@@ -107,6 +125,7 @@ export const useProperties = () => {
           vibe: propertyData.vibe,
           highlights: propertyData.highlights,
           images: imageUrls,
+          vibe_analysis: vibeAnalysis,
         })
         .select()
         .single();
@@ -119,7 +138,7 @@ export const useProperties = () => {
       queryClient.invalidateQueries({ queryKey: ['realtor-properties'] });
       toast({
         title: "Property Listed!",
-        description: "Your property has been successfully added to the platform.",
+        description: "Your property has been successfully added with AI vibe analysis.",
       });
     },
     onError: (error) => {
