@@ -19,6 +19,14 @@ interface ChatConversation {
   updated_at: string;
 }
 
+interface SendMessageData {
+  message: string;
+  conversationId: string;
+  userType?: 'renter' | 'realtor';
+  userPreferences?: any;
+  propertyImages?: string[];
+}
+
 export const useChat = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -86,7 +94,9 @@ export const useChat = () => {
 
   // Send message
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ message, conversationId }: { message: string; conversationId: string }) => {
+    mutationFn: async (messageData: SendMessageData) => {
+      const { message, conversationId, userType, userPreferences, propertyImages } = messageData;
+      
       // Add user message to database
       const { error: userMessageError } = await supabase
         .from('chat_messages')
@@ -98,12 +108,15 @@ export const useChat = () => {
 
       if (userMessageError) throw userMessageError;
 
-      // Call edge function for AI response
+      // Call edge function for AI response with enhanced context
       const { data, error } = await supabase.functions.invoke('chat-ai', {
         body: { 
           message, 
           conversationId,
-          userId: user?.id 
+          userId: user?.id,
+          userType,
+          userPreferences,
+          propertyImages
         }
       });
 

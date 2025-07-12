@@ -113,12 +113,6 @@ export const PropertyDetailModal = ({
                 {formatPrice(apartment.price)}/mo
               </Badge>
             </div>
-
-            {vibeScore && (
-              <div className="absolute top-3 left-3">
-                <VibeScore score={vibeScore} size="sm" />
-              </div>
-            )}
           </div>
 
           {/* Property Details */}

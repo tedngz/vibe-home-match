@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OnboardingQuiz } from '@/components/OnboardingQuiz';
@@ -19,7 +20,7 @@ export type UserPreferences = {
   activities: string[];
   priceRange: [number, number];
   size: string;
-  location: string[]; // Changed to array to support multiple districts
+  location: string[];
   moveInDate: string;
 };
 
@@ -61,6 +62,33 @@ const Index = () => {
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
+  // Load saved preferences from localStorage
+  useEffect(() => {
+    if (user) {
+      const savedUserType = localStorage.getItem(`userType_${user.id}`);
+      const savedPreferences = localStorage.getItem(`userPreferences_${user.id}`);
+      
+      if (savedUserType) {
+        setUserType(savedUserType as 'renter' | 'realtor');
+        
+        if (savedUserType === 'realtor') {
+          setCurrentView('dashboard');
+        } else if (savedPreferences) {
+          try {
+            const preferences = JSON.parse(savedPreferences);
+            setUserPreferences(preferences);
+            setCurrentView('swipe');
+          } catch (error) {
+            console.error('Error parsing saved preferences:', error);
+            setCurrentView('onboarding');
+          }
+        } else {
+          setCurrentView('onboarding');
+        }
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
@@ -69,20 +97,48 @@ const Index = () => {
 
   const handleUserTypeSelect = (type: 'renter' | 'realtor') => {
     setUserType(type);
+    if (user) {
+      localStorage.setItem(`userType_${user.id}`, type);
+    }
+    
     if (type === 'realtor') {
       setCurrentView('dashboard');
     } else {
-      setCurrentView('onboarding');
+      // Check if user has saved preferences
+      if (user) {
+        const savedPreferences = localStorage.getItem(`userPreferences_${user.id}`);
+        if (savedPreferences) {
+          try {
+            const preferences = JSON.parse(savedPreferences);
+            setUserPreferences(preferences);
+            setCurrentView('swipe');
+          } catch (error) {
+            setCurrentView('onboarding');
+          }
+        } else {
+          setCurrentView('onboarding');
+        }
+      } else {
+        setCurrentView('onboarding');
+      }
     }
   };
 
   const handleOnboardingComplete = (preferences: UserPreferences) => {
     setUserPreferences(preferences);
+    // Save preferences to localStorage
+    if (user) {
+      localStorage.setItem(`userPreferences_${user.id}`, JSON.stringify(preferences));
+    }
     setCurrentView('swipe');
   };
 
   const handleRestartOnboarding = () => {
     setUserPreferences(null);
+    // Clear saved preferences
+    if (user) {
+      localStorage.removeItem(`userPreferences_${user.id}`);
+    }
     setCurrentView('onboarding');
     setMatches([]);
   };
@@ -109,9 +165,21 @@ const Index = () => {
     setUserPreferences(null);
     setMatches([]);
     setRealtorMatches([]);
+    
+    // Clear localStorage
+    if (user) {
+      localStorage.removeItem(`userType_${user.id}`);
+      localStorage.removeItem(`userPreferences_${user.id}`);
+    }
   };
 
   const handleSignOut = async () => {
+    // Clear localStorage on sign out
+    if (user) {
+      localStorage.removeItem(`userType_${user.id}`);
+      localStorage.removeItem(`userPreferences_${user.id}`);
+    }
+    
     await signOut();
     navigate('/auth');
   };
@@ -128,7 +196,7 @@ const Index = () => {
   }
 
   if (!user) {
-    return null; // This will redirect to auth page
+    return null;
   }
 
   return (
@@ -146,7 +214,6 @@ const Index = () => {
           />
         )}
         
-        {/* Add sign out button in top right when not on navigation pages */}
         {(!userType || currentView === 'onboarding' || currentView === 'dashboard') && (
           <div className="absolute top-4 right-4 z-50">
             <Button
@@ -193,7 +260,6 @@ const Index = () => {
           />
         )}
 
-        {/* Floating AI Button for renters */}
         {userType === 'renter' && (currentView === 'swipe' || currentView === 'matches') && (
           <FloatingAIButton onClick={() => setIsAIChatOpen(true)} />
         )}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,15 +42,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       highlights: property.highlights || [],
       realtor: {
         id: property.realtor_id,
-        name: 'Licensed Realtor', // Default name since we don't have realtor details
-        phone: '+1-234-567-8900', // Default phone
-        email: 'contact@realtor.com' // Default email
+        name: 'Licensed Realtor',
+        phone: '+1-234-567-8900',
+        email: 'contact@realtor.com'
       }
     };
   };
 
   useEffect(() => {
-    // Transform real properties to apartments
     const transformedRealProperties = (realProperties || []).map(transformPropertyToApartment);
     const allProperties = [...transformedRealProperties, ...sampleProperties];
     
@@ -82,7 +80,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     });
     
     console.log(`Found ${filteredApartments.length} apartments matching preferences`);
-    console.log(`Real properties: ${realProperties?.length || 0}, Sample properties: ${sampleProperties.length}`);
     
     setApartments(filteredApartments);
     
@@ -133,7 +130,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       setCurrentApartmentIndex(currentApartmentIndex + 1);
       setExpandedDescription(false);
     } else {
-      // No more apartments available
       setNoMatchReason('no-more-matches');
     }
   };
@@ -313,12 +309,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               <Badge className="bg-white/90 text-gray-800 font-semibold">
                 {formatPrice(currentApartment.price)}/mo
               </Badge>
-            </div>
-
-            <div className="absolute bottom-3 left-3">
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-white/20">
-                <VibeScore score={vibeScore} size="sm" />
-              </div>
             </div>
           </div>
 

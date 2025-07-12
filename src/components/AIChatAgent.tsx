@@ -11,11 +11,20 @@ import { UserPreferences, Apartment } from '@/pages/Index';
 interface AIChatAgentProps {
   isOpen: boolean;
   onClose: () => void;
-  userPreferences: UserPreferences | null;
-  onMatch: (apartment: Apartment) => void;
+  userPreferences?: UserPreferences | null;
+  onMatch?: (apartment: Apartment) => void;
+  userType?: 'renter' | 'realtor';
+  propertyImages?: string[];
 }
 
-export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AIChatAgentProps) => {
+export const AIChatAgent = ({ 
+  isOpen, 
+  onClose, 
+  userPreferences, 
+  onMatch, 
+  userType = 'renter',
+  propertyImages 
+}: AIChatAgentProps) => {
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const {
@@ -39,14 +48,24 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
 
   useEffect(() => {
     if (isOpen && !currentConversationId && conversations.length === 0) {
-      createConversation('Property Search Chat');
+      const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
+      createConversation(title);
     }
-  }, [isOpen, currentConversationId, conversations.length, createConversation]);
+  }, [isOpen, currentConversationId, conversations.length, createConversation, userType]);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim() || !currentConversationId) return;
 
-    sendMessage({ message: inputMessage, conversationId: currentConversationId });
+    // Enhanced message with context for different user types
+    const messageData = {
+      message: inputMessage,
+      conversationId: currentConversationId,
+      userType,
+      userPreferences: userType === 'renter' ? userPreferences : undefined,
+      propertyImages: userType === 'realtor' ? propertyImages : undefined,
+    };
+
+    sendMessage(messageData);
     setInputMessage('');
   };
 
@@ -57,13 +76,42 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
     }
   };
 
+  const getTitle = () => {
+    if (userType === 'realtor') {
+      return 'Hausto AI - Property Marketing Assistant';
+    }
+    return 'Hausto AI - Property Assistant';
+  };
+
+  const getPlaceholder = () => {
+    if (userType === 'realtor') {
+      return 'Ask me to help create property descriptions, titles, or marketing content...';
+    }
+    return 'Ask me about rental properties...';
+  };
+
+  const getWelcomeMessage = () => {
+    if (userType === 'realtor') {
+      return {
+        title: "Hi! I'm Hausto AI, your property marketing assistant.",
+        subtitle: "I can help you create compelling property descriptions, catchy titles, and marketing content that highlights your listings' best features!"
+      };
+    }
+    return {
+      title: "Hi! I'm Hausto AI, your rental property assistant.",
+      subtitle: "Ask me about properties, neighborhoods, or anything rental-related!"
+    };
+  };
+
+  const welcomeMessage = getWelcomeMessage();
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl h-[600px] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Bot className="w-5 h-5 text-blue-500" />
-            <span>Hausto AI - Property Assistant</span>
+            <span>{getTitle()}</span>
           </DialogTitle>
         </DialogHeader>
         
@@ -73,8 +121,8 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
               {messages.length === 0 && (
                 <div className="text-center text-gray-500 py-8">
                   <Bot className="w-12 h-12 mx-auto mb-4 text-blue-500" />
-                  <p>Hi! I'm Hausto AI, your rental property assistant.</p>
-                  <p className="text-sm mt-2">Ask me about properties, neighborhoods, or anything rental-related!</p>
+                  <p>{welcomeMessage.title}</p>
+                  <p className="text-sm mt-2">{welcomeMessage.subtitle}</p>
                 </div>
               )}
               
@@ -133,7 +181,7 @@ export const AIChatAgent = ({ isOpen, onClose, userPreferences, onMatch }: AICha
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me about rental properties..."
+              placeholder={getPlaceholder()}
               disabled={isSendingMessage || !currentConversationId}
               className="flex-1"
             />
