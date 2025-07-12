@@ -12,9 +12,9 @@ interface VibeScoreProps {
 
 export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeScoreProps) => {
   const getScoreColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return 'bg-emerald-500/10 text-emerald-700 border-emerald-200';
-    if (scoreValue >= 60) return 'bg-amber-500/10 text-amber-700 border-amber-200';
-    return 'bg-red-500/10 text-red-700 border-red-200';
+    if (scoreValue >= 80) return 'bg-emerald-500/90 text-white border-emerald-400';
+    if (scoreValue >= 60) return 'bg-amber-500/90 text-white border-amber-400';
+    return 'bg-red-500/90 text-white border-red-400';
   };
 
   const getScoreEmoji = (scoreValue: number) => {
@@ -26,9 +26,9 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
   };
 
   const sizeClasses = {
-    sm: 'text-xs px-2 py-1',
-    md: 'text-sm px-3 py-1.5',
-    lg: 'text-base px-4 py-2'
+    sm: 'text-xs px-2.5 py-1.5',
+    md: 'text-sm px-3 py-2',
+    lg: 'text-base px-4 py-2.5'
   };
 
   // Round all percentages
@@ -44,7 +44,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
 
   return (
     <div className="space-y-3">
-      <Badge className={`${getScoreColor(roundedScore.overall)} ${sizeClasses[size]} font-medium flex items-center gap-1.5 border backdrop-blur-sm`}>
+      <Badge className={`${getScoreColor(roundedScore.overall)} ${sizeClasses[size]} font-semibold flex items-center gap-1.5 border-2 backdrop-blur-md shadow-lg`}>
         <Sparkles className="w-3 h-3" />
         {roundedScore.overall}% {getScoreEmoji(roundedScore.overall)}
       </Badge>

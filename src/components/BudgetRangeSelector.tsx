@@ -16,10 +16,9 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
   const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const PRESET_RANGES = [
-    { label: 'Budget', range: [3000000, 8000000] as [number, number] },
-    { label: 'Mid-range', range: [8000000, 15000000] as [number, number] },
-    { label: 'Premium', range: [15000000, 25000000] as [number, number] },
-    { label: 'Luxury', range: [25000000, 40000000] as [number, number] },
+    { label: 'Budget', range: [3000000, 8000000] as [number, number], description: 'Affordable options' },
+    { label: 'Mid-range', range: [8000000, 20000000] as [number, number], description: 'Best value for money' },
+    { label: 'Premium', range: [20000000, 40000000] as [number, number], description: 'High-end properties' },
   ];
 
   const handlePresetClick = (preset: typeof PRESET_RANGES[0]) => {
@@ -32,43 +31,38 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
     setActivePreset(null);
   };
 
+  // Find active preset based on current value
+  const currentPreset = PRESET_RANGES.find(preset => 
+    preset.range[0] === value[0] && preset.range[1] === value[1]
+  );
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-md mx-auto">
       {/* Currency Selector */}
       <div className="text-center">
-        <Label className="text-base font-medium text-slate-900 mb-4 block">Currency</Label>
+        <Label className="text-base font-medium text-slate-900 mb-3 block">Currency</Label>
         <CurrencySelector />
-      </div>
-
-      {/* Sleek Budget Display */}
-      <div className="text-center space-y-4">
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl p-6 shadow-lg">
-          <div className="text-sm font-medium opacity-90 mb-2">Your Budget Range</div>
-          <div className="text-2xl font-bold">
-            {formatPrice(value[0])} - {formatPrice(value[1])}
-          </div>
-          <div className="text-sm opacity-80 mt-1">per month</div>
-        </div>
       </div>
 
       {/* Quick Presets */}
       <div className="space-y-4">
-        <Label className="text-base font-medium text-slate-900 block text-center">Quick Selection</Label>
-        <div className="grid grid-cols-2 gap-3">
+        <Label className="text-base font-medium text-slate-900 block text-center">Budget Range</Label>
+        <div className="space-y-3">
           {PRESET_RANGES.map((preset) => (
             <Button
               key={preset.label}
-              variant={activePreset === preset.label ? 'default' : 'outline'}
-              size="sm"
+              variant={activePreset === preset.label || currentPreset?.label === preset.label ? 'default' : 'outline'}
+              size="lg"
               onClick={() => handlePresetClick(preset)}
-              className={`transition-all duration-200 h-auto py-3 ${
-                activePreset === preset.label
+              className={`w-full h-auto py-4 transition-all duration-200 ${
+                activePreset === preset.label || currentPreset?.label === preset.label
                   ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg border-none'
                   : 'hover:bg-orange-50 hover:border-orange-300 hover:shadow-md'
               }`}
             >
-              <div className="text-center">
-                <div className="font-semibold">{preset.label}</div>
+              <div className="text-center w-full">
+                <div className="font-semibold text-lg">{preset.label}</div>
+                <div className="text-sm opacity-90 mt-1">{preset.description}</div>
                 <div className="text-xs opacity-75 mt-1">
                   {formatPrice(preset.range[0])} - {formatPrice(preset.range[1])}
                 </div>
@@ -78,40 +72,27 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
         </div>
       </div>
 
-      {/* Custom Slider with Enhanced Styling */}
-      <div className="space-y-6">
+      {/* Custom Slider */}
+      <div className="space-y-4">
         <Label className="text-base font-medium text-slate-900 block text-center">Custom Range</Label>
-        <div className="px-4">
-          <div className="relative">
-            <div className="relative">
-              {/* Custom styled slider container */}
-              <div className="relative">
-                {/* Start circle */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full -translate-x-2 z-10 shadow-md"></div>
-                
-                <Slider
-                  value={value}
-                  onValueChange={handleSliderChange}
-                  max={40000000}
-                  min={3000000}
-                  step={500000}
-                  className="w-full [&>span]:h-3 [&>span]:rounded-full [&>span]:bg-gray-200 [&>span>span]:bg-gradient-to-r [&>span>span]:from-orange-500 [&>span>span]:to-red-500 [&>span>span]:rounded-full [&_[role=slider]]:w-6 [&_[role=slider]]:h-6 [&_[role=slider]]:bg-white [&_[role=slider]]:border-4 [&_[role=slider]]:border-orange-500 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-all [&_[role=slider]]:hover:scale-110"
-                />
-                
-                {/* End circle */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full translate-x-2 z-10 shadow-md"></div>
-              </div>
+        <div className="px-2">
+          <Slider
+            value={value}
+            onValueChange={handleSliderChange}
+            max={40000000}
+            min={3000000}
+            step={500000}
+            className="w-full"
+          />
+          
+          <div className="flex justify-between text-sm text-slate-600 mt-3 font-medium">
+            <div className="text-center">
+              <div className="font-semibold text-orange-600">{formatPrice(value[0])}</div>
+              <div className="text-xs opacity-75">Min</div>
             </div>
-            
-            <div className="flex justify-between text-sm text-slate-600 mt-4 font-medium">
-              <div className="text-center">
-                <div className="font-semibold text-orange-600">{formatPrice(value[0])}</div>
-                <div className="text-xs opacity-75 mt-1">Minimum</div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-orange-600">{formatPrice(value[1])}</div>
-                <div className="text-xs opacity-75 mt-1">Maximum</div>
-              </div>
+            <div className="text-center">
+              <div className="font-semibold text-orange-600">{formatPrice(value[1])}</div>
+              <div className="text-xs opacity-75">Max</div>
             </div>
           </div>
         </div>

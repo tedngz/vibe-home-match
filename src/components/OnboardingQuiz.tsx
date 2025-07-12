@@ -86,51 +86,51 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
   const steps = [
     {
-      title: "What's your style vibe?",
+      title: "What's your style vibe? ✨",
       subtitle: "Pick styles that speak to you",
       type: "multi-select" as const,
       key: "styles" as keyof UserPreferences,
       options: [
         { 
           id: 'modern', 
-          label: '🏢 Modern', 
+          label: 'Modern', 
           description: 'Clean lines, minimalist design',
-          image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop&auto=format'
-        },
-        { 
-          id: 'cozy', 
-          label: '🏠 Cozy', 
-          description: 'Warm, comfortable atmosphere',
           image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
         },
         { 
+          id: 'cozy', 
+          label: 'Cozy', 
+          description: 'Warm, comfortable atmosphere',
+          image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format'
+        },
+        { 
           id: 'industrial', 
-          label: '🏭 Industrial', 
+          label: 'Industrial', 
           description: 'Raw materials, urban aesthetic',
           image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'bohemian', 
-          label: '🌸 Bohemian', 
+          label: 'Bohemian', 
           description: 'Artistic, eclectic mix',
           image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'scandinavian', 
-          label: '❄️ Scandinavian', 
+          label: 'Scandinavian', 
           description: 'Light colors, functional design',
           image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'minimalist', 
-          label: '⚪ Minimalist', 
+          label: 'Minimalist', 
           description: 'Simple, uncluttered spaces',
           image: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=400&h=300&fit=crop&auto=format'
         }
       ]
     },
     {
-      title: "Color palette preference?",
+      title: "Color palette preference? 🎨",
       subtitle: "What colors make you feel at home?",
       type: "multi-select" as const,
       key: "colors" as keyof UserPreferences,
@@ -143,7 +143,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       ]
     },
     {
-      title: "How do you spend time at home?",
+      title: "How do you spend time at home? 🏠",
       subtitle: "Your lifestyle shapes your space",
       type: "multi-select" as const,
       key: "activities" as keyof UserPreferences,
@@ -157,13 +157,13 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       ]
     },
     {
-      title: "What's your budget range?",
+      title: "What's your budget range? 💰",
       subtitle: "Let's find options that fit your budget",
       type: "budget" as const,
       key: "priceRange" as keyof UserPreferences
     },
     {
-      title: "Preferred space size?",
+      title: "Preferred space size? 📏",
       subtitle: "How much room do you need?",
       type: "single-select" as const,
       key: "size" as keyof UserPreferences,
@@ -175,13 +175,13 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
       ]
     },
     {
-      title: "Where do you want to live?",
+      title: "Where do you want to live? 📍",
       subtitle: "Choose your preferred areas",
       type: "location" as const,
       key: "location" as keyof UserPreferences
     },
     {
-      title: "When do you want to move?",
+      title: "When do you want to move? ⏰",
       subtitle: "Your timeline helps us prioritize",
       type: "single-select" as const,
       key: "moveInDate" as keyof UserPreferences,
@@ -214,16 +214,16 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
 
           <div className="min-h-[400px] flex items-center justify-center">
             {currentStepData.type === "multi-select" && (
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl">
                 {currentStepData.options.map(option => (
                   <Button
                     key={option.id}
                     variant={((preferences[currentStepData.key] as string[]) || []).includes(option.id) ? 'default' : 'outline'}
-                    className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-lg transition-all duration-200 border-2"
+                    className="h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden hover:shadow-lg transition-all duration-200 border-2 aspect-square min-h-[200px]"
                     onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                   >
                     {currentStep === 0 && option.image ? (
-                      <div className="w-full h-40 relative">
+                      <div className="w-full h-32 relative">
                         <img 
                           src={option.image} 
                           alt={option.label}
@@ -232,11 +232,11 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
                         <div className="absolute inset-0 bg-black/20"></div>
                       </div>
                     ) : option.emoji ? (
-                      <div className="w-full h-40 flex items-center justify-center bg-gray-100">
-                        <span className="text-3xl">{option.emoji}</span>
+                      <div className="w-full h-32 flex items-center justify-center bg-gray-50">
+                        <span className="text-4xl">{option.emoji}</span>
                       </div>
                     ) : null}
-                    <div className="p-4 space-y-2 w-full">
+                    <div className="p-4 space-y-2 w-full flex-1 flex flex-col justify-center">
                       <span className="font-semibold text-base">{option.label}</span>
                       <div className="text-xs text-gray-500 leading-relaxed">
                         {option.description}
@@ -248,12 +248,12 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
             )}
 
             {currentStepData.type === "single-select" && (
-              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-4xl">
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl">
                 {currentStepData.options.map(option => (
                   <Button
                     key={option.id}
                     variant={(preferences[currentStepData.key] === option.id) ? 'default' : 'outline'}
-                    className="h-auto p-6 flex flex-col items-center justify-center text-center space-y-3 hover:shadow-lg transition-all duration-200 border-2"
+                    className="h-auto p-6 flex flex-col items-center justify-center text-center space-y-3 hover:shadow-lg transition-all duration-200 border-2 aspect-square min-h-[160px]"
                     onClick={() => handleSingleSelect(option.id, currentStepData.key)}
                   >
                     <span className="text-3xl">{option.emoji}</span>
@@ -265,7 +265,7 @@ export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
             )}
 
             {currentStepData.type === "budget" && (
-              <div className="w-full max-w-2xl">
+              <div className="w-full max-w-lg">
                 <BudgetRangeSelector
                   value={preferences.priceRange as [number, number]}
                   onChange={handleBudgetChange}
