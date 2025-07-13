@@ -45,25 +45,44 @@ export const AIChatAgent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen && !currentConversationId && conversations.length === 0) {
+    if (isOpen && !currentConversationId) {
+      console.log('Creating new conversation, current conversations:', conversations.length);
       const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
       createConversation(title);
+    } else if (isOpen && currentConversationId) {
+      console.log('Using existing conversation:', currentConversationId);
     }
-  }, [isOpen, currentConversationId, conversations.length, createConversation, userType]);
+  }, [isOpen, currentConversationId, createConversation, userType]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
     
     console.log('Sending message:', inputMessage);
     console.log('Current conversation ID:', currentConversationId);
     console.log('User type:', userType);
 
+    // If no conversation exists, create one and wait for it
     if (!currentConversationId) {
-      console.error('No conversation ID available');
-      // Try to create a conversation first
+      console.log('Creating conversation before sending message');
       const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
-      createConversation(title);
-      return;
+      
+      try {
+        await new Promise<void>((resolve) => {
+          createConversation(title);
+          // Wait a bit for the conversation to be created
+          const checkConversation = () => {
+            if (currentConversationId) {
+              resolve();
+            } else {
+              setTimeout(checkConversation, 100);
+            }
+          };
+          checkConversation();
+        });
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        return;
+      }
     }
 
     // Enhanced message with context for different user types

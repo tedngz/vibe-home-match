@@ -13,7 +13,29 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Chat AI function called');
+    
     const { message, conversationId, userId, userType, userPreferences, propertyImages } = await req.json();
+    
+    console.log('Request data:', { 
+      messageLength: message?.length, 
+      conversationId, 
+      userId, 
+      userType, 
+      hasPreferences: !!userPreferences,
+      hasPropertyImages: !!propertyImages
+    });
+
+    if (!message || !conversationId) {
+      console.error('Missing required fields:', { message: !!message, conversationId: !!conversationId });
+      return new Response(
+        JSON.stringify({ error: 'Missing message or conversation ID' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -63,34 +85,68 @@ Provide creative, engaging, and professional content that stands out in the rent
         context += `\nProperty images provided: ${propertyImages.length} images to analyze for creating descriptions.`;
       }
     } else {
+      // Helper function for lifestyle tips
+      function getLifestyleTips(location, vibe, highlights) {
+        const tips = [];
+        
+        if (location?.includes('District 1')) {
+          tips.push('Urban professionals who love being in the heart of the action');
+        } else if (location?.includes('District 2')) {
+          tips.push('Those who appreciate modern development with international community');
+        } else if (location?.includes('Ba Dinh')) {
+          tips.push('Culture enthusiasts near government district and historic sites');
+        }
+        
+        if (vibe?.includes('Modern')) {
+          tips.push('Tech-savvy individuals who appreciate contemporary design');
+        } else if (vibe?.includes('Cozy')) {
+          tips.push('Those seeking a warm, homely atmosphere');
+        }
+        
+        if (highlights?.includes('Family Friendly')) {
+          tips.push('Families with children or those planning to start one');
+        }
+        
+        return tips.length ? tips.join(' • ') : 'Various lifestyles and preferences';
+      }
+
       // Renter context - help with property search and recommendations
-      systemPrompt = `You are Hausto AI, a helpful and knowledgeable rental property assistant for renters. You help users find suitable rental properties based on their specific preferences, budget, and lifestyle needs.
+      systemPrompt = `You are Hausto AI, a friendly and knowledgeable rental property assistant. You specialize in helping renters find their perfect home by understanding their lifestyle, preferences, and needs.
 
-You have access to the following rental properties in our database:
-
+🏠 AVAILABLE PROPERTIES:
 ${properties.map(p => `
-🏠 Property ID: ${p.id}
-📍 Title: ${p.title}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏡 ${p.title}
 📍 Location: ${p.location}
-💰 Price: $${p.price}/month
-📏 Size: ${p.size || 'Not specified'}
-✨ Vibe: ${p.vibe || 'Not specified'}
+💰 Price: ${p.price?.toLocaleString()} VND/month (≈ $${Math.round(p.price / 24500)})
+📏 Size: ${p.size || 'Size not specified'}
+✨ Style: ${p.vibe || 'Style not specified'}
+
 📝 Description: ${p.description || 'No description available'}
-🌟 Highlights: ${p.highlights?.length ? p.highlights.join(', ') : 'No highlights listed'}
-${p.vibe_analysis ? `🎯 Vibe Analysis: Modern(${p.vibe_analysis.modern || 5}/10), Cozy(${p.vibe_analysis.cozy || 5}/10), Luxurious(${p.vibe_analysis.luxurious || 5}/10), Spacious(${p.vibe_analysis.spacious || 5}/10)` : ''}
----
+
+🌟 Key Features: ${p.highlights?.length ? p.highlights.join(' • ') : 'Features not listed'}
+
+🎯 Vibe Scores: ${p.vibe_analysis ? `Modern ${p.vibe_analysis.modern || 5}/10 • Cozy ${p.vibe_analysis.cozy || 5}/10 • Luxurious ${p.vibe_analysis.luxurious || 5}/10 • Spacious ${p.vibe_analysis.spacious || 5}/10 • Natural Light ${p.vibe_analysis.natural_light || 5}/10` : 'Vibe scores not available'}
+
+💡 Perfect for: ${getLifestyleTips(p.location, p.vibe, p.highlights)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `).join('\n')}
 
-INSTRUCTIONS:
-- Always provide specific property recommendations that match the user's criteria
-- Reference specific property titles, locations, and features when recommending
-- If a user asks about budget, compare prices and suggest options within their range
-- If they mention style preferences, match properties based on vibe scores and descriptions
-- Be conversational and enthusiastic about helping them find their perfect home
-- When discussing specific properties, mention unique features and why they'd be a good fit
-- If no properties perfectly match, suggest the closest options and explain the trade-offs`;
+🎯 YOUR MISSION:
+- Always suggest 3-5 specific properties that match the user's request
+- Provide comprehensive lifestyle insights for each recommendation
+- Explain WHY each property fits their needs
+- Include nearby activities, amenities, and neighborhood vibes
+- Be enthusiastic and personal in your recommendations
+- Focus on how each space would enhance their daily life
 
-      // Filter properties based on user preferences for better recommendations
+💬 COMMUNICATION STYLE:
+- Be conversational, warm, and genuinely helpful
+- Use emojis to make responses engaging
+- Paint a picture of what living there would be like
+- Include practical details alongside emotional appeal`;
+
+      // Add user preferences context for renters
       if (userPreferences) {
         const matchingProperties = properties.filter(p => {
           const locationMatch = userPreferences.location?.some(loc => 
@@ -104,18 +160,16 @@ INSTRUCTIONS:
         if (matchingProperties.length > 0) {
           systemPrompt += `\n\nBASED ON USER'S PREFERENCES, THESE PROPERTIES ARE MOST RELEVANT:
 ${matchingProperties.slice(0, 5).map(p => `
-✅ ${p.title} in ${p.location} - $${p.price}/month
+✅ ${p.title} in ${p.location} - ${p.price?.toLocaleString()} VND/month
    Perfect because: ${p.vibe || 'Great location match'} and within budget
 `).join('')}`;
         }
-      }
 
-      if (userPreferences) {
         context += `\n🎯 USER'S SPECIFIC PREFERENCES & REQUIREMENTS:
 💫 Preferred Styles: ${userPreferences.styles?.join(', ') || 'Not specified'}
 🎨 Preferred Colors: ${userPreferences.colors?.join(', ') || 'Not specified'}
 🏃‍♀️ Activities/Lifestyle: ${userPreferences.activities?.join(', ') || 'Not specified'}
-💰 Budget Range: $${userPreferences.priceRange?.[0] || 0} - $${userPreferences.priceRange?.[1] || 'unlimited'}/month
+💰 Budget Range: ${userPreferences.priceRange?.[0]?.toLocaleString() || 0} - ${userPreferences.priceRange?.[1]?.toLocaleString() || 'unlimited'} VND/month
 📐 Preferred Size: ${userPreferences.size || 'Not specified'}
 📍 Preferred Locations: ${userPreferences.location?.join(', ') || 'Not specified'}
 📅 Move-in Date: ${userPreferences.moveInDate || 'Flexible'}
@@ -125,6 +179,10 @@ ${matchingProperties.slice(0, 5).map(p => `
 - Stay within or slightly above budget range (max 20% over)
 - Match style preferences with property vibes and descriptions
 - Consider lifestyle activities when recommending neighborhoods`;
+      }
+
+      if (propertyImages && propertyImages.length > 0) {
+        context += `\nProperty images provided: ${propertyImages.length} images to analyze for creating descriptions.`;
       }
     }
 
@@ -140,9 +198,18 @@ Current user message: ${message}`;
     // Call OpenAI API
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('OpenAI API key not found');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        }
+      );
     }
 
+    console.log('Calling OpenAI API...');
+    
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -155,15 +222,33 @@ Current user message: ${message}`;
           { role: 'system', content: fullContext },
           { role: 'user', content: message }
         ],
-        max_tokens: 800,
-        temperature: 0.7,
+        max_tokens: 1200,
+        temperature: 0.8,
       }),
     });
 
+    console.log('OpenAI response status:', openaiResponse.status);
+    
+    if (!openaiResponse.ok) {
+      console.error('OpenAI API error:', openaiResponse.status, openaiResponse.statusText);
+      const errorText = await openaiResponse.text();
+      console.error('OpenAI error response:', errorText);
+      throw new Error(`OpenAI API error: ${openaiResponse.status}`);
+    }
+
     const openaiData = await openaiResponse.json();
-    const aiResponse = openaiData.choices[0]?.message?.content || 'Sorry, I could not process your request.';
+    console.log('OpenAI response received');
+    
+    if (!openaiData.choices || !openaiData.choices[0] || !openaiData.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', openaiData);
+      throw new Error('Invalid response from OpenAI');
+    }
+    
+    const aiResponse = openaiData.choices[0].message.content || 'Sorry, I could not process your request.';
+    console.log('AI response length:', aiResponse.length);
 
     // Save AI response to database
+    console.log('Saving AI response to database...');
     const { error: saveError } = await supabase
       .from('chat_messages')
       .insert({
@@ -173,9 +258,11 @@ Current user message: ${message}`;
       });
 
     if (saveError) {
+      console.error('Error saving AI response:', saveError);
       throw saveError;
     }
 
+    console.log('Chat AI function completed successfully');
     return new Response(
       JSON.stringify({ response: aiResponse }),
       { 
