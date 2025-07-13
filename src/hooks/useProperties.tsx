@@ -76,10 +76,10 @@ export const useProperties = () => {
   };
 
   // Analyze image vibes using AI
-  const analyzeImageVibes = async (imageUrls: string[]): Promise<any> => {
+  const analyzeImageVibes = async (imageUrls: string[], generateContent = false): Promise<any> => {
     try {
       const { data, error } = await supabase.functions.invoke('analyze-vibe', {
-        body: { imageUrls }
+        body: { imageUrls, generateContent }
       });
 
       if (error) throw error;
@@ -109,21 +109,34 @@ export const useProperties = () => {
         propertyData.imageFiles.map(file => uploadImage(file))
       );
 
-      // Analyze vibes from uploaded images
-      const vibeAnalysis = await analyzeImageVibes(imageUrls);
+      // Analyze vibes and generate content from uploaded images
+      const vibeAnalysis = await analyzeImageVibes(imageUrls, true);
+
+      // Use AI-generated content if available and fields are empty/generic
+      const finalTitle = propertyData.title && propertyData.title.trim() && propertyData.title !== 'New Property' ? 
+        propertyData.title : 
+        (vibeAnalysis?.generated_content?.title || 'Beautiful Rental Property');
+      
+      const finalDescription = propertyData.description && propertyData.description.trim() && propertyData.description !== 'Property description' ? 
+        propertyData.description : 
+        (vibeAnalysis?.generated_content?.description || 'A wonderful space perfect for your next home.');
+      
+      const finalHighlights = propertyData.highlights?.length && propertyData.highlights.some(h => h.trim()) ? 
+        propertyData.highlights : 
+        (vibeAnalysis?.generated_content?.highlights || ['Great location', 'Modern amenities', 'Spacious rooms']);
 
       // Create property record
       const { data, error } = await supabase
         .from('properties')
         .insert({
           realtor_id: user.id,
-          title: propertyData.title,
-          description: propertyData.description,
+          title: finalTitle,
+          description: finalDescription,
           location: propertyData.location,
           price: propertyData.price,
           size: propertyData.size,
           vibe: propertyData.vibe,
-          highlights: propertyData.highlights,
+          highlights: finalHighlights,
           images: imageUrls,
           vibe_analysis: vibeAnalysis,
         })

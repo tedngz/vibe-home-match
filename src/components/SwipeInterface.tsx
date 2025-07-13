@@ -81,7 +81,13 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     
     console.log(`Found ${filteredApartments.length} apartments matching preferences`);
     
-    setApartments(filteredApartments);
+    // Only update state if apartments array actually changed
+    setApartments(prevApartments => {
+      if (JSON.stringify(prevApartments.map(a => a.id)) === JSON.stringify(filteredApartments.map(a => a.id))) {
+        return prevApartments;
+      }
+      return filteredApartments;
+    });
     
     if (filteredApartments.length === 0) {
       if (!realProperties || realProperties.length === 0) {

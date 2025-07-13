@@ -63,32 +63,68 @@ Provide creative, engaging, and professional content that stands out in the rent
         context += `\nProperty images provided: ${propertyImages.length} images to analyze for creating descriptions.`;
       }
     } else {
-      // Renter context - help with property search
-      systemPrompt = `You are Hausto AI, a helpful rental property assistant for renters. You help users find suitable rental properties based on their preferences and needs.
+      // Renter context - help with property search and recommendations
+      systemPrompt = `You are Hausto AI, a helpful and knowledgeable rental property assistant for renters. You help users find suitable rental properties based on their specific preferences, budget, and lifestyle needs.
 
-You have access to the following rental properties:
+You have access to the following rental properties in our database:
 
 ${properties.map(p => `
-Property: ${p.title}
-Location: ${p.location}
-Price: $${p.price}
-Size: ${p.size}
-Vibe: ${p.vibe}
-Description: ${p.description}
-Highlights: ${p.highlights?.join(', ')}
+🏠 Property ID: ${p.id}
+📍 Title: ${p.title}
+📍 Location: ${p.location}
+💰 Price: $${p.price}/month
+📏 Size: ${p.size || 'Not specified'}
+✨ Vibe: ${p.vibe || 'Not specified'}
+📝 Description: ${p.description || 'No description available'}
+🌟 Highlights: ${p.highlights?.length ? p.highlights.join(', ') : 'No highlights listed'}
+${p.vibe_analysis ? `🎯 Vibe Analysis: Modern(${p.vibe_analysis.modern || 5}/10), Cozy(${p.vibe_analysis.cozy || 5}/10), Luxurious(${p.vibe_analysis.luxurious || 5}/10), Spacious(${p.vibe_analysis.spacious || 5}/10)` : ''}
+---
 `).join('\n')}
 
-Based on the user's preferences and conversation, help them find suitable properties. Be conversational, helpful, and provide specific recommendations when relevant.`;
+INSTRUCTIONS:
+- Always provide specific property recommendations that match the user's criteria
+- Reference specific property titles, locations, and features when recommending
+- If a user asks about budget, compare prices and suggest options within their range
+- If they mention style preferences, match properties based on vibe scores and descriptions
+- Be conversational and enthusiastic about helping them find their perfect home
+- When discussing specific properties, mention unique features and why they'd be a good fit
+- If no properties perfectly match, suggest the closest options and explain the trade-offs`;
+
+      // Filter properties based on user preferences for better recommendations
+      if (userPreferences) {
+        const matchingProperties = properties.filter(p => {
+          const locationMatch = userPreferences.location?.some(loc => 
+            p.location.toLowerCase().includes(loc.toLowerCase())
+          );
+          const budgetMatch = userPreferences.priceRange ? 
+            p.price <= userPreferences.priceRange[1] * 1.2 : true;
+          return locationMatch && budgetMatch;
+        });
+
+        if (matchingProperties.length > 0) {
+          systemPrompt += `\n\nBASED ON USER'S PREFERENCES, THESE PROPERTIES ARE MOST RELEVANT:
+${matchingProperties.slice(0, 5).map(p => `
+✅ ${p.title} in ${p.location} - $${p.price}/month
+   Perfect because: ${p.vibe || 'Great location match'} and within budget
+`).join('')}`;
+        }
+      }
 
       if (userPreferences) {
-        context += `\nUser preferences:
-- Styles: ${userPreferences.styles?.join(', ')}
-- Colors: ${userPreferences.colors?.join(', ')}
-- Activities: ${userPreferences.activities?.join(', ')}
-- Budget: $${userPreferences.priceRange?.[0]} - $${userPreferences.priceRange?.[1]}
-- Size: ${userPreferences.size}
-- Location: ${userPreferences.location?.join(', ')}
-- Move-in: ${userPreferences.moveInDate}`;
+        context += `\n🎯 USER'S SPECIFIC PREFERENCES & REQUIREMENTS:
+💫 Preferred Styles: ${userPreferences.styles?.join(', ') || 'Not specified'}
+🎨 Preferred Colors: ${userPreferences.colors?.join(', ') || 'Not specified'}
+🏃‍♀️ Activities/Lifestyle: ${userPreferences.activities?.join(', ') || 'Not specified'}
+💰 Budget Range: $${userPreferences.priceRange?.[0] || 0} - $${userPreferences.priceRange?.[1] || 'unlimited'}/month
+📐 Preferred Size: ${userPreferences.size || 'Not specified'}
+📍 Preferred Locations: ${userPreferences.location?.join(', ') || 'Not specified'}
+📅 Move-in Date: ${userPreferences.moveInDate || 'Flexible'}
+
+🔍 MATCHING STRATEGY:
+- Prioritize properties in preferred locations
+- Stay within or slightly above budget range (max 20% over)
+- Match style preferences with property vibes and descriptions
+- Consider lifestyle activities when recommending neighborhoods`;
       }
     }
 
