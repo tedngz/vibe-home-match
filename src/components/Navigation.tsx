@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, MessageSquare } from 'lucide-react';
+import { CurrencySelector } from '@/components/CurrencySelector';
 import { UserMenu } from '@/components/UserMenu';
 
 interface NavigationProps {
@@ -27,10 +28,11 @@ export const Navigation = ({
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               Hausto
             </h1>
+            <CurrencySelector />
           </div>
           
           <div className="flex items-center space-x-2">
