@@ -208,32 +208,31 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
           </div>
         </Card>
 
-        {/* Recent Matches */}
+        {/* Interested Renters */}
         <Card className="bg-white/90 backdrop-blur-sm border-slate-200 shadow-lg">
           <div className="p-6 border-b border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900">Recent Matches</h2>
-            <p className="text-slate-600 text-sm">Renters interested in your properties</p>
+            <h2 className="text-xl font-semibold text-slate-900">Interested Renters</h2>
+            <p className="text-slate-600 text-sm">Connect with potential tenants</p>
           </div>
           
           <div className="p-6">
             {matches.length === 0 ? (
               <div className="text-center py-8">
                 <User className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 mb-2">No matches yet</h3>
-                <p className="text-slate-600">Your properties will start getting matches once renters discover them!</p>
+                <h3 className="text-lg font-medium text-slate-900 mb-2">No interested renters yet</h3>
+                <p className="text-slate-600">Your properties will start getting interest once renters discover them!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {matches.map((match) => (
                   <div key={match.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
                     <div className="flex items-center space-x-4">
-                      <img 
-                        src={match.apartment.images[0]}
-                        alt={match.apartment.title}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
+                      <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-white font-semibold">
+                        R
+                      </div>
                       <div>
-                        <h3 className="font-medium text-slate-900">{match.apartment.title}</h3>
+                        <h3 className="font-medium text-slate-900">Interested Renter</h3>
+                        <p className="text-sm text-slate-600">{match.apartment.title}</p>
                         <div className="flex items-center text-sm text-slate-600 mt-1">
                           <MapPin className="w-3 h-3 mr-1" />
                           {match.apartment.location}
@@ -242,7 +241,7 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                           <Badge variant="secondary" className="bg-slate-100 text-slate-700">
                             {formatPrice(match.apartment.price)}/mo
                           </Badge>
-                          <Badge className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800">
+                          <Badge className="bg-primary/10 text-primary">
                             {match.apartment.vibe}
                           </Badge>
                         </div>
@@ -261,10 +260,10 @@ export const RealtorDashboard = ({ matches, onSwitchUserType }: RealtorDashboard
                       <Button
                         size="sm"
                         onClick={() => setSelectedMatch(match)}
-                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
+                        className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
                       >
                         <MessageSquare className="w-4 h-4 mr-1" />
-                        Message
+                        Chat
                       </Button>
                     </div>
                   </div>

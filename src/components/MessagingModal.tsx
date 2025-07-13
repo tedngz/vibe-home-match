@@ -78,11 +78,11 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 truncate">Potential Renter</p>
+                        <p className="font-medium text-sm text-gray-900 truncate">Interested Renter</p>
                         <p className="text-xs text-gray-600 truncate">{match.apartment.title}</p>
                         <div className="flex items-center mt-1">
                           <MapPin className="w-3 h-3 text-gray-400 mr-1" />
@@ -109,7 +109,7 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
               {/* Chat Header */}
               <div className="p-4 border-b bg-gray-50">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -129,7 +129,7 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         msg.sender === 'realtor'
-                          ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white'
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
@@ -156,7 +156,7 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                   />
                   <Button 
                     onClick={sendMessage}
-                    className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                    className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg"
                   >
                     <Send className="w-4 h-4" />
                   </Button>

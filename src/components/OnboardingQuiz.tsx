@@ -221,119 +221,159 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-8 px-4">
-      <div className="w-full max-w-3xl">
-        <Card className="bg-card shadow-lg rounded-2xl border overflow-hidden">
-          {/* Header with icon */}
-          <div className="bg-primary p-6 text-primary-foreground">
-            <div className={`text-center transition-all duration-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <div className="flex items-center justify-center mb-4">
+    <div className="min-h-screen bg-background flex items-center justify-center py-4 px-4">
+      <div className="w-full max-w-4xl">
+        <Card className="bg-card shadow-xl rounded-3xl border-0 overflow-hidden">
+          {/* Minimal Header */}
+          <div className="bg-gradient-to-r from-primary via-primary to-secondary p-8 text-primary-foreground">
+            <div className={`text-center transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
                 {currentStepData.icon && (
-                  <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
-                    <currentStepData.icon className="w-6 h-6 text-secondary-foreground" />
-                  </div>
+                  <currentStepData.icon className="w-8 h-8 text-white" />
                 )}
               </div>
-              <h2 className="text-xl font-bold mb-2">{currentStepData.title}</h2>
-              <p className="text-sm text-primary-foreground/80">{currentStepData.subtitle}</p>
+              <h2 className="text-2xl font-bold mb-3 text-white">{currentStepData.title}</h2>
+              <p className="text-white/90 max-w-2xl mx-auto leading-relaxed">{currentStepData.subtitle}</p>
             </div>
             
-            {/* Simple progress bar */}
-            <div className="mt-4">
-              <div className="w-full bg-primary-foreground/20 rounded-full h-2">
+            {/* Elegant progress indicator */}
+            <div className="mt-8 flex justify-center space-x-2">
+              {Array.from({ length: totalSteps }).map((_, index) => (
                 <div 
-                  className="h-full bg-secondary rounded-full transition-all duration-500"
-                  style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                    index <= currentStep ? 'bg-white scale-110' : 'bg-white/30'
+                  }`}
                 />
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Content area */}
-          <div className="p-6">
-            <div className={`min-h-[300px] flex items-center justify-center transition-all duration-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          {/* Clean Content area */}
+          <div className="p-8">
+            <div className={`min-h-[400px] flex items-center justify-center transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               {currentStepData.type === "multi-select" && (
-                <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {currentStepData.options?.map((option, index) => {
-                    const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
-                    return (
-                      <Button
-                        key={option.id}
-                        variant="outline"
-                        className={`h-auto p-4 flex flex-col items-center justify-center text-center rounded-lg min-h-[120px] transition-colors
-                          ${isSelected ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-accent hover:text-accent-foreground'}
-                        `}
-                        onClick={() => handleMultiSelect(option.id, currentStepData.key)}
-                      >
-                        {currentStep === 0 && option.image ? (
-                          <div className="w-full h-32 relative">
-                            <img 
-                              src={option.image} 
-                              alt={option.label}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className={`absolute inset-0 transition-all duration-300 ${isSelected ? 'bg-purple-500/30' : 'bg-black/10'}`}></div>
-                            {isSelected && (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm">✓</span>
+                <div className="w-full">
+                  {currentStep === 0 ? (
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                      {currentStepData.options?.map((option, index) => {
+                        const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
+                        return (
+                          <div
+                            key={option.id}
+                            onClick={() => handleMultiSelect(option.id, currentStepData.key)}
+                            className={`relative group cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                              isSelected ? 'ring-4 ring-primary ring-offset-2' : ''
+                            }`}
+                          >
+                            <div className="aspect-[4/3] relative">
+                              <img 
+                                src={option.image} 
+                                alt={option.label}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className={`absolute inset-0 transition-all duration-300 ${
+                                isSelected ? 'bg-primary/20' : 'bg-black/20 group-hover:bg-black/10'
+                              }`}></div>
+                              {isSelected && (
+                                <div className="absolute top-3 right-3">
+                                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                                    <span className="text-primary-foreground text-sm font-bold">✓</span>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                              <h3 className="text-white font-bold text-lg">{option.label}</h3>
+                              <p className="text-white/90 text-sm">{option.description}</p>
+                            </div>
                           </div>
-                        ) : option.emoji ? (
-                          <div className={`w-full h-32 flex items-center justify-center transition-all duration-300 ${isSelected ? 'bg-purple-50' : 'bg-gray-50'}`}>
-                            <span className="text-5xl animate-bounce" style={{ animationDelay: `${index * 200}ms` }}>{option.emoji}</span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                      {currentStepData.options?.map((option, index) => {
+                        const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
+                        return (
+                          <div
+                            key={option.id}
+                            onClick={() => handleMultiSelect(option.id, currentStepData.key)}
+                            className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
+                              isSelected 
+                                ? 'bg-primary/10 border-primary shadow-lg' 
+                                : 'bg-white border-gray-200 hover:border-primary/50 hover:shadow-md'
+                            }`}
+                            style={{ animationDelay: `${index * 100}ms` }}
+                          >
+                            <div className="text-4xl mb-4 transition-transform duration-300 group-hover:scale-110">
+                              {option.emoji}
+                            </div>
+                            <h3 className={`font-bold text-lg mb-2 transition-colors ${
+                              isSelected ? 'text-primary' : 'text-gray-800'
+                            }`}>
+                              {option.label}
+                            </h3>
+                            <p className={`text-sm transition-colors ${
+                              isSelected ? 'text-primary/80' : 'text-gray-600'
+                            }`}>
+                              {option.description}
+                            </p>
                           </div>
-                        ) : null}
-                        <div className="p-6 space-y-3 w-full flex-1 flex flex-col justify-center">
-                          <span className={`font-bold text-lg transition-colors ${isSelected ? 'text-purple-700' : 'text-gray-800'}`}>{option.label}</span>
-                          <div className={`text-sm leading-relaxed transition-colors ${isSelected ? 'text-purple-600' : 'text-gray-600'}`}>
-                            {option.description}
-                          </div>
-                        </div>
-                      </Button>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
               {currentStepData.type === "single-select" && (
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
                   {currentStepData.options?.map((option, index) => {
                     const isSelected = preferences[currentStepData.key] === option.id;
                     return (
-                      <Button
+                      <div
                         key={option.id}
-                        variant="outline"
-                        className={`h-auto p-6 flex flex-col items-center justify-center text-center space-y-4 
-                          hover:shadow-xl hover:scale-105 transition-all duration-300 border-2 rounded-2xl min-h-[180px]
-                          animate-fade-in ${isSelected ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}
-                        `}
-                        style={{ animationDelay: `${index * 100}ms` }}
                         onClick={() => handleSingleSelect(option.id, currentStepData.key)}
+                        className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
+                          isSelected 
+                            ? 'bg-primary/10 border-primary shadow-lg' 
+                            : 'bg-white border-gray-200 hover:border-primary/50 hover:shadow-md'
+                        }`}
+                        style={{ animationDelay: `${index * 100}ms` }}
                       >
-                        <span className="text-4xl animate-bounce" style={{ animationDelay: `${index * 200}ms` }}>{option.emoji}</span>
-                        <span className={`font-bold text-lg transition-colors ${isSelected ? 'text-purple-700' : 'text-gray-800'}`}>{option.label}</span>
-                        <span className={`text-sm leading-relaxed transition-colors ${isSelected ? 'text-purple-600' : 'text-gray-600'}`}>{option.description}</span>
+                        <div className="text-4xl mb-4 transition-transform duration-300 group-hover:scale-110">
+                          {option.emoji}
+                        </div>
+                        <h3 className={`font-bold text-lg mb-2 transition-colors ${
+                          isSelected ? 'text-primary' : 'text-gray-800'
+                        }`}>
+                          {option.label}
+                        </h3>
+                        <p className={`text-sm transition-colors ${
+                          isSelected ? 'text-primary/80' : 'text-gray-600'
+                        }`}>
+                          {option.description}
+                        </p>
                         {isSelected && (
-                          <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center animate-scale-in">
-                            <span className="text-white text-xs">✓</span>
+                          <div className="absolute top-3 right-3">
+                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                              <span className="text-primary-foreground text-xs font-bold">✓</span>
+                            </div>
                           </div>
                         )}
-                      </Button>
+                      </div>
                     );
                   })}
                 </div>
               )}
 
               {currentStepData.type === "budget" && (
-                <div className="w-full max-w-lg space-y-6">
+                <div className="w-full max-w-lg mx-auto space-y-8">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                      <DollarSign className="w-10 h-10 text-white" />
+                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <DollarSign className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-gray-600 mb-6">Drag the sliders to set your comfortable budget range</p>
                   </div>
                   <BudgetRangeSelector
                     value={preferences.priceRange as [number, number]}
@@ -343,12 +383,11 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               )}
 
               {currentStepData.type === "location" && (
-                <div className="w-full max-w-3xl space-y-6">
+                <div className="w-full max-w-4xl mx-auto space-y-8">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                      <MapPin className="w-10 h-10 text-white" />
+                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <MapPin className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-gray-600 mb-6">Select all the neighborhoods that interest you</p>
                   </div>
                   <CityDistrictSelector
                     value={preferences.location as string[]}
@@ -358,41 +397,30 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               )}
             </div>
 
-            {/* Navigation */}
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+            {/* Clean Navigation */}
+            <div className="flex justify-between items-center mt-12 pt-8">
               <Button 
                 variant="outline" 
                 onClick={handleBack}
                 disabled={currentStep === 0}
-                className="min-w-[120px] rounded-full hover:shadow-lg transition-all duration-200"
+                className="px-6 py-3 rounded-full border-2 hover:bg-gray-50 transition-all duration-200 disabled:opacity-50"
               >
-                ← Previous
+                ← Back
               </Button>
-              
-              <div className="flex space-x-2">
-                {Array.from({ length: totalSteps }).map((_, index) => (
-                  <div 
-                    key={index}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index <= currentStep ? 'bg-purple-500' : 'bg-gray-200'
-                    }`}
-                  />
-                ))}
-              </div>
 
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={handleNext} 
-                  className="min-w-[120px] rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
-                  Next →
+                  Continue
                 </Button>
               ) : (
                 <Button 
-                  onClick={handleSubmit} 
-                  className="min-w-[120px] rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg hover:shadow-xl transition-all duration-200"
+                  onClick={handleSubmit}
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
-                  🎉 Let's Go!
+                  Get Started
                 </Button>
               )}
             </div>
