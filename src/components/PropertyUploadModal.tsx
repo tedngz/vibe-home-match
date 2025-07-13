@@ -80,51 +80,105 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
 
     setIsGenerating(true);
     
-    // Simulate AI generation
-    setTimeout(() => {
-      // Generate title
-      const locationShort = location.split(',')[0];
-      const priceFormatted = currency === 'VND' ? `${(parseInt(price) / 1000000).toFixed(1)}M VND` : `$${Math.round(parseInt(price) / 24500)}`;
-      const generatedTitle = `Stunning ${size}m² Apartment in ${locationShort} - ${priceFormatted}/month`;
+    try {
+      // Convert files to base64 URLs for immediate AI analysis
+      const imageUrls: string[] = [];
       
-      // Auto-select vibes based on location and price
-      let autoVibes = [];
-      if (location.includes('District 1') || location.includes('Hoan Kiem')) {
-        autoVibes = ['Urban Chic', 'Modern Minimalist'];
-      } else if (location.includes('District 2') || location.includes('Cau Giay')) {
-        autoVibes = ['Modern Minimalist', 'Young Professional'];
-      } else if (parseInt(price) > 20000000) {
-        autoVibes = ['Luxury Executive', 'Modern Minimalist'];
+      for (const file of imageFiles) {
+        const reader = new FileReader();
+        const base64Promise = new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+        
+        const base64Url = await base64Promise;
+        imageUrls.push(base64Url);
+      }
+
+      // Call our analyze-vibe function with content generation
+      const response = await fetch(`https://gbgrwjdmytaksrztcyzs.supabase.co/functions/v1/analyze-vibe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrls: imageUrls,
+          generateContent: true,
+          propertyInfo: {
+            location,
+            price: parseInt(price),
+            size,
+            currency
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate content');
+      }
+
+      const data = await response.json();
+      const analysis = data.analysis;
+
+      if (analysis?.generated_content) {
+        const generated = analysis.generated_content;
+        setTitle(generated.title || `Beautiful ${size}m² Property in ${location.split(',')[0]}`);
+        setDescription(generated.description || 'A wonderful space perfect for your next home.');
+        
+        // Auto-select vibes based on AI analysis
+        const aiVibes = [];
+        if (analysis.modern > 7) aiVibes.push('Modern Minimalist');
+        if (analysis.cozy > 7) aiVibes.push('Cozy Traditional');
+        if (analysis.luxurious > 7) aiVibes.push('Luxury Executive');
+        if (analysis.urban > 7) aiVibes.push('Urban Chic');
+        if (analysis.spacious > 7) aiVibes.push('Spacious Layout');
+        
+        // Fallback vibes if none detected
+        if (aiVibes.length === 0) {
+          if (location.includes('District 1') || location.includes('Hoan Kiem')) {
+            aiVibes.push('Urban Chic', 'Modern Minimalist');
+          } else {
+            aiVibes.push('Cozy Traditional', 'Family Friendly');
+          }
+        }
+        
+        setSelectedVibes(generated.highlights || aiVibes);
       } else {
-        autoVibes = ['Cozy Traditional', 'Family Friendly'];
+        // Fallback content if AI generation fails
+        const locationShort = location.split(',')[0];
+        const priceFormatted = currency === 'VND' ? `${(parseInt(price) / 1000000).toFixed(1)}M VND` : `$${Math.round(parseInt(price) / 24500)}`;
+        
+        setTitle(`Stunning ${size}m² Apartment in ${locationShort} - ${priceFormatted}/month`);
+        setDescription(`Welcome to this exceptional ${size}m² property located in the heart of ${location}. This beautifully designed space offers the perfect blend of comfort and modern living.`);
+        setSelectedVibes(['Modern Minimalist', 'Family Friendly']);
       }
       
-      // Generate description
-      const generatedDescription = `Welcome to this exceptional ${size}m² property located in the heart of ${location}. This beautifully designed space offers the perfect blend of comfort and modern living.
-
-Key Features:
-• Spacious ${size}m² layout with excellent natural lighting
-• Prime location in ${location.split(',')[0]} with easy access to amenities
-• Modern finishes and thoughtful design throughout
-• Perfect for ${autoVibes.join(' and ').toLowerCase()} lifestyle
-
-The apartment features an open-concept design that maximizes space and creates a seamless flow between living areas. Located in one of the city's most sought-after neighborhoods, you'll enjoy convenient access to restaurants, shopping, and public transportation.
-
-This property represents an excellent opportunity for those seeking quality living in a vibrant urban environment. The ${autoVibes[0].toLowerCase()} aesthetic creates an atmosphere that truly feels like home.
-
-Experience modern city living at its finest in this exceptional ${location.split(',')[0]} residence.`;
-      
-      setTitle(generatedTitle);
-      setDescription(generatedDescription);
-      setSelectedVibes(autoVibes);
       setHasGenerated(true);
-      setIsGenerating(false);
       
       toast({
         title: "Content Generated!",
-        description: "AI has created title, description, and selected vibes based on your property details.",
+        description: "AI has analyzed your property images and created unique content based on the visual features detected.",
       });
-    }, 2000);
+      
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Using fallback content generation. Check your internet connection and try again.",
+        variant: "destructive"
+      });
+      
+      // Fallback generation
+      const locationShort = location.split(',')[0];
+      const priceFormatted = currency === 'VND' ? `${(parseInt(price) / 1000000).toFixed(1)}M VND` : `$${Math.round(parseInt(price) / 24500)}`;
+      
+      setTitle(`Beautiful ${size}m² Property in ${locationShort}`);
+      setDescription(`Discover this amazing ${size}m² property in ${location}. A perfect space for modern living.`);
+      setSelectedVibes(['Modern Minimalist', 'Family Friendly']);
+      setHasGenerated(true);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSubmit = () => {

@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrls, generateContent = false } = await req.json();
+    const { imageUrls, generateContent = false, propertyInfo } = await req.json();
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
@@ -109,6 +109,15 @@ serve(async (req) => {
     if (generateContent) {
       const detailedAnalyses = analyses.map(a => a.detailed_analysis || a.raw_analysis).join('\n\n');
       
+      // Create enhanced prompt with property context
+      const propertyContext = propertyInfo ? `
+Property Context:
+- Location: ${propertyInfo.location}
+- Size: ${propertyInfo.size}m²
+- Price: ${propertyInfo.currency === 'VND' ? `${propertyInfo.price.toLocaleString()} VND` : `$${propertyInfo.price}`}/month
+- Currency: ${propertyInfo.currency}
+` : '';
+
       const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -120,38 +129,50 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `You are a creative real estate marketing expert. Based on detailed property image analyses, create unique and compelling rental listing content that highlights the property's specific features and appeals to potential renters.`
+              content: `You are an expert real estate marketing specialist creating compelling rental listings. Based on detailed visual analysis of property images, you create unique, engaging content that highlights specific architectural features, design elements, and lifestyle benefits visible in the photos.
+
+IMPORTANT RULES:
+- Create titles that are catchy and unique, not generic
+- Descriptions should mention specific visual features you can see in the images
+- Highlight unique selling points and lifestyle benefits
+- Make each listing feel distinct and memorable
+- Use engaging, descriptive language that appeals to potential renters
+- Focus on what makes THIS specific property special`
             },
             {
               role: 'user',
-              content: `Based on these property image analyses, create a unique and compelling rental listing:
+              content: `Create a compelling rental listing based on this visual analysis:
 
-Property Analysis:
+${propertyContext}
+
+Detailed Image Analysis:
 ${detailedAnalyses}
 
-Vibe Scores (1-10):
-- Modern: ${aggregated.modern}
-- Cozy: ${aggregated.cozy}
-- Luxurious: ${aggregated.luxurious}
-- Minimalist: ${aggregated.minimalist}
-- Spacious: ${aggregated.spacious}
-- Natural Light: ${aggregated.natural_light}
-- Urban: ${aggregated.urban}
+Visual Characteristics (1-10 scale):
+- Modern: ${aggregated.modern}/10
+- Cozy: ${aggregated.cozy}/10  
+- Luxurious: ${aggregated.luxurious}/10
+- Minimalist: ${aggregated.minimalist}/10
+- Spacious: ${aggregated.spacious}/10
+- Natural Light: ${aggregated.natural_light}/10
+- Urban: ${aggregated.urban}/10
+- Elegant: ${aggregated.elegant}/10
 
-Create:
-1. A catchy, unique title (max 60 characters) that captures the property's essence
-2. A compelling description (100-200 words) that highlights specific features you observed
-3. 3-5 key highlights/features that make this property special
+Based on what you can see in the images and the property details, create:
 
-Format as JSON:
+1. A unique, catchy title (50-80 characters) that captures the property's distinctive features
+2. An engaging description (150-250 words) that mentions specific visual elements, architectural features, and lifestyle benefits you observed
+3. 4-6 compelling highlights that represent the most attractive features visible in the images
+
+Return JSON format:
 {
-  "title": "your catchy title",
-  "description": "your compelling description",
-  "highlights": ["highlight1", "highlight2", "highlight3"]
+  "title": "your unique title",
+  "description": "your detailed description mentioning specific visual features",
+  "highlights": ["highlight1", "highlight2", "highlight3", "highlight4"]
 }`
             }
           ],
-          max_tokens: 600,
+          max_tokens: 800,
           temperature: 0.8,
         }),
       });
@@ -166,10 +187,14 @@ Format as JSON:
         aggregated.generated_content = generatedContent;
       } catch (error) {
         console.error('Error parsing generated content:', error);
+        // Improved fallback with property context
+        const locationName = propertyInfo?.location?.split(',')[0] || 'Prime Location';
+        const sizeText = propertyInfo?.size ? `${propertyInfo.size}m²` : 'Spacious';
+        
         aggregated.generated_content = {
-          title: "Beautiful Rental Property",
-          description: "A wonderful space perfect for your next home.",
-          highlights: ["Great location", "Modern amenities", "Spacious rooms"]
+          title: `Stunning ${sizeText} Property in ${locationName}`,
+          description: `Discover this beautiful ${sizeText} property offering modern living in ${locationName}. Features contemporary design elements and excellent natural lighting, perfect for comfortable urban living.`,
+          highlights: ["Prime location", "Modern design", "Natural lighting", "Contemporary finishes"]
         };
       }
     }
