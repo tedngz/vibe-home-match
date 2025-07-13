@@ -268,7 +268,6 @@ const Index = () => {
           isOpen={isAIChatOpen}
           onClose={() => setIsAIChatOpen(false)}
           userPreferences={userPreferences}
-          onMatch={handleMatch}
         />
       </div>
     </CurrencyProvider>

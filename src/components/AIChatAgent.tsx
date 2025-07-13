@@ -12,7 +12,6 @@ interface AIChatAgentProps {
   isOpen: boolean;
   onClose: () => void;
   userPreferences?: UserPreferences | null;
-  onMatch?: (apartment: Apartment) => void;
   userType?: 'renter' | 'realtor';
   propertyImages?: string[];
 }
@@ -21,7 +20,6 @@ export const AIChatAgent = ({
   isOpen, 
   onClose, 
   userPreferences, 
-  onMatch, 
   userType = 'renter',
   propertyImages 
 }: AIChatAgentProps) => {

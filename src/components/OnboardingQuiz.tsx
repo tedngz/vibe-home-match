@@ -9,9 +9,10 @@ import { CityDistrictSelector } from '@/components/CityDistrictSelector';
 
 interface OnboardingQuizProps {
   onComplete: (preferences: UserPreferences) => void;
+  onSkip?: () => void;
 }
 
-export const OnboardingQuiz = ({ onComplete }: OnboardingQuizProps) => {
+export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [preferences, setPreferences] = useState<Partial<UserPreferences>>({
     styles: [],
