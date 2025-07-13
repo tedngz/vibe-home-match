@@ -311,22 +311,25 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               </div>
             )}
 
-            <div className="absolute top-3 right-3">
-              <Badge className="bg-white/90 text-gray-800 font-semibold">
-                {formatPrice(currentApartment.price)}/mo
-              </Badge>
-            </div>
           </div>
 
           <div className="p-5">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">{currentApartment.title}</h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
+              <VibeScore score={vibeScore} size="sm" />
+            </div>
             <div className="flex items-center text-gray-600 text-sm mb-3">
               <MapPin className="w-3 h-3 mr-1" />
               {currentApartment.location}
             </div>
-            <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mb-4">
-              {currentApartment.vibe}
-            </Badge>
+            <div className="flex items-center justify-between mb-4">
+              <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                {currentApartment.vibe}
+              </Badge>
+              <Badge className="bg-primary text-primary-foreground font-semibold">
+                {formatPrice(currentApartment.price)}/mo
+              </Badge>
+            </div>
 
             <div className="mb-4">
               <VibeScore score={vibeScore} showBreakdown={true} size="sm" />

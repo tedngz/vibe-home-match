@@ -119,36 +119,25 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                     </div>
                   )}
 
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-white/90 text-gray-800 font-semibold">
-                      {formatPrice(apartment.price)}/mo
-                    </Badge>
-                  </div>
-                  
-                  {/* Enhanced Vibe Score Display */}
-                  {vibeScore && (
-                    <div className="absolute top-3 left-3">
-                      <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 shadow-lg border border-white/20">
-                        <VibeScore score={vibeScore} size="sm" />
-                      </div>
-                    </div>
-                  )}
                 </div>
                 
                 <div className="p-5">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-gray-900 mb-2">{apartment.title}</h3>
-                      <div className="flex items-center text-gray-600 text-sm mb-3">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        {apartment.location}
-                      </div>
-                    </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
+                    {vibeScore && <VibeScore score={vibeScore} size="sm" />}
                   </div>
-
-                  <Badge variant="secondary" className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 mb-3">
-                    {apartment.vibe}
-                  </Badge>
+                  <div className="flex items-center text-gray-600 text-sm mb-3">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    {apartment.location}
+                  </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                      {apartment.vibe}
+                    </Badge>
+                    <Badge className="bg-primary text-primary-foreground font-semibold">
+                      {formatPrice(apartment.price)}/mo
+                    </Badge>
+                  </div>
 
                   {/* Enhanced Vibe Score Breakdown */}
                   {vibeScore && (

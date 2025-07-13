@@ -221,38 +221,28 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center py-8 px-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-pink-200/30 to-orange-200/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
-      <div className="w-full max-w-5xl relative z-10">
-        <Card className="bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl border-0 overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center py-8 px-4">
+      <div className="w-full max-w-3xl">
+        <Card className="bg-card shadow-lg rounded-2xl border overflow-hidden">
           {/* Header with icon */}
-          <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 p-6 md:p-8 text-white">
-            <div className="flex items-center justify-center mb-4">
-              {currentStepData.icon && (
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center animate-bounce">
-                  <currentStepData.icon className="w-8 h-8" />
-                </div>
-              )}
-            </div>
+          <div className="bg-primary p-6 text-primary-foreground">
             <div className={`text-center transition-all duration-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">{currentStepData.title}</h2>
-              <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">{currentStepData.subtitle}</p>
+              <div className="flex items-center justify-center mb-4">
+                {currentStepData.icon && (
+                  <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                    <currentStepData.icon className="w-6 h-6 text-secondary-foreground" />
+                  </div>
+                )}
+              </div>
+              <h2 className="text-xl font-bold mb-2">{currentStepData.title}</h2>
+              <p className="text-sm text-primary-foreground/80">{currentStepData.subtitle}</p>
             </div>
             
-            {/* Progress bar */}
-            <div className="mt-6 space-y-2">
-              <div className="flex items-center justify-between text-sm text-white/80">
-                <span>Progress</span>
-                <span>{Math.round(((currentStep + 1) / totalSteps) * 100)}% complete</span>
-              </div>
-              <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+            {/* Simple progress bar */}
+            <div className="mt-4">
+              <div className="w-full bg-primary-foreground/20 rounded-full h-2">
                 <div 
-                  className="h-full bg-white rounded-full transition-all duration-500 ease-out"
+                  className="h-full bg-secondary rounded-full transition-all duration-500"
                   style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
                 />
               </div>
@@ -260,21 +250,19 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           </div>
 
           {/* Content area */}
-          <div className="p-6 md:p-8">
-            <div className={`min-h-[400px] flex items-center justify-center transition-all duration-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="p-6">
+            <div className={`min-h-[300px] flex items-center justify-center transition-all duration-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               {currentStepData.type === "multi-select" && (
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
+                <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {currentStepData.options?.map((option, index) => {
                     const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
                     return (
                       <Button
                         key={option.id}
                         variant="outline"
-                        className={`h-auto p-0 flex flex-col items-center justify-center text-center overflow-hidden 
-                          hover:shadow-xl hover:scale-105 transition-all duration-300 border-2 rounded-2xl min-h-[200px]
-                          animate-fade-in ${isSelected ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}
+                        className={`h-auto p-4 flex flex-col items-center justify-center text-center rounded-lg min-h-[120px] transition-colors
+                          ${isSelected ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-accent hover:text-accent-foreground'}
                         `}
-                        style={{ animationDelay: `${index * 100}ms` }}
                         onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                       >
                         {currentStep === 0 && option.image ? (
