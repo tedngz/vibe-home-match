@@ -52,7 +52,19 @@ export const AIChatAgent = ({
   }, [isOpen, currentConversationId, conversations.length, createConversation, userType]);
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim() || !currentConversationId) return;
+    if (!inputMessage.trim()) return;
+    
+    console.log('Sending message:', inputMessage);
+    console.log('Current conversation ID:', currentConversationId);
+    console.log('User type:', userType);
+
+    if (!currentConversationId) {
+      console.error('No conversation ID available');
+      // Try to create a conversation first
+      const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
+      createConversation(title);
+      return;
+    }
 
     // Enhanced message with context for different user types
     const messageData = {
@@ -63,6 +75,7 @@ export const AIChatAgent = ({
       propertyImages: userType === 'realtor' ? propertyImages : undefined,
     };
 
+    console.log('Sending message data:', messageData);
     sendMessage(messageData);
     setInputMessage('');
   };
@@ -212,7 +225,7 @@ export const AIChatAgent = ({
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isSendingMessage || !currentConversationId}
+              disabled={!inputMessage.trim() || isSendingMessage}
               className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
             >
               <Send className="w-4 h-4" />

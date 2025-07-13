@@ -17,15 +17,46 @@ serve(async (req) => {
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('OpenAI API key not found in environment');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        }
+      );
+    }
+
+    console.log('Starting image analysis:', { 
+      imageCount: imageUrls?.length, 
+      generateContent, 
+      hasPropertyInfo: !!propertyInfo 
+    });
+
+    // Validate input
+    if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+      console.error('Invalid or missing imageUrls');
+      return new Response(
+        JSON.stringify({ error: 'No images provided for analysis' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
     }
 
     // Analyze each image for vibe characteristics and optionally generate content
-    const analyses = await Promise.all(
-      imageUrls.map(async (imageUrl: string, index: number) => {
+    const analyses = [];
+    
+    for (let index = 0; index < imageUrls.length; index++) {
+      const imageUrl = imageUrls[index];
+      
+      try {
         const basePrompt = generateContent 
           ? `Analyze this rental property image and describe what you see. Focus on unique architectural features, design elements, lighting, space characteristics, and any special amenities or highlights visible. Be detailed and specific about what makes this property special. After your analysis, return a JSON object with vibe characteristics (scale 1-10): modern, cozy, luxurious, minimalist, colorful, spacious, natural_light, urban, rustic, elegant, plus a 'detailed_analysis' field with your observations.`
           : `Analyze this rental property image and return a JSON object with the following vibe characteristics (scale 1-10): modern, cozy, luxurious, minimalist, colorful, spacious, natural_light, urban, rustic, elegant. Also provide a brief description of the overall vibe.`;
+
+        console.log(`Processing image ${index + 1}/${imageUrls.length}`);
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -54,48 +85,100 @@ serve(async (req) => {
           }),
         });
 
-        console.log(`Making OpenAI request for image ${index}`);
+        console.log(`OpenAI response status for image ${index + 1}: ${response.status}`);
         
         if (!response.ok) {
-          console.error(`OpenAI API error: ${response.status} - ${response.statusText}`);
+          console.error(`OpenAI API error for image ${index + 1}: ${response.status} - ${response.statusText}`);
           const errorText = await response.text();
           console.error('Error response:', errorText);
-          throw new Error(`OpenAI API error: ${response.status}`);
+          
+          // Use fallback for this image instead of failing completely
+          analyses.push({
+            modern: 5,
+            cozy: 5,
+            luxurious: 5,
+            minimalist: 5,
+            colorful: 5,
+            spacious: 5,
+            natural_light: 5,
+            urban: 5,
+            rustic: 5,
+            elegant: 5,
+            description: 'Unable to analyze image',
+            detailed_analysis: generateContent ? 'Analysis failed due to API error' : 'Analysis failed',
+            image_index: index,
+            raw_analysis: 'API Error'
+          });
+          continue;
         }
 
         const data = await response.json();
-        console.log(`OpenAI response for image ${index}:`, JSON.stringify(data, null, 2));
+        console.log(`OpenAI response for image ${index + 1} received`);
         
         if (!data || !data.choices || data.choices.length === 0) {
-          console.error('No choices in OpenAI response:', data);
-          throw new Error('No choices returned from OpenAI');
+          console.error(`No choices in OpenAI response for image ${index + 1}:`, data);
+          analyses.push({
+            modern: 5,
+            cozy: 5,
+            luxurious: 5,
+            minimalist: 5,
+            colorful: 5,
+            spacious: 5,
+            natural_light: 5,
+            urban: 5,
+            rustic: 5,
+            elegant: 5,
+            description: 'Unable to analyze image',
+            detailed_analysis: generateContent ? 'No analysis returned' : 'Analysis failed',
+            image_index: index,
+            raw_analysis: 'No Response'
+          });
+          continue;
         }
 
         if (!data.choices[0] || !data.choices[0].message) {
-          console.error('No message in OpenAI choice:', data.choices[0]);
-          throw new Error('No message in OpenAI response');
+          console.error(`No message in OpenAI choice for image ${index + 1}:`, data.choices[0]);
+          analyses.push({
+            modern: 5,
+            cozy: 5,
+            luxurious: 5,
+            minimalist: 5,
+            colorful: 5,
+            spacious: 5,
+            natural_light: 5,
+            urban: 5,
+            rustic: 5,
+            elegant: 5,
+            description: 'Unable to analyze image',
+            detailed_analysis: generateContent ? 'Invalid response format' : 'Analysis failed',
+            image_index: index,
+            raw_analysis: 'Invalid Format'
+          });
+          continue;
         }
         
         const content = data.choices[0].message.content || '{}';
-        console.log(`Content from OpenAI for image ${index}:`, content);
+        console.log(`Content length for image ${index + 1}: ${content.length} characters`);
         
         try {
           // Try to extract JSON from the response
           const jsonMatch = content.match(/\{[\s\S]*\}/);
           const jsonStr = jsonMatch ? jsonMatch[0] : content;
-          console.log(`Extracted JSON string for image ${index}:`, jsonStr);
           const parsed = JSON.parse(jsonStr);
           
-          return {
+          analyses.push({
             ...parsed,
             image_index: index,
             raw_analysis: content
-          };
+          });
+          
+          console.log(`Successfully parsed analysis for image ${index + 1}`);
         } catch (parseError) {
-          console.error(`JSON parsing failed for image ${index}:`, parseError);
-          console.error('Content that failed to parse:', content);
+          console.error(`JSON parsing failed for image ${index + 1}:`, parseError);
+          console.error('Content that failed to parse:', content.substring(0, 200));
+          
           // Fallback if JSON parsing fails
-          return {
+          analyses.push({
             modern: 5,
             cozy: 5,
             luxurious: 5,
@@ -110,10 +193,28 @@ serve(async (req) => {
             detailed_analysis: generateContent ? content : 'Analysis failed',
             image_index: index,
             raw_analysis: content
-          };
+          });
         }
-      })
-    );
+      } catch (imageError) {
+        console.error(`Error processing image ${index + 1}:`, imageError);
+        analyses.push({
+          modern: 5,
+          cozy: 5,
+          luxurious: 5,
+          minimalist: 5,
+          colorful: 5,
+          spacious: 5,
+          natural_light: 5,
+          urban: 5,
+          rustic: 5,
+          elegant: 5,
+          description: 'Unable to analyze image',
+          detailed_analysis: generateContent ? 'Processing error' : 'Analysis failed',
+          image_index: index,
+          raw_analysis: 'Processing Error'
+        });
+      }
+    }
 
     // Aggregate the analyses and generate content if requested
     const aggregated = {
@@ -133,8 +234,9 @@ serve(async (req) => {
     // Generate unique title and description if requested
     if (generateContent) {
       const detailedAnalyses = analyses.map(a => a.detailed_analysis || a.raw_analysis).join('\n\n');
+      console.log('Generating content with analysis:', detailedAnalyses.length, 'characters of analysis');
       
-      // Create enhanced prompt with property context
+      try {
       const propertyContext = propertyInfo ? `
 Property Context:
 - Location: ${propertyInfo.location}
@@ -244,6 +346,18 @@ Return JSON format:
           title: `Stunning ${sizeText} Property in ${locationName}`,
           description: `Discover this beautiful ${sizeText} property offering modern living in ${locationName}. Features contemporary design elements and excellent natural lighting, perfect for comfortable urban living.`,
           highlights: ["Prime location", "Modern design", "Natural lighting", "Contemporary finishes"]
+        };
+      }
+      } catch (contentError) {
+        console.error('Error in content generation:', contentError);
+        // Fallback content generation
+        const locationName = propertyInfo?.location?.split(',')[0] || 'Prime Location';
+        const sizeText = propertyInfo?.size ? `${propertyInfo.size}m²` : 'Spacious';
+        
+        aggregated.generated_content = {
+          title: `Beautiful ${sizeText} Property in ${locationName}`,
+          description: `Discover this amazing ${sizeText} property in ${locationName}. Perfect for modern living with great features and amenities.`,
+          highlights: ["Prime location", "Modern design", "Great amenities", "Perfect for living"]
         };
       }
     }
