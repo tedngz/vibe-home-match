@@ -11,6 +11,7 @@ import { useProperties } from '@/hooks/useProperties';
 import { useToast } from '@/hooks/use-toast';
 import { CurrencySelector } from '@/components/CurrencySelector';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PropertyUploadModalProps {
   isOpen: boolean;
@@ -95,13 +96,9 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
         imageUrls.push(base64Url);
       }
 
-      // Call our analyze-vibe function with content generation
-      const response = await fetch(`https://gbgrwjdmytaksrztcyzs.supabase.co/functions/v1/analyze-vibe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Call our analyze-vibe function with content generation using Supabase client
+      const { data, error } = await supabase.functions.invoke('analyze-vibe', {
+        body: {
           imageUrls: imageUrls,
           generateContent: true,
           propertyInfo: {
@@ -110,15 +107,14 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
             size,
             currency
           }
-        })
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate content');
+      if (error) {
+        throw new Error(error.message || 'Failed to generate content');
       }
 
-      const data = await response.json();
-      const analysis = data.analysis;
+      const analysis = data?.analysis;
 
       if (analysis?.generated_content) {
         const generated = analysis.generated_content;

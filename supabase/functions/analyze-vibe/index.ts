@@ -55,7 +55,13 @@ serve(async (req) => {
         });
 
         const data = await response.json();
-        const content = data.choices[0]?.message?.content || '{}';
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+          console.error('Invalid OpenAI response:', data);
+          throw new Error('Invalid response from OpenAI');
+        }
+        
+        const content = data.choices[0].message.content || '{}';
         
         try {
           // Try to extract JSON from the response
@@ -178,7 +184,13 @@ Return JSON format:
       });
 
       const contentData = await contentResponse.json();
-      const contentText = contentData.choices[0]?.message?.content || '{}';
+      
+      if (!contentData.choices || !contentData.choices[0] || !contentData.choices[0].message) {
+        console.error('Invalid OpenAI response for content generation:', contentData);
+        throw new Error('Invalid response from OpenAI for content generation');
+      }
+      
+      const contentText = contentData.choices[0].message.content || '{}';
       
       try {
         const jsonMatch = contentText.match(/\{[\s\S]*\}/);
