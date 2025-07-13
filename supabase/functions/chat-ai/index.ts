@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
@@ -50,8 +49,11 @@ serve(async (req) => {
       .select('*');
 
     if (propertiesError) {
+      console.error('Error fetching properties:', propertiesError);
       throw propertiesError;
     }
+
+    console.log(`Found ${properties?.length || 0} properties in database`);
 
     // Get conversation history
     const { data: chatHistory, error: historyError } = await supabase
@@ -62,6 +64,7 @@ serve(async (req) => {
       .limit(10);
 
     if (historyError) {
+      console.error('Error fetching chat history:', historyError);
       throw historyError;
     }
 
@@ -134,28 +137,35 @@ ${properties.map(p => `
 
 🎯 YOUR MISSION:
 - Always suggest 3-5 specific properties that match the user's request
-- Provide comprehensive lifestyle insights for each recommendation
-- Explain WHY each property fits their needs
-- Include nearby activities, amenities, and neighborhood vibes
+- Provide comprehensive lifestyle insights for each recommendation (150+ words per property)
+- Explain WHY each property fits their needs with detailed reasoning
+- Include nearby activities, amenities, and neighborhood vibes with specific examples
 - Be enthusiastic and personal in your recommendations
-- Focus on how each space would enhance their daily life
+- Focus on how each space would enhance their daily life with vivid descriptions
+- Describe the morning routine, work-from-home setup, evening relaxation possibilities
+- Mention local cafes, restaurants, transportation, shopping, and entertainment
+- Paint a complete lifestyle picture for each property
 
 💬 COMMUNICATION STYLE:
-- Be conversational, warm, and genuinely helpful
-- Use emojis to make responses engaging
-- Paint a picture of what living there would be like
-- Include practical details alongside emotional appeal`;
+- Be conversational, warm, and genuinely helpful with detailed responses
+- Use emojis to make responses engaging and visually appealing
+- Paint a vivid picture of what living there would be like
+- Include practical details alongside emotional appeal
+- Write comprehensive responses (400+ words minimum)
+- Create excitement about each property with rich storytelling`;
 
       // Add user preferences context for renters
       if (userPreferences) {
         const matchingProperties = properties.filter(p => {
           const locationMatch = userPreferences.location?.some(loc => 
-            p.location.toLowerCase().includes(loc.toLowerCase())
+            p.location.toLowerCase().includes(loc.toLowerCase().split(',')[0])
           );
           const budgetMatch = userPreferences.priceRange ? 
             p.price <= userPreferences.priceRange[1] * 1.2 : true;
           return locationMatch && budgetMatch;
         });
+
+        console.log(`Found ${matchingProperties.length} properties matching user preferences`);
 
         if (matchingProperties.length > 0) {
           systemPrompt += `\n\nBASED ON USER'S PREFERENCES, THESE PROPERTIES ARE MOST RELEVANT:
@@ -222,8 +232,8 @@ Current user message: ${message}`;
           { role: 'system', content: fullContext },
           { role: 'user', content: message }
         ],
-        max_tokens: 1200,
-        temperature: 0.8,
+        max_tokens: 2000,
+        temperature: 0.7,
       }),
     });
 
@@ -233,7 +243,28 @@ Current user message: ${message}`;
       console.error('OpenAI API error:', openaiResponse.status, openaiResponse.statusText);
       const errorText = await openaiResponse.text();
       console.error('OpenAI error response:', errorText);
-      throw new Error(`OpenAI API error: ${openaiResponse.status}`);
+      
+      // Provide fallback response
+      const fallbackResponse = userType === 'realtor' 
+        ? "I'm having trouble connecting to the AI service right now. Please try again in a moment, or feel free to ask me about property marketing strategies!"
+        : "I'm having trouble connecting to the AI service right now. But I'd be happy to help you find properties! Could you tell me more about what you're looking for - location preferences, budget, or lifestyle needs?";
+      
+      // Save fallback response to database
+      await supabase
+        .from('chat_messages')
+        .insert({
+          conversation_id: conversationId,
+          role: 'assistant',
+          content: fallbackResponse
+        });
+
+      return new Response(
+        JSON.stringify({ response: fallbackResponse }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
     }
 
     const openaiData = await openaiResponse.json();

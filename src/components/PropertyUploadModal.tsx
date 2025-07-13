@@ -121,20 +121,35 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
         setTitle(generated.title || `Beautiful ${size}m² Property in ${location.split(',')[0]}`);
         setDescription(generated.description || 'A wonderful space perfect for your next home.');
         
-        // Auto-select vibes based on AI analysis
+        // Auto-select vibes based on AI analysis with better scoring
         const aiVibes = [];
-        if (analysis.modern > 7) aiVibes.push('Modern Minimalist');
-        if (analysis.cozy > 7) aiVibes.push('Cozy Traditional');
-        if (analysis.luxurious > 7) aiVibes.push('Luxury Executive');
-        if (analysis.urban > 7) aiVibes.push('Urban Chic');
-        if (analysis.spacious > 7) aiVibes.push('Spacious Layout');
+        if (analysis.modern > 6) aiVibes.push('Modern Minimalist');
+        if (analysis.cozy > 6) aiVibes.push('Cozy Traditional');
+        if (analysis.luxurious > 6) aiVibes.push('Luxury Executive');
+        if (analysis.urban > 6) aiVibes.push('Urban Chic');
+        if (analysis.spacious > 6) aiVibes.push('Family Friendly');
+        if (analysis.natural_light > 7) aiVibes.push('Bright & Airy');
         
-        // Fallback vibes if none detected
+        // Smart fallback vibes based on location and price
         if (aiVibes.length === 0) {
+          const priceNum = parseInt(price);
           if (location.includes('District 1') || location.includes('Hoan Kiem')) {
-            aiVibes.push('Urban Chic', 'Modern Minimalist');
+            aiVibes.push('Urban Chic', 'Young Professional');
+          } else if (location.includes('District 2') || location.includes('Cau Giay')) {
+            aiVibes.push('Modern Minimalist', 'Pet Friendly');
+          } else if (priceNum > 20000000) {
+            aiVibes.push('Luxury Executive', 'Modern Minimalist');
           } else {
             aiVibes.push('Cozy Traditional', 'Family Friendly');
+          }
+        }
+        
+        // Always ensure at least 2 vibes are selected
+        if (aiVibes.length === 1) {
+          if (parseInt(price) > 15000000) {
+            aiVibes.push('Luxury Executive');
+          } else {
+            aiVibes.push('Family Friendly');
           }
         }
         
