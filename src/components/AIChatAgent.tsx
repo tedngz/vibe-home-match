@@ -121,6 +121,33 @@ export const AIChatAgent = ({
                   <Bot className="w-12 h-12 mx-auto mb-4 text-blue-500" />
                   <p>{welcomeMessage.title}</p>
                   <p className="text-sm mt-2">{welcomeMessage.subtitle}</p>
+                  
+                  {/* Add suggestion prompts for renters */}
+                  {userType === 'renter' && (
+                    <div className="mt-6 space-y-2">
+                      <p className="text-sm font-medium text-gray-700 mb-3">Try asking:</p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          "Find apartments with big windows",
+                          "Show me modern minimalist places",
+                          "Properties with good natural light",
+                          "Apartments near District 1",
+                          "Cozy places under 15M VND",
+                          "Pet-friendly apartments",
+                          "Places with balcony views",
+                          "Family-friendly neighborhoods"
+                        ].map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setInputMessage(suggestion)}
+                            className="px-3 py-1 text-xs bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-full border border-blue-200 hover:from-blue-100 hover:to-purple-100 hover:border-blue-300 transition-all duration-200"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               

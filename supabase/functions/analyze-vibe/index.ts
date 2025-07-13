@@ -54,19 +54,36 @@ serve(async (req) => {
           }),
         });
 
-        const data = await response.json();
+        console.log(`Making OpenAI request for image ${index}`);
         
-        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-          console.error('Invalid OpenAI response:', data);
-          throw new Error('Invalid response from OpenAI');
+        if (!response.ok) {
+          console.error(`OpenAI API error: ${response.status} - ${response.statusText}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`OpenAI API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(`OpenAI response for image ${index}:`, JSON.stringify(data, null, 2));
+        
+        if (!data || !data.choices || data.choices.length === 0) {
+          console.error('No choices in OpenAI response:', data);
+          throw new Error('No choices returned from OpenAI');
+        }
+
+        if (!data.choices[0] || !data.choices[0].message) {
+          console.error('No message in OpenAI choice:', data.choices[0]);
+          throw new Error('No message in OpenAI response');
         }
         
         const content = data.choices[0].message.content || '{}';
+        console.log(`Content from OpenAI for image ${index}:`, content);
         
         try {
           // Try to extract JSON from the response
           const jsonMatch = content.match(/\{[\s\S]*\}/);
           const jsonStr = jsonMatch ? jsonMatch[0] : content;
+          console.log(`Extracted JSON string for image ${index}:`, jsonStr);
           const parsed = JSON.parse(jsonStr);
           
           return {
@@ -74,7 +91,9 @@ serve(async (req) => {
             image_index: index,
             raw_analysis: content
           };
-        } catch {
+        } catch (parseError) {
+          console.error(`JSON parsing failed for image ${index}:`, parseError);
+          console.error('Content that failed to parse:', content);
           // Fallback if JSON parsing fails
           return {
             modern: 5,
@@ -183,22 +202,40 @@ Return JSON format:
         }),
       });
 
-      const contentData = await contentResponse.json();
+      console.log('Making content generation request to OpenAI');
       
-      if (!contentData.choices || !contentData.choices[0] || !contentData.choices[0].message) {
-        console.error('Invalid OpenAI response for content generation:', contentData);
-        throw new Error('Invalid response from OpenAI for content generation');
+      if (!contentResponse.ok) {
+        console.error(`Content generation API error: ${contentResponse.status} - ${contentResponse.statusText}`);
+        const errorText = await contentResponse.text();
+        console.error('Content generation error response:', errorText);
+        throw new Error(`Content generation API error: ${contentResponse.status}`);
+      }
+
+      const contentData = await contentResponse.json();
+      console.log('Content generation response:', JSON.stringify(contentData, null, 2));
+      
+      if (!contentData || !contentData.choices || contentData.choices.length === 0) {
+        console.error('No choices in content generation response:', contentData);
+        throw new Error('No choices in content generation response');
+      }
+
+      if (!contentData.choices[0] || !contentData.choices[0].message) {
+        console.error('No message in content generation choice:', contentData.choices[0]);
+        throw new Error('No message in content generation response');
       }
       
       const contentText = contentData.choices[0].message.content || '{}';
+      console.log('Generated content text:', contentText);
       
       try {
         const jsonMatch = contentText.match(/\{[\s\S]*\}/);
         const jsonStr = jsonMatch ? jsonMatch[0] : contentText;
+        console.log('Extracted content JSON string:', jsonStr);
         const generatedContent = JSON.parse(jsonStr);
         aggregated.generated_content = generatedContent;
       } catch (error) {
         console.error('Error parsing generated content:', error);
+        console.error('Content that failed to parse:', contentText);
         // Improved fallback with property context
         const locationName = propertyInfo?.location?.split(',')[0] || 'Prime Location';
         const sizeText = propertyInfo?.size ? `${propertyInfo.size}m²` : 'Spacious';
