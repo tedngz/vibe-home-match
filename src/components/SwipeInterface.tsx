@@ -331,9 +331,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               </Badge>
             </div>
 
-            <div className="mb-4">
-              <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
-            </div>
 
             <div className="mb-4">
               <div className={`text-gray-700 text-sm leading-relaxed ${

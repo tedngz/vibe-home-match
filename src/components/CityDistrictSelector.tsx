@@ -111,7 +111,6 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <MapPin className="w-4 h-4 text-orange-600" />
                       <span className="font-medium text-slate-900">{district.name}</span>
                       {isSelected && (
                         <Badge className="bg-orange-500 text-white text-xs">Selected</Badge>

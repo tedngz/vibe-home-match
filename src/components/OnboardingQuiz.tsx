@@ -119,31 +119,31 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           id: 'cozy', 
           label: 'Cozy', 
           description: 'Warm hugs everywhere',
-          image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'industrial', 
           label: 'Industrial', 
           description: 'Raw, urban edge',
-          image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1513977055-dc37db53e645?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'bohemian', 
           label: 'Bohemian', 
           description: 'Artistic, free spirit',
-          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'scandinavian', 
           label: 'Scandinavian', 
           description: 'Light, airy perfection',
-          image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'minimalist', 
           label: 'Minimalist', 
           description: 'Less is more magic',
-          image: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1560185127-6a8a24b43cdc?w=400&h=300&fit=crop&auto=format'
         }
       ]
     },
@@ -177,14 +177,14 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
       ]
     },
     {
-      title: "Let's talk numbers! 💰 What's your comfort zone?",
+      title: "Let's talk numbers! What's your comfort zone?",
       subtitle: "No judgment here - everyone has a budget! Let's find something amazing within yours. What range feels right?",
       type: "budget" as const,
       key: "priceRange" as keyof UserPreferences,
       icon: DollarSign
     },
     {
-      title: "Space to breathe! 📏 How much room do you need?",
+      title: "Space to breathe! How much room do you need?",
       subtitle: "Some love cozy spaces, others need room to spread out. What feels like 'just right' for your lifestyle?",
       type: "single-select" as const,
       key: "size" as keyof UserPreferences,
@@ -197,14 +197,14 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
       ]
     },
     {
-      title: "Location, location! 📍 Where do you want to call home?",
-      subtitle: "Jakarta has so many amazing neighborhoods! Which areas are calling your name? Pick as many as you'd like to explore.",
+      title: "Where do you want to call home?",
+      subtitle: "Vietnam has so many amazing neighborhoods! Which areas are calling your name? Pick as many as you'd like to explore.",
       type: "location" as const,
       key: "location" as keyof UserPreferences,
       icon: MapPin
     },
     {
-      title: "Almost done! ⏰ When are you ready to make the move?",
+      title: "Almost done! When are you ready to make the move?",
       subtitle: "This helps me prioritize the perfect matches for you. Don't stress - we can always adjust as things change!",
       type: "single-select" as const,
       key: "moveInDate" as keyof UserPreferences,
