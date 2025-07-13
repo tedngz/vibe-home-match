@@ -238,11 +238,12 @@ serve(async (req) => {
       
       try {
       const propertyContext = propertyInfo ? `
-Property Context:
+Property Details:
 - Location: ${propertyInfo.location}
 - Size: ${propertyInfo.size}m²
-- Price: ${propertyInfo.currency === 'VND' ? `${propertyInfo.price.toLocaleString()} VND` : `$${propertyInfo.price}`}/month
+- Monthly Rent: ${propertyInfo.currency === 'VND' ? `${propertyInfo.price.toLocaleString()} VND` : `$${propertyInfo.price}`}
 - Currency: ${propertyInfo.currency}
+- Target Market: ${propertyInfo.price > 20000000 ? 'Luxury' : propertyInfo.price > 10000000 ? 'Mid-range' : 'Affordable'}
 ` : '';
 
       const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {

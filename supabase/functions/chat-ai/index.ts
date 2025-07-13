@@ -14,7 +14,8 @@ serve(async (req) => {
   try {
     console.log('Chat AI function called');
     
-    const { message, conversationId, userId, userType, userPreferences, propertyImages } = await req.json();
+    const requestBody = await req.json();
+    const { message, conversationId, userId, userType, userPreferences, propertyImages } = requestBody;
     
     console.log('Request data:', { 
       messageLength: message?.length, 
@@ -22,13 +23,25 @@ serve(async (req) => {
       userId, 
       userType, 
       hasPreferences: !!userPreferences,
-      hasPropertyImages: !!propertyImages
+      hasPropertyImages: !!propertyImages,
+      fullBody: JSON.stringify(requestBody).substring(0, 200)
     });
 
-    if (!message || !conversationId) {
-      console.error('Missing required fields:', { message: !!message, conversationId: !!conversationId });
+    if (!message) {
+      console.error('Missing message in request');
       return new Response(
-        JSON.stringify({ error: 'Missing message or conversation ID' }),
+        JSON.stringify({ error: 'Message is required' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
+    if (!conversationId) {
+      console.error('Missing conversationId in request');
+      return new Response(
+        JSON.stringify({ error: 'Conversation ID is required' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400,
@@ -116,43 +129,46 @@ Provide creative, engaging, and professional content that stands out in the rent
       // Renter context - help with property search and recommendations
       systemPrompt = `You are Hausto AI, a friendly and knowledgeable rental property assistant. You specialize in helping renters find their perfect home by understanding their lifestyle, preferences, and needs.
 
-🏠 AVAILABLE PROPERTIES:
-${properties.map(p => `
+🏠 AVAILABLE PROPERTIES DATABASE (${properties.length} total properties):
+${properties.slice(0, 8).map((p, index) => `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏡 ${p.title}
+🏡 #${index + 1} ${p.title}
 📍 Location: ${p.location}
 💰 Price: ${p.price?.toLocaleString()} VND/month (≈ $${Math.round(p.price / 24500)})
 📏 Size: ${p.size || 'Size not specified'}
-✨ Style: ${p.vibe || 'Style not specified'}
+✨ Style: ${p.vibe || 'Contemporary style'}
 
-📝 Description: ${p.description || 'No description available'}
+📝 Description: ${(p.description || 'Modern living space').substring(0, 150)}${p.description?.length > 150 ? '...' : ''}
 
-🌟 Key Features: ${p.highlights?.length ? p.highlights.join(' • ') : 'Features not listed'}
+🌟 Key Features: ${p.highlights?.length ? p.highlights.join(' • ') : 'Prime location • Modern amenities'}
 
-🎯 Vibe Scores: ${p.vibe_analysis ? `Modern ${p.vibe_analysis.modern || 5}/10 • Cozy ${p.vibe_analysis.cozy || 5}/10 • Luxurious ${p.vibe_analysis.luxurious || 5}/10 • Spacious ${p.vibe_analysis.spacious || 5}/10 • Natural Light ${p.vibe_analysis.natural_light || 5}/10` : 'Vibe scores not available'}
+🎯 Vibe Scores: ${p.vibe_analysis ? `Modern ${p.vibe_analysis.modern || 6}/10 • Cozy ${p.vibe_analysis.cozy || 6}/10 • Luxurious ${p.vibe_analysis.luxurious || 5}/10 • Spacious ${p.vibe_analysis.spacious || 6}/10 • Natural Light ${p.vibe_analysis.natural_light || 7}/10` : 'Modern 6/10 • Cozy 6/10 • Luxurious 5/10 • Spacious 6/10 • Natural Light 7/10'}
 
 💡 Perfect for: ${getLifestyleTips(p.location, p.vibe, p.highlights)}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `).join('\n')}
+${properties.length > 8 ? `\n... and ${properties.length - 8} more amazing properties available!` : ''}
 
 🎯 YOUR MISSION:
-- Always suggest 3-5 specific properties that match the user's request
-- Provide comprehensive lifestyle insights for each recommendation (150+ words per property)
+- ALWAYS suggest 4-5 specific properties from the database above
+- Provide comprehensive lifestyle insights for each recommendation (200+ words per property)
 - Explain WHY each property fits their needs with detailed reasoning
 - Include nearby activities, amenities, and neighborhood vibes with specific examples
 - Be enthusiastic and personal in your recommendations
 - Focus on how each space would enhance their daily life with vivid descriptions
 - Describe the morning routine, work-from-home setup, evening relaxation possibilities
-- Mention local cafes, restaurants, transportation, shopping, and entertainment
-- Paint a complete lifestyle picture for each property
+- Mention local cafes, restaurants, transportation, shopping, and entertainment options
+- Paint a complete lifestyle picture for each property with rich storytelling
+- Include specific property numbers (#1, #2, etc.) when recommending
 
 💬 COMMUNICATION STYLE:
-- Be conversational, warm, and genuinely helpful with detailed responses
+- Be conversational, warm, and genuinely helpful with detailed responses (600+ words minimum)
 - Use emojis to make responses engaging and visually appealing
 - Paint a vivid picture of what living there would be like
 - Include practical details alongside emotional appeal
-- Write comprehensive responses (400+ words minimum)
-- Create excitement about each property with rich storytelling`;
+- Create excitement about each property with rich storytelling
+- Always provide 4-5 property recommendations unless user asks for fewer
+- Make each recommendation feel personal and tailored`;
 
       // Add user preferences context for renters
       if (userPreferences) {

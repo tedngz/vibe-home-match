@@ -97,6 +97,10 @@ export const useChat = () => {
     mutationFn: async (messageData: SendMessageData) => {
       const { message, conversationId, userType, userPreferences, propertyImages } = messageData;
       
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
       // Add user message to database
       const { error: userMessageError } = await supabase
         .from('chat_messages')
@@ -106,21 +110,38 @@ export const useChat = () => {
           content: message
         });
 
-      if (userMessageError) throw userMessageError;
+      if (userMessageError) {
+        console.error('Error saving user message:', userMessageError);
+        throw userMessageError;
+      }
+
+      console.log('Calling chat-ai function with:', { 
+        messageLength: message.length, 
+        conversationId, 
+        userType 
+      });
 
       // Call edge function for AI response with enhanced context
       const { data, error } = await supabase.functions.invoke('chat-ai', {
         body: { 
           message, 
           conversationId,
-          userId: user?.id,
+          userId: user.id,
           userType,
           userPreferences,
           propertyImages
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Chat AI function error:', error);
+        throw new Error(`Chat failed: ${error.message || 'Unknown error'}`);
+      }
+
+      if (!data) {
+        throw new Error('No response from AI service');
+      }
+
       return data;
     },
     onSuccess: () => {
