@@ -44,7 +44,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
 
   return (
     <div className="space-y-2">
-      <Badge className={`bg-primary text-primary-foreground ${sizeClasses[size]} font-semibold flex items-center gap-1`}>
+      <Badge className={`bg-gradient-to-r from-primary to-secondary text-white ${sizeClasses[size]} font-semibold flex items-center gap-1 shadow-lg ring-2 ring-primary/20`}>
         <Sparkles className={size === 'sm' ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
         Vibe Score: {roundedScore.overall}%
       </Badge>
@@ -54,31 +54,31 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
           <div className="grid grid-cols-2 gap-3">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Style Match</span>
+                <span className="text-gray-600 font-medium">Style</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.style}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.style} className="h-1.5 [&>div]:bg-primary" />
+              <Progress value={roundedScore.breakdown.style} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Color Match</span>
+                <span className="text-gray-600 font-medium">Color</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.color}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.color} className="h-1.5 [&>div]:bg-primary" />
+              <Progress value={roundedScore.breakdown.color} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Activity Match</span>
+                <span className="text-gray-600 font-medium">Activity</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.activities}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.activities} className="h-1.5 [&>div]:bg-primary" />
+              <Progress value={roundedScore.breakdown.activities} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Budget Match</span>
+                <span className="text-gray-600 font-medium">Budget</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.price}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.price} className="h-1.5 [&>div]:bg-primary" />
+              <Progress value={roundedScore.breakdown.price} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
             </div>
           </div>
         </div>

@@ -122,10 +122,17 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                 </div>
                 
                 <div className="p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
                     {vibeScore && <VibeScore score={vibeScore} size="sm" />}
                   </div>
+                  
+                  {/* Score breakdown */}
+                  {vibeScore && (
+                    <div className="mb-3">
+                      <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
+                    </div>
+                  )}
                   <div className="flex items-center text-gray-600 text-sm mb-3">
                     <MapPin className="w-3 h-3 mr-1" />
                     {apartment.location}
@@ -139,12 +146,6 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
                     </Badge>
                   </div>
 
-                  {/* Enhanced Vibe Score Breakdown */}
-                  {vibeScore && (
-                    <div className="mb-4">
-                      <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
-                    </div>
-                  )}
 
                   <div className="mb-4">
                     <div className={`text-gray-700 text-sm leading-relaxed ${

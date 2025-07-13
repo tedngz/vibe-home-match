@@ -314,9 +314,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
           </div>
 
           <div className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
+            <div className="flex items-start justify-between mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
               <VibeScore score={vibeScore} size="sm" />
+            </div>
+            
+            {/* Score breakdown */}
+            <div className="mb-3">
+              <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
             </div>
             <div className="flex items-center text-gray-600 text-sm mb-3">
               <MapPin className="w-3 h-3 mr-1" />

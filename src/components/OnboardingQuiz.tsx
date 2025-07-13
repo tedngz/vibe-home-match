@@ -119,19 +119,19 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           id: 'cozy', 
           label: 'Cozy', 
           description: 'Warm hugs everywhere',
-          image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'industrial', 
           label: 'Industrial', 
           description: 'Raw, urban edge',
-          image: 'https://images.unsplash.com/photo-1513977055-dc37db53e645?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'bohemian', 
           label: 'Bohemian', 
           description: 'Artistic, free spirit',
-          image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=300&fit=crop&auto=format'
         },
         { 
           id: 'scandinavian', 
@@ -143,7 +143,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           id: 'minimalist', 
           label: 'Minimalist', 
           description: 'Less is more magic',
-          image: 'https://images.unsplash.com/photo-1560185127-6a8a24b43cdc?w=400&h=300&fit=crop&auto=format'
+          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
         }
       ]
     },
@@ -370,11 +370,6 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
 
               {currentStepData.type === "budget" && (
                 <div className="w-full max-w-lg mx-auto space-y-8">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <DollarSign className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
                   <BudgetRangeSelector
                     value={preferences.priceRange as [number, number]}
                     onChange={handleBudgetChange}
@@ -384,11 +379,6 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
 
               {currentStepData.type === "location" && (
                 <div className="w-full max-w-4xl mx-auto space-y-8">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <MapPin className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
                   <CityDistrictSelector
                     value={preferences.location as string[]}
                     onChange={handleLocationChange}
