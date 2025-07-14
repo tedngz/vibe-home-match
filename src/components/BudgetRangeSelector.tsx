@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { CurrencySelector } from '@/components/CurrencySelector';
+import { Switch } from '@/components/ui/switch';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface BudgetRangeSelectorProps {
@@ -12,7 +12,7 @@ interface BudgetRangeSelectorProps {
 }
 
 export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProps) => {
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency, setCurrency } = useCurrency();
   const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const PRESET_RANGES = [
@@ -38,9 +38,19 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
 
   return (
     <div className="space-y-6 max-w-md mx-auto">
-      {/* Currency Selector */}
-      <div className="text-center">
-        <CurrencySelector />
+      {/* Currency Switch */}
+      <div className="flex items-center justify-center space-x-3">
+        <span className={`text-sm font-medium ${currency === 'VND' ? 'text-primary' : 'text-muted-foreground'}`}>
+          ₫ VND
+        </span>
+        <Switch
+          checked={currency === 'USD'}
+          onCheckedChange={(checked) => setCurrency(checked ? 'USD' : 'VND')}
+          className="data-[state=checked]:bg-primary"
+        />
+        <span className={`text-sm font-medium ${currency === 'USD' ? 'text-primary' : 'text-muted-foreground'}`}>
+          $ USD
+        </span>
       </div>
 
       {/* Quick Presets */}

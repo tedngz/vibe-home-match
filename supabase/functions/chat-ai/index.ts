@@ -15,12 +15,11 @@ serve(async (req) => {
     console.log('Chat AI function called');
     
     const requestBody = await req.json();
-    const { message, conversationId, userId, userType, userPreferences, propertyImages } = requestBody;
+    const { message, conversationId, userType, userPreferences, propertyImages } = requestBody;
     
     console.log('Request data:', { 
       messageLength: message?.length, 
       conversationId, 
-      userId, 
       userType, 
       hasPreferences: !!userPreferences,
       hasPropertyImages: !!propertyImages,

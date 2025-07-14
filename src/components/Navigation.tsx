@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, MessageSquare } from 'lucide-react';
-import { CurrencySelector } from '@/components/CurrencySelector';
+import { CurrencyDropdown } from '@/components/CurrencyDropdown';
 import { UserMenu } from '@/components/UserMenu';
 
 interface NavigationProps {
@@ -32,7 +32,7 @@ export const Navigation = ({
             <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               Hausto
             </h1>
-            <CurrencySelector />
+            <CurrencyDropdown />
           </div>
           
           <div className="flex items-center space-x-2">

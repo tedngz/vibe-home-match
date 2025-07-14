@@ -225,9 +225,9 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
       <div className="w-full max-w-4xl">
         <Card className="bg-card shadow-xl rounded-3xl border-0 overflow-hidden">
           {/* Minimal Header */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-8 text-white">
+          <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 p-8 text-white">
             <div className={`text-center transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+              <div className="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm ring-2 ring-white/30">
                 {currentStepData.icon && (
                   <currentStepData.icon className="w-8 h-8 text-white" />
                 )}
@@ -263,7 +263,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                             key={option.id}
                             onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                             className={`relative group cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                              isSelected ? 'ring-4 ring-primary ring-offset-2' : ''
+                              isSelected ? 'ring-4 ring-violet-500 ring-offset-2' : ''
                             }`}
                           >
                             <div className="aspect-[4/3] relative">
@@ -273,12 +273,12 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                                 className="w-full h-full object-cover"
                               />
                               <div className={`absolute inset-0 transition-all duration-300 ${
-                                isSelected ? 'bg-primary/20' : 'bg-black/20 group-hover:bg-black/10'
+                                isSelected ? 'bg-violet-500/20' : 'bg-black/20 group-hover:bg-black/10'
                               }`}></div>
                               {isSelected && (
                                 <div className="absolute top-3 right-3">
-                                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                                    <span className="text-primary-foreground text-sm font-bold">✓</span>
+                                  <div className="w-8 h-8 bg-violet-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <span className="text-white text-sm font-bold">✓</span>
                                   </div>
                                 </div>
                               )}
@@ -301,8 +301,8 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                             onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                             className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
                               isSelected 
-                                ? 'bg-primary/10 border-primary shadow-lg' 
-                                : 'bg-white border-gray-200 hover:border-primary/50 hover:shadow-md'
+                                ? 'bg-violet-50 border-violet-500 shadow-lg' 
+                                : 'bg-white border-gray-200 hover:border-violet-300 hover:shadow-md'
                             }`}
                             style={{ animationDelay: `${index * 100}ms` }}
                           >
@@ -310,12 +310,12 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                               {option.emoji}
                             </div>
                             <h3 className={`font-bold text-lg mb-2 transition-colors ${
-                              isSelected ? 'text-primary' : 'text-gray-800'
+                              isSelected ? 'text-violet-600' : 'text-gray-800'
                             }`}>
                               {option.label}
                             </h3>
                             <p className={`text-sm transition-colors ${
-                              isSelected ? 'text-primary/80' : 'text-gray-600'
+                              isSelected ? 'text-violet-500' : 'text-gray-600'
                             }`}>
                               {option.description}
                             </p>
@@ -337,8 +337,8 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                         onClick={() => handleSingleSelect(option.id, currentStepData.key)}
                         className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
                           isSelected 
-                            ? 'bg-primary/10 border-primary shadow-lg' 
-                            : 'bg-white border-gray-200 hover:border-primary/50 hover:shadow-md'
+                            ? 'bg-violet-50 border-violet-500 shadow-lg' 
+                            : 'bg-white border-gray-200 hover:border-violet-300 hover:shadow-md'
                         }`}
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
@@ -346,19 +346,19 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                           {option.emoji}
                         </div>
                         <h3 className={`font-bold text-lg mb-2 transition-colors ${
-                          isSelected ? 'text-primary' : 'text-gray-800'
+                          isSelected ? 'text-violet-600' : 'text-gray-800'
                         }`}>
                           {option.label}
                         </h3>
                         <p className={`text-sm transition-colors ${
-                          isSelected ? 'text-primary/80' : 'text-gray-600'
+                          isSelected ? 'text-violet-500' : 'text-gray-600'
                         }`}>
                           {option.description}
                         </p>
                         {isSelected && (
                           <div className="absolute top-3 right-3">
-                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                              <span className="text-primary-foreground text-xs font-bold">✓</span>
+                            <div className="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center shadow-lg">
+                              <span className="text-white text-xs font-bold">✓</span>
                             </div>
                           </div>
                         )}
@@ -401,14 +401,14 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={handleNext} 
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all duration-200 text-white font-medium"
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
                   Continue
                 </Button>
               ) : (
                 <Button 
                   onClick={handleSubmit}
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-lg transition-all duration-200 text-white font-medium"
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
                   Get Started
                 </Button>
