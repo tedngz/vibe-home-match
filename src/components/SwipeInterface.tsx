@@ -319,10 +319,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               <VibeScore score={vibeScore} size="sm" />
             </div>
             
-            {/* Score breakdown */}
-            <div className="mb-3">
-              <VibeScore score={vibeScore} showBreakdown={true} size="sm" />
-            </div>
             <div className="flex items-center text-gray-600 text-sm mb-3">
               <MapPin className="w-3 h-3 mr-1" />
               {currentApartment.location}

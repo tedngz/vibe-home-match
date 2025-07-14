@@ -241,12 +241,12 @@ Current user message: ${message}`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-mini-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: fullContext },
           { role: 'user', content: message }
         ],
-        max_tokens: 4000,
+        max_tokens: 2000,
         temperature: 0.7,
       }),
     });

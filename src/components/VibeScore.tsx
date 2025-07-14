@@ -12,9 +12,9 @@ interface VibeScoreProps {
 
 export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeScoreProps) => {
   const getScoreColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return 'bg-emerald-500/90 text-white border-emerald-400';
-    if (scoreValue >= 60) return 'bg-amber-500/90 text-white border-amber-400';
-    return 'bg-red-500/90 text-white border-red-400';
+    if (scoreValue >= 80) return 'bg-green-500 text-white border-green-400';
+    if (scoreValue >= 60) return 'bg-yellow-500 text-white border-yellow-400';
+    return 'bg-red-500 text-white border-red-400';
   };
 
   const getScoreEmoji = (scoreValue: number) => {
@@ -44,7 +44,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
 
   return (
     <div className="space-y-2">
-      <Badge className={`bg-gradient-to-r from-primary to-secondary text-white ${sizeClasses[size]} font-semibold flex items-center gap-1 shadow-lg ring-2 ring-primary/20`}>
+      <Badge className={`${getScoreColor(roundedScore.overall)} ${sizeClasses[size]} font-semibold flex items-center gap-1 shadow-lg border`}>
         <Sparkles className={size === 'sm' ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
         Vibe Score: {roundedScore.overall}%
       </Badge>
@@ -57,28 +57,28 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
                 <span className="text-gray-600 font-medium">Style</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.style}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.style} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
+              <Progress value={roundedScore.breakdown.style} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.style).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.style).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-gray-600 font-medium">Color</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.color}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.color} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
+              <Progress value={roundedScore.breakdown.color} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.color).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.color).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-gray-600 font-medium">Activity</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.activities}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.activities} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
+              <Progress value={roundedScore.breakdown.activities} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.activities).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.activities).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
                 <span className="text-gray-600 font-medium">Budget</span>
                 <span className="font-semibold text-primary">{roundedScore.breakdown.price}%</span>
               </div>
-              <Progress value={roundedScore.breakdown.price} className="h-1.5 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-secondary" />
+              <Progress value={roundedScore.breakdown.price} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.price).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.price).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
             </div>
           </div>
         </div>
