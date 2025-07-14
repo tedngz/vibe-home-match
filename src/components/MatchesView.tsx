@@ -9,18 +9,19 @@ import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { UserProfile } from '@/components/LoginModal';
+import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface MatchesViewProps {
-  matches: Apartment[];
   userPreferences?: UserPreferences;
   userProfile?: UserProfile;
 }
 
-export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesViewProps) => {
+export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) => {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
+  const { renterMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
 
   const nextImage = (apartmentId: string, totalImages: number) => {
@@ -46,7 +47,43 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
     }));
   };
 
-  if (matches.length === 0) {
+  // Transform PropertyMatch to Apartment
+  const transformMatchToApartment = (match: any): Apartment => {
+    const property = match.properties;
+    return {
+      id: property.id,
+      images: property.images || [],
+      title: property.title,
+      location: property.location,
+      price: Number(property.price),
+      size: property.size || '',
+      vibe: property.vibe || '',
+      description: property.description || '',
+      highlights: property.highlights || [],
+      realtor: {
+        id: property.realtor_id,
+        name: 'Licensed Realtor',
+        phone: '+1-234-567-8900',
+        email: 'contact@realtor.com'
+      }
+    };
+  };
+
+  const apartments = renterMatches.map(transformMatchToApartment);
+
+  if (isLoadingMatches) {
+    return (
+      <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
+        <Card className="p-8 text-center bg-white/70 backdrop-blur-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <h3 className="text-xl font-semibold mb-2">Loading your matches</h3>
+          <p className="text-gray-600">Finding your perfect properties...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (apartments.length === 0) {
     return (
       <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
         <Card className="p-8 text-center bg-white/70 backdrop-blur-md">
@@ -65,11 +102,11 @@ export const MatchesView = ({ matches, userPreferences, userProfile }: MatchesVi
           <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
             Your Matches
           </h2>
-          <p className="text-gray-600 mt-1">{matches.length} perfect vibe{matches.length !== 1 ? 's' : ''} found!</p>
+          <p className="text-gray-600 mt-1">{apartments.length} perfect vibe{apartments.length !== 1 ? 's' : ''} found!</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {matches.map((apartment) => {
+          {apartments.map((apartment) => {
             const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
             const currentImageIndex = imageIndices[apartment.id] || 0;
             const isExpanded = expandedDescriptions[apartment.id] || false;

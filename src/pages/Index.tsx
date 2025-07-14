@@ -247,7 +247,6 @@ const Index = () => {
         
         {userType === 'renter' && currentView === 'matches' && (
           <MatchesView 
-            matches={matches} 
             userPreferences={userPreferences}
             userProfile={{ name: user.user_metadata?.name || '', email: user.email || '', phone: user.user_metadata?.phone || '' }}
           />
@@ -255,7 +254,6 @@ const Index = () => {
 
         {userType === 'realtor' && currentView === 'dashboard' && (
           <RealtorDashboard 
-            matches={realtorMatches}
             onSwitchUserType={switchUserType}
           />
         )}

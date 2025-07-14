@@ -9,6 +9,7 @@ import { useProperties, Property } from '@/hooks/useProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -118,10 +119,27 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     }
   }, [userPreferences, realProperties]);
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (apartments.length === 0) return;
     const currentApartment = apartments[currentApartmentIndex];
     setLikedApartmentIds(prev => [...prev, currentApartment.id]);
+    
+    // Save match to database
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id) {
+        await supabase
+          .from('property_matches')
+          .insert({
+            renter_id: userData.user.id,
+            property_id: currentApartment.id,
+            realtor_id: currentApartment.realtor.id
+          });
+      }
+    } catch (error) {
+      console.error('Error saving match:', error);
+    }
+    
     onMatch(currentApartment);
     nextApartment();
   };

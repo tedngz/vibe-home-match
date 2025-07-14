@@ -148,6 +148,41 @@ export type Database = {
         }
         Relationships: []
       }
+      property_matches: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          realtor_id: string
+          renter_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          realtor_id: string
+          renter_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          realtor_id?: string
+          renter_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_matches_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
