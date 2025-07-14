@@ -35,12 +35,12 @@ export const Navigation = ({
           </div>
           
           <div className="flex items-center justify-center flex-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <Button
                 variant={currentView === 'swipe' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('swipe')}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+                className={currentView === 'swipe' ? 'bg-primary text-primary-foreground' : ''}
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Discover
@@ -55,7 +55,7 @@ export const Navigation = ({
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Matches
                 {matchCount > 0 && (
-                  <Badge className="ml-2 bg-orange-500 text-white text-xs h-5 min-w-5 flex items-center justify-center rounded-full">
+                  <Badge className="ml-1 bg-primary text-primary-foreground text-xs h-5 min-w-5 flex items-center justify-center rounded-full">
                     {matchCount}
                   </Badge>
                 )}

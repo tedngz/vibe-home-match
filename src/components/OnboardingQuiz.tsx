@@ -227,7 +227,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           {/* Clean Header */}
           <div className="p-8 text-center">
             <div className={`transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 {currentStepData.icon && (
                   <currentStepData.icon className="w-8 h-8 text-white" />
                 )}
@@ -242,7 +242,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                 <div 
                   key={index}
                   className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                    index <= currentStep ? 'bg-violet-500 scale-110' : 'bg-gray-300'
+                    index <= currentStep ? 'bg-orange-500 scale-110' : 'bg-gray-300'
                   }`}
                 />
               ))}
@@ -263,7 +263,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                             key={option.id}
                             onClick={() => handleMultiSelect(option.id, currentStepData.key)}
                             className={`relative group cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                              isSelected ? 'ring-4 ring-violet-500 ring-offset-2' : ''
+                              isSelected ? 'ring-4 ring-orange-500 ring-offset-2' : ''
                             }`}
                           >
                             <div className="aspect-[4/3] relative">
@@ -273,11 +273,11 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                                 className="w-full h-full object-cover"
                               />
                               <div className={`absolute inset-0 transition-all duration-300 ${
-                                isSelected ? 'bg-violet-500/20' : 'bg-black/20 group-hover:bg-black/10'
+                                isSelected ? 'bg-orange-500/20' : 'bg-black/20 group-hover:bg-black/10'
                               }`}></div>
                               {isSelected && (
                                 <div className="absolute top-3 right-3">
-                                  <div className="w-8 h-8 bg-violet-500 rounded-full flex items-center justify-center shadow-lg">
+                                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
                                     <span className="text-white text-sm font-bold">✓</span>
                                   </div>
                                 </div>
@@ -292,17 +292,17 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                       })}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
                       {currentStepData.options?.map((option, index) => {
                         const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
                         return (
                           <div
                             key={option.id}
                             onClick={() => handleMultiSelect(option.id, currentStepData.key)}
-                            className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
+                            className={`group cursor-pointer rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
                               isSelected 
-                                ? 'bg-violet-50 border-violet-500 shadow-lg' 
-                                : 'bg-white border-gray-200 hover:border-violet-300 hover:shadow-md'
+                                ? 'bg-orange-50 border-orange-500 shadow-lg' 
+                                : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
                             }`}
                             style={{ animationDelay: `${index * 100}ms` }}
                           >
@@ -310,12 +310,12 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                               {option.emoji}
                             </div>
                             <h3 className={`font-bold text-lg mb-2 transition-colors ${
-                              isSelected ? 'text-violet-600' : 'text-gray-800'
+                              isSelected ? 'text-orange-600' : 'text-gray-800'
                             }`}>
                               {option.label}
                             </h3>
                             <p className={`text-sm transition-colors ${
-                              isSelected ? 'text-violet-500' : 'text-gray-600'
+                              isSelected ? 'text-orange-500' : 'text-gray-600'
                             }`}>
                               {option.description}
                             </p>
@@ -328,17 +328,17 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               )}
 
               {currentStepData.type === "single-select" && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
                   {currentStepData.options?.map((option, index) => {
                     const isSelected = preferences[currentStepData.key] === option.id;
                     return (
                       <div
                         key={option.id}
                         onClick={() => handleSingleSelect(option.id, currentStepData.key)}
-                        className={`group cursor-pointer rounded-2xl p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
+                        className={`group cursor-pointer rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:scale-105 border-2 ${
                           isSelected 
-                            ? 'bg-violet-50 border-violet-500 shadow-lg' 
-                            : 'bg-white border-gray-200 hover:border-violet-300 hover:shadow-md'
+                            ? 'bg-orange-50 border-orange-500 shadow-lg' 
+                            : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
                         }`}
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
@@ -346,18 +346,18 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                           {option.emoji}
                         </div>
                         <h3 className={`font-bold text-lg mb-2 transition-colors ${
-                          isSelected ? 'text-violet-600' : 'text-gray-800'
+                          isSelected ? 'text-orange-600' : 'text-gray-800'
                         }`}>
                           {option.label}
                         </h3>
                         <p className={`text-sm transition-colors ${
-                          isSelected ? 'text-violet-500' : 'text-gray-600'
+                          isSelected ? 'text-orange-500' : 'text-gray-600'
                         }`}>
                           {option.description}
                         </p>
                         {isSelected && (
                           <div className="absolute top-3 right-3">
-                            <div className="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
                               <span className="text-white text-xs font-bold">✓</span>
                             </div>
                           </div>
@@ -401,14 +401,14 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               {currentStep < totalSteps - 1 ? (
                 <Button 
                   onClick={handleNext} 
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:shadow-lg transition-all duration-200 text-white font-medium"
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
                   Continue
                 </Button>
               ) : (
                 <Button 
                   onClick={handleSubmit}
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:shadow-lg transition-all duration-200 text-white font-medium"
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:shadow-lg transition-all duration-200 text-white font-medium"
                 >
                   Get Started
                 </Button>

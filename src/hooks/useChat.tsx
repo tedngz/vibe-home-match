@@ -129,6 +129,9 @@ export const useChat = () => {
           userType,
           userPreferences,
           propertyImages
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
 
