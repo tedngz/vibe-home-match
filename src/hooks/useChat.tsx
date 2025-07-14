@@ -128,7 +128,7 @@ export const useChat = () => {
           conversationId,
           userType,
           userPreferences,
-          propertyImages
+          propertyImages: Array.isArray(propertyImages) ? propertyImages : []
         },
         headers: {
           'Content-Type': 'application/json'
