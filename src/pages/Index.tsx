@@ -90,6 +90,16 @@ const Index = () => {
   }, [user]);
 
   useEffect(() => {
+    // Listen for AI chat opening event from SwipeInterface
+    const handleOpenAIChat = () => {
+      setIsAIChatOpen(true);
+    };
+
+    window.addEventListener('openAIChat', handleOpenAIChat);
+    return () => window.removeEventListener('openAIChat', handleOpenAIChat);
+  }, []);
+
+  useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
@@ -104,15 +114,15 @@ const Index = () => {
     if (type === 'realtor') {
       setCurrentView('dashboard');
     } else {
-      // Check if user has saved preferences
+      // Check if user has saved preferences - auto skip quiz if completed before
       if (user) {
         const savedPreferences = localStorage.getItem(`userPreferences_${user.id}`);
         if (savedPreferences) {
           try {
-            const preferences = JSON.parse(savedPreferences);
-            setUserPreferences(preferences);
+            setUserPreferences(JSON.parse(savedPreferences));
             setCurrentView('swipe');
           } catch (error) {
+            console.error('Error parsing saved preferences:', error);
             setCurrentView('onboarding');
           }
         } else {

@@ -55,14 +55,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     
     const filteredApartments = allProperties.filter(apartment => {
       const locationMatch = userPreferences.location.some(loc => 
-        apartment.location.toLowerCase().includes(loc.toLowerCase())
+        apartment.location.toLowerCase().includes(loc.toLowerCase().split(',')[0])
       );
       
       const vibeScore = calculateVibeScore(apartment, userPreferences);
-      const hasGoodVibeMatch = vibeScore.overall > 35;
+      const hasGoodVibeMatch = vibeScore.overall > 20; // Lowered threshold to show more properties
       
       const [minPrice, maxPrice] = userPreferences.priceRange;
-      const priceInRange = apartment.price <= maxPrice * 1.3;
+      const priceInRange = apartment.price <= maxPrice * 1.5; // Increased price flexibility
       
       return locationMatch && hasGoodVibeMatch && priceInRange;
     })
@@ -258,7 +258,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               variant="outline"
               className="w-full border-orange-300 text-orange-600 hover:bg-orange-50"
               onClick={() => {
-                console.log('Opening Hausto AI chat');
+                // Trigger AI chat opening
+                window.dispatchEvent(new CustomEvent('openAIChat'));
               }}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
