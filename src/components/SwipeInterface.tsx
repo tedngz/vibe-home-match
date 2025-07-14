@@ -5,11 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
-import { sampleProperties } from '@/data/sampleProperties';
+import { useProperties, Property } from '@/hooks/useProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { useProperties, Property } from '@/hooks/useProperties';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -51,7 +50,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
   useEffect(() => {
     const transformedRealProperties = (realProperties || []).map(transformPropertyToApartment);
-    const allProperties = [...transformedRealProperties, ...sampleProperties];
+    const allProperties = transformedRealProperties;
     
     const filteredApartments = allProperties.filter(apartment => {
       const locationMatch = userPreferences.location.some(loc => 

@@ -126,7 +126,6 @@ export const useChat = () => {
         body: { 
           message, 
           conversationId,
-          userId: user.id,
           userType,
           userPreferences,
           propertyImages
