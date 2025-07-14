@@ -40,7 +40,6 @@ export const BudgetRangeSelector = ({ value, onChange }: BudgetRangeSelectorProp
     <div className="space-y-6 max-w-md mx-auto">
       {/* Currency Selector */}
       <div className="text-center">
-        <Label className="text-base font-medium text-slate-900 mb-3 block">Currency</Label>
         <CurrencySelector />
       </div>
 

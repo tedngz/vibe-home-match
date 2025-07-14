@@ -225,7 +225,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
       <div className="w-full max-w-4xl">
         <Card className="bg-card shadow-xl rounded-3xl border-0 overflow-hidden">
           {/* Minimal Header */}
-          <div className="bg-gradient-to-r from-primary via-primary to-secondary p-8 text-primary-foreground">
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-8 text-white">
             <div className={`text-center transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
                 {currentStepData.icon && (

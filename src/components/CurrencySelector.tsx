@@ -13,18 +13,13 @@ export const CurrencySelector = () => {
   ];
 
   return (
-    <div className="flex items-center space-x-2">
-      {currencies.map((curr) => (
-        <Button
-          key={curr.code}
-          variant={currency === curr.code ? "default" : "outline"}
-          size="sm"
-          onClick={() => setCurrency(curr.code)}
-          className="h-8"
-        >
-          {curr.symbol} {curr.code}
-        </Button>
-      ))}
-    </div>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setCurrency(currency === 'VND' ? 'USD' : 'VND')}
+      className="h-8 min-w-[60px]"
+    >
+      {currency === 'VND' ? '₫' : '$'} {currency}
+    </Button>
   );
 };
