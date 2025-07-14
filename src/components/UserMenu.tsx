@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { MoreVertical, RotateCcw, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { CurrencyDropdown } from '@/components/CurrencyDropdown';
 
 interface UserMenuProps {
   userType: 'renter' | 'realtor';
@@ -29,6 +30,10 @@ export const UserMenu = ({ userType, onSwitchUserType, onRestartOnboarding }: Us
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
+        <div className="px-2 py-1">
+          <CurrencyDropdown />
+        </div>
+        <DropdownMenuSeparator />
         {onRestartOnboarding && (
           <>
             <DropdownMenuItem onClick={onRestartOnboarding}>

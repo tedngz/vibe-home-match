@@ -224,16 +224,16 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
     <div className="min-h-screen bg-background flex items-center justify-center py-4 px-4">
       <div className="w-full max-w-4xl">
         <Card className="bg-card shadow-xl rounded-3xl border-0 overflow-hidden">
-          {/* Minimal Header */}
-          <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 p-8 text-white">
-            <div className={`text-center transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <div className="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm ring-2 ring-white/30">
+          {/* Clean Header */}
+          <div className="p-8 text-center">
+            <div className={`transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 {currentStepData.icon && (
                   <currentStepData.icon className="w-8 h-8 text-white" />
                 )}
               </div>
-              <h2 className="text-2xl font-bold mb-3 text-white">{currentStepData.title}</h2>
-              <p className="text-white/90 max-w-2xl mx-auto leading-relaxed">{currentStepData.subtitle}</p>
+              <h2 className="text-2xl font-bold mb-3 text-gray-800">{currentStepData.title}</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">{currentStepData.subtitle}</p>
             </div>
             
             {/* Elegant progress indicator */}
@@ -242,7 +242,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                 <div 
                   key={index}
                   className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                    index <= currentStep ? 'bg-white scale-110' : 'bg-white/30'
+                    index <= currentStep ? 'bg-violet-500 scale-110' : 'bg-gray-300'
                   }`}
                 />
               ))}
