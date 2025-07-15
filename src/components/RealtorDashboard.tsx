@@ -260,13 +260,23 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                           {new Date(match.created_at).toLocaleTimeString()}
                         </p>
                       </div>
-                      <Button
-                        size="sm"
-                        className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
-                      >
-                        <User className="w-4 h-4 mr-1" />
-                        View Profile
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                        >
+                          <User className="w-4 h-4 mr-1" />
+                          View Profile
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-1" />
+                          Chat
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}

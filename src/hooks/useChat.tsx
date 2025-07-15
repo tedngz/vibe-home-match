@@ -164,6 +164,15 @@ export const useChat = () => {
     mutationFn: async (conversationId: string) => {
       if (!user?.id) throw new Error('User not authenticated');
 
+      // First delete all messages in the conversation
+      const { error: messagesError } = await supabase
+        .from('chat_messages')
+        .delete()
+        .eq('conversation_id', conversationId);
+
+      if (messagesError) throw messagesError;
+
+      // Then delete the conversation
       const { error } = await supabase
         .from('chat_conversations')
         .delete()

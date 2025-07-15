@@ -128,33 +128,23 @@ export const useDirectMessages = () => {
     },
   });
 
-  // Delete conversation (hide it for current user)
+  // Delete conversation (delete everything for both users)
   const deleteConversationMutation = useMutation({
     mutationFn: async (matchId: string) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Get current deleted_by and append user
-      const { data: messages } = await supabase
+      // Delete all messages in the match
+      const { error: messagesError } = await supabase
         .from('direct_messages')
-        .select('id, deleted_by')
+        .delete()
         .eq('match_id', matchId);
 
-      if (messages) {
-        for (const message of messages) {
-          const deletedBy = Array.isArray(message.deleted_by) ? message.deleted_by : [];
-          if (!deletedBy.includes(user.id)) {
-            await supabase
-              .from('direct_messages')
-              .update({ deleted_by: [...deletedBy, user.id] })
-              .eq('id', message.id);
-          }
-        }
-      }
+      if (messagesError) throw messagesError;
 
-      // Mark conversation as inactive for this user
+      // Delete the conversation
       const { error: convError } = await supabase
         .from('match_conversations')
-        .update({ is_active: false })
+        .delete()
         .eq('match_id', matchId);
 
       if (convError) throw convError;

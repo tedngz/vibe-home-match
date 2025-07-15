@@ -10,6 +10,7 @@ import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
 import { FloatingAIButton } from '@/components/FloatingAIButton';
 import { Profile } from '@/components/Profile';
+import { RealtorProfile } from '@/components/RealtorProfile';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -271,7 +272,11 @@ const Index = () => {
         )}
 
         {currentView === 'profile' && userType && (
-          <Profile userType={userType} />
+          userType === 'realtor' ? (
+            <RealtorProfile />
+          ) : (
+            <Profile userType={userType} />
+          )
         )}
 
         {userType === 'realtor' && currentView === 'dashboard' && (
