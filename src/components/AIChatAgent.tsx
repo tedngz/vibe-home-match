@@ -31,6 +31,7 @@ export const AIChatAgent = ({
   const [inputMessage, setInputMessage] = useState('');
   const [activeTab, setActiveTab] = useState('ai');
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { formatPrice } = useCurrency();
   const { user } = useAuth();
@@ -72,14 +73,27 @@ export const AIChatAgent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen && !currentConversationId) {
+    if (isOpen && !currentConversationId && conversations.length === 0) {
       console.log('Creating new conversation, current conversations:', conversations.length);
       const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
       createConversation(title);
     } else if (isOpen && currentConversationId) {
       console.log('Using existing conversation:', currentConversationId);
+      // Send pending message if there is one
+      if (pendingMessage) {
+        console.log('Sending pending message:', pendingMessage);
+        const messageData = {
+          message: pendingMessage,
+          conversationId: currentConversationId,
+          userType,
+          userPreferences: userType === 'renter' ? userPreferences : undefined,
+          propertyImages: userType === 'realtor' ? propertyImages : undefined,
+        };
+        sendMessage(messageData);
+        setPendingMessage(null);
+      }
     }
-  }, [isOpen, currentConversationId, createConversation, userType]);
+  }, [isOpen, currentConversationId, createConversation, userType, pendingMessage, sendMessage, userPreferences, propertyImages]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -90,25 +104,13 @@ export const AIChatAgent = ({
       console.log('Current conversation ID:', currentConversationId);
       console.log('User type:', userType);
 
-      // If no conversation exists, create one first
+      // If no conversation exists, store the message as pending and create one
       if (!currentConversationId) {
-        console.log('Creating conversation before sending message');
+        console.log('No conversation ID, storing message as pending and creating conversation');
+        setPendingMessage(inputMessage);
+        setInputMessage('');
         const title = userType === 'realtor' ? 'Property Marketing Assistant' : 'Property Search Chat';
-        await createConversation(title);
-        
-        // Wait for conversation to be created
-        setTimeout(() => {
-          if (currentConversationId) {
-            console.log('Conversation created, sending message');
-            sendMessage({
-              message: inputMessage,
-              conversationId: currentConversationId,
-              userType,
-              userPreferences: userType === 'renter' ? userPreferences : undefined,
-              propertyImages: userType === 'realtor' ? propertyImages : undefined,
-            });
-          }
-        }, 500);
+        createConversation(title);
         return;
       }
 
