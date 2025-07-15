@@ -8,6 +8,7 @@ import { UserProfile } from '@/components/LoginModal';
 import { useProperties, Property } from '@/hooks/useProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
+import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -344,9 +345,16 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
           </div>
 
           <div className="p-5">
-            <div className="flex items-start justify-between mb-2">
-              <h2 className="text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
-              <VibeScore score={vibeScore} size="sm" />
+            <div className="mb-2">
+              <div className="flex items-start justify-between mb-2">
+                <h2 className="text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
+                <VibeScore score={vibeScore} size="sm" />
+              </div>
+              
+              {/* Detailed Score Breakdown */}
+              <div className="bg-gray-50 p-3 rounded-lg mb-3">
+                <VibeScoreBar score={vibeScore} showBreakdown={true} />
+              </div>
             </div>
             
             <div className="flex items-center text-gray-600 text-sm mb-3">

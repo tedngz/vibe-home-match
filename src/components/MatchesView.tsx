@@ -8,6 +8,7 @@ import { Apartment, UserPreferences } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
+import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { UserProfile } from '@/components/LoginModal';
 import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -159,9 +160,18 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                 </div>
                 
                 <div className="p-5">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
-                    {vibeScore && <VibeScore score={vibeScore} size="sm" />}
+                  <div className="mb-3">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
+                      {vibeScore && <VibeScore score={vibeScore} size="sm" />}
+                    </div>
+                    
+                    {/* Score Breakdown */}
+                    {vibeScore && (
+                      <div className="bg-gray-50 p-3 rounded-lg mb-2">
+                        <VibeScoreBar score={vibeScore} showBreakdown={true} />
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex items-center text-gray-600 text-sm mb-3">

@@ -374,72 +374,82 @@ export const AIChatAgent = ({
                             </div>
                           )}
                           
-                          {directMessages.map((message) => {
-                            const isOwnMessage = message.sender_id === user?.id;
-                            const isFromRealtor = userType === 'renter' ? 
-                              message.sender_id !== user?.id : 
-                              message.sender_id === user?.id && userType === 'realtor';
-                            
-                            return (
-                              <div
-                                key={message.id}
-                                className={`flex items-start space-x-2 ${
-                                  isOwnMessage ? 'justify-end' : 'justify-start'
-                                }`}
-                              >
-                                {!isOwnMessage && (
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                    isFromRealtor 
-                                      ? 'bg-blue-100' 
-                                      : 'bg-green-100'
-                                  }`}>
-                                    <User className={`w-4 h-4 ${
-                                      isFromRealtor 
-                                        ? 'text-blue-600' 
-                                        : 'text-green-600'
-                                    }`} />
-                                  </div>
-                                )}
-                                
-                                <div
-                                  className={`max-w-xs px-4 py-2 rounded-lg ${
-                                    isOwnMessage
-                                      ? userType === 'realtor'
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-green-500 text-white'
-                                      : isFromRealtor
-                                        ? 'bg-blue-50 text-blue-900 border border-blue-200'
-                                        : 'bg-green-50 text-green-900 border border-green-200'
-                                  }`}
-                                >
-                                  <p className="text-sm">{message.content}</p>
-                                  <p className={`text-xs mt-1 ${
-                                    isOwnMessage 
-                                      ? 'text-white/70' 
-                                      : isFromRealtor 
-                                        ? 'text-blue-600/70'
-                                        : 'text-green-600/70'
-                                  }`}>
-                                    {new Date(message.created_at).toLocaleTimeString()}
-                                  </p>
-                                </div>
-                                
-                                {isOwnMessage && (
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                                    userType === 'realtor' 
-                                      ? 'bg-blue-100' 
-                                      : 'bg-green-100'
-                                  }`}>
-                                    <User className={`w-4 h-4 ${
-                                      userType === 'realtor' 
-                                        ? 'text-blue-600' 
-                                        : 'text-green-600'
-                                    }`} />
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                           {directMessages.map((message) => {
+                             const isOwnMessage = message.sender_id === user?.id;
+                             const senderIsRealtor = userType === 'renter' ? 
+                               message.sender_id !== user?.id : 
+                               message.sender_id === user?.id;
+                             
+                             return (
+                               <div
+                                 key={message.id}
+                                 className={`flex items-start space-x-2 ${
+                                   isOwnMessage ? 'justify-end' : 'justify-start'
+                                 }`}
+                               >
+                                 {!isOwnMessage && (
+                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                     senderIsRealtor 
+                                       ? 'bg-blue-100' 
+                                       : 'bg-green-100'
+                                   }`}>
+                                     <User className={`w-4 h-4 ${
+                                       senderIsRealtor 
+                                         ? 'text-blue-600' 
+                                         : 'text-green-600'
+                                     }`} />
+                                   </div>
+                                 )}
+                                 
+                                 <div className="flex flex-col">
+                                   <div className={`text-xs font-medium mb-1 ${isOwnMessage ? 'text-right' : 'text-left'} ${
+                                     senderIsRealtor ? 'text-blue-600' : 'text-green-600'
+                                   }`}>
+                                     {senderIsRealtor ? 'Realtor' : 'Renter'}
+                                   </div>
+                                   <div
+                                     className={`max-w-xs px-4 py-2 rounded-lg ${
+                                       isOwnMessage
+                                         ? senderIsRealtor
+                                           ? 'bg-blue-500 text-white'
+                                           : 'bg-green-500 text-white'
+                                         : senderIsRealtor
+                                           ? 'bg-blue-50 text-blue-900 border border-blue-200'
+                                           : 'bg-green-50 text-green-900 border border-green-200'
+                                     }`}
+                                   >
+                                     <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                     <div className={`text-xs mt-1 ${
+                                       isOwnMessage 
+                                         ? 'text-white/70' 
+                                         : senderIsRealtor 
+                                           ? 'text-blue-600/70'
+                                           : 'text-green-600/70'
+                                     }`}>
+                                       {new Date(message.created_at).toLocaleTimeString([], { 
+                                         hour: '2-digit', 
+                                         minute: '2-digit' 
+                                       })}
+                                     </div>
+                                   </div>
+                                 </div>
+                                 
+                                 {isOwnMessage && (
+                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                     senderIsRealtor 
+                                       ? 'bg-blue-100' 
+                                       : 'bg-green-100'
+                                   }`}>
+                                     <User className={`w-4 h-4 ${
+                                       senderIsRealtor 
+                                         ? 'text-blue-600' 
+                                         : 'text-green-600'
+                                     }`} />
+                                   </div>
+                                 )}
+                               </div>
+                             );
+                           })}
                           
                           <div ref={messagesEndRef} />
                         </div>
