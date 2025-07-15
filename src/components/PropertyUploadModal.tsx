@@ -35,9 +35,14 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
   const { currency, convertPrice } = useCurrency();
 
   const vibeOptions = [
-    'Modern Minimalist', 'Cozy Traditional', 'Urban Chic', 'Bohemian Eclectic',
-    'Industrial Loft', 'Scandinavian Clean', 'Vintage Charm', 'Luxury Executive',
-    'Artistic Creative', 'Family Friendly', 'Young Professional', 'Pet Friendly'
+    'Modern', 'Cozy', 'Industrial', 'Bohemian', 'Scandinavian', 'Minimalist', 
+    'Contemporary', 'Traditional', 'Rustic', 'Luxury', 'Urban', 'Vintage',
+    'Pet Friendly', 'Gym Access', 'Pool', 'Parking', 'Balcony', 'Garden', 
+    'Elevator', 'Security', 'WiFi', 'Furnished', 'Air Conditioning', 'Washing Machine',
+    'City Center', 'Quiet Neighborhood', 'Near Metro', 'Shopping Nearby', 
+    'School District', 'Business District', 'Riverside', 'Mountain View', 'Beach Access',
+    'High Ceilings', 'Natural Light', 'Open Plan', 'Walk-in Closet', 
+    'En-suite Bathroom', 'Kitchen Island', 'Hardwood Floors', 'Marble Counters', 'Smart Home'
   ];
 
   const locationSuggestions = [
@@ -121,43 +126,47 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
         setTitle(generated.title || `Beautiful ${size}m² Property in ${location.split(',')[0]}`);
         setDescription(generated.description || 'A wonderful space perfect for your next home.');
         
-        // Auto-select vibes based on AI analysis, ensuring only predefined options
+        // Auto-select vibes based on AI analysis of images, using only predefined vibe options
         const aiVibes = [];
-        if (analysis.modern > 6) aiVibes.push('Modern Minimalist');
-        if (analysis.cozy > 6) aiVibes.push('Cozy Traditional');
-        if (analysis.luxurious > 6) aiVibes.push('Luxury Executive');
-        if (analysis.urban > 6) aiVibes.push('Urban Chic');
-        if (analysis.spacious > 6) aiVibes.push('Family Friendly');
+        if (analysis.modern > 6) aiVibes.push('Modern');
+        if (analysis.cozy > 6) aiVibes.push('Cozy');
+        if (analysis.luxurious > 6) aiVibes.push('Luxury');
+        if (analysis.urban > 6) aiVibes.push('Urban');
+        if (analysis.spacious > 6) aiVibes.push('Natural Light');
+        if (analysis.minimalist > 6) aiVibes.push('Minimalist');
+        if (analysis.elegant > 6) aiVibes.push('Contemporary');
+        if (analysis.natural_light > 7) aiVibes.push('Natural Light');
         
-        // Map other analysis values to existing vibe options
-        if (analysis.industrial > 6) aiVibes.push('Industrial Loft');
-        if (analysis.minimalist > 6) aiVibes.push('Modern Minimalist');
-        if (analysis.natural_light > 7) aiVibes.push('Scandinavian Clean');
+        // Add amenity-based vibes from image analysis
+        if (analysis.rustic > 5) aiVibes.push('Rustic');
+        if (analysis.colorful > 6) aiVibes.push('Bohemian');
         
-        // Smart fallback vibes based on location and price
+        // Smart fallback vibes based on location and price if no image analysis vibes match
         if (aiVibes.length === 0) {
           const priceNum = parseInt(price);
           if (location.includes('District 1') || location.includes('Hoan Kiem')) {
-            aiVibes.push('Urban Chic', 'Young Professional');
+            aiVibes.push('Urban', 'City Center');
           } else if (location.includes('District 2') || location.includes('Cau Giay')) {
-            aiVibes.push('Modern Minimalist', 'Pet Friendly');
+            aiVibes.push('Modern', 'Pet Friendly');
           } else if (priceNum > 20000000) {
-            aiVibes.push('Luxury Executive', 'Modern Minimalist');
+            aiVibes.push('Luxury', 'Modern');
           } else {
-            aiVibes.push('Cozy Traditional', 'Family Friendly');
+            aiVibes.push('Cozy', 'Traditional');
           }
         }
         
         // Always ensure at least 2 vibes are selected
         if (aiVibes.length === 1) {
           if (parseInt(price) > 15000000) {
-            aiVibes.push('Luxury Executive');
+            aiVibes.push('Luxury');
           } else {
-            aiVibes.push('Family Friendly');
+            aiVibes.push('Cozy');
           }
         }
         
-        setSelectedVibes(generated.highlights || aiVibes);
+        // Remove duplicates and limit to 4 vibes
+        const uniqueVibes = [...new Set(aiVibes)].slice(0, 4);
+        setSelectedVibes(uniqueVibes);
       } else {
         // Fallback content if AI generation fails
         const locationShort = location.split(',')[0];
