@@ -165,7 +165,7 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
         
         setTitle(`Stunning ${size}m² Apartment in ${locationShort} - ${priceFormatted}/month`);
         setDescription(`Welcome to this exceptional ${size}m² property located in the heart of ${location}. This beautifully designed space offers the perfect blend of comfort and modern living.`);
-        setSelectedVibes(['Modern Minimalist', 'Family Friendly']);
+        setSelectedVibes(['Modern', 'Natural Light']);
       }
       
       setHasGenerated(true);
@@ -189,7 +189,7 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
       
       setTitle(`Beautiful ${size}m² Property in ${locationShort}`);
       setDescription(`Discover this amazing ${size}m² property in ${location}. A perfect space for modern living.`);
-      setSelectedVibes(['Modern Minimalist', 'Family Friendly']);
+      setSelectedVibes(['Modern', 'Natural Light']);
       setHasGenerated(true);
     } finally {
       setIsGenerating(false);

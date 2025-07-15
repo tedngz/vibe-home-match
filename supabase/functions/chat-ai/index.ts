@@ -14,8 +14,35 @@ serve(async (req) => {
   try {
     console.log('Chat AI function called');
     
-    const requestBody = await req.json();
-    const { message, conversationId, userType, userPreferences, propertyImages } = requestBody;
+    const requestBody = await req.text();
+    console.log('Raw request body:', requestBody);
+    
+    if (!requestBody) {
+      console.error('Empty request body');
+      return new Response(
+        JSON.stringify({ error: 'Empty request body' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(requestBody);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
+    }
+
+    const { message, conversationId, userType, userPreferences, propertyImages } = parsedBody;
     
     console.log('Request data:', { 
       messageLength: message?.length, 
