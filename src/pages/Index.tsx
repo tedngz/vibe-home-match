@@ -9,6 +9,7 @@ import { RealtorDashboard } from '@/components/RealtorDashboard';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
 import { FloatingAIButton } from '@/components/FloatingAIButton';
+import { Profile } from '@/components/Profile';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -56,11 +57,12 @@ const Index = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [userType, setUserType] = useState<'renter' | 'realtor' | null>(null);
-  const [currentView, setCurrentView] = useState<'onboarding' | 'swipe' | 'matches' | 'dashboard'>('onboarding');
+  const [currentView, setCurrentView] = useState<'onboarding' | 'swipe' | 'matches' | 'dashboard' | 'profile'>('onboarding');
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
   const [matches, setMatches] = useState<Apartment[]>([]);
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Load saved preferences from localStorage
   useEffect(() => {
@@ -214,8 +216,14 @@ const Index = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && (
           <Navigation 
-            currentView={currentView} 
-            setCurrentView={setCurrentView}
+            currentView={currentView === 'profile' ? 'profile' : currentView} 
+            setCurrentView={(view) => {
+              if (view === 'profile') {
+                setCurrentView('profile');
+              } else {
+                setCurrentView(view as 'swipe' | 'matches');
+              }
+            }}
             matchCount={matches.length}
             userType={userType}
             onSwitchUserType={switchUserType}
@@ -262,13 +270,17 @@ const Index = () => {
           />
         )}
 
+        {currentView === 'profile' && userType && (
+          <Profile userType={userType} />
+        )}
+
         {userType === 'realtor' && currentView === 'dashboard' && (
           <RealtorDashboard 
             onSwitchUserType={switchUserType}
           />
         )}
 
-        {userType && (currentView === 'swipe' || currentView === 'matches' || currentView === 'dashboard') && (
+        {userType && (currentView === 'swipe' || currentView === 'matches' || currentView === 'dashboard' || currentView === 'profile') && (
           <FloatingAIButton onClick={() => setIsAIChatOpen(true)} />
         )}
 

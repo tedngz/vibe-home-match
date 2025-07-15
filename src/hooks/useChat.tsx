@@ -159,6 +159,38 @@ export const useChat = () => {
     },
   });
 
+  // Delete conversation
+  const deleteConversationMutation = useMutation({
+    mutationFn: async (conversationId: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('chat_conversations')
+        .delete()
+        .eq('id', conversationId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return conversationId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chat-conversations'] });
+      setCurrentConversationId(null);
+      toast({
+        title: "Conversation Deleted",
+        description: "The conversation has been removed.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting conversation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete conversation. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   return {
     conversations,
     messages,
@@ -168,5 +200,7 @@ export const useChat = () => {
     isCreatingConversation: createConversationMutation.isPending,
     sendMessage: sendMessageMutation.mutate,
     isSendingMessage: sendMessageMutation.isPending,
+    deleteConversation: deleteConversationMutation.mutate,
+    isDeletingConversation: deleteConversationMutation.isPending,
   };
 };

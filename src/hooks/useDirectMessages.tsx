@@ -133,7 +133,25 @@ export const useDirectMessages = () => {
     mutationFn: async (matchId: string) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Simply mark conversation as inactive for now
+      // Get current deleted_by and append user
+      const { data: messages } = await supabase
+        .from('direct_messages')
+        .select('id, deleted_by')
+        .eq('match_id', matchId);
+
+      if (messages) {
+        for (const message of messages) {
+          const deletedBy = Array.isArray(message.deleted_by) ? message.deleted_by : [];
+          if (!deletedBy.includes(user.id)) {
+            await supabase
+              .from('direct_messages')
+              .update({ deleted_by: [...deletedBy, user.id] })
+              .eq('id', message.id);
+          }
+        }
+      }
+
+      // Mark conversation as inactive for this user
       const { error: convError } = await supabase
         .from('match_conversations')
         .update({ is_active: false })

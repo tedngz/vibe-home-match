@@ -1,13 +1,13 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, MessageSquare } from 'lucide-react';
+import { Heart, MessageSquare, User } from 'lucide-react';
 import { CurrencyDropdown } from '@/components/CurrencyDropdown';
 import { UserMenu } from '@/components/UserMenu';
 
 interface NavigationProps {
-  currentView: 'swipe' | 'matches';
-  setCurrentView: (view: 'swipe' | 'matches') => void;
+  currentView: 'swipe' | 'matches' | 'profile';
+  setCurrentView: (view: 'swipe' | 'matches' | 'profile') => void;
   matchCount: number;
   userType: 'renter' | 'realtor';
   onSwitchUserType: () => void;
@@ -59,6 +59,16 @@ export const Navigation = ({
                     {matchCount}
                   </Badge>
                 )}
+              </Button>
+              
+              <Button
+                variant={currentView === 'profile' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setCurrentView('profile')}
+                className={currentView === 'profile' ? 'bg-primary text-primary-foreground' : ''}
+              >
+                <User className="w-4 h-4 mr-2" />
+                Profile
               </Button>
             </div>
           </div>
