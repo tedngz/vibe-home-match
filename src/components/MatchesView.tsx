@@ -3,10 +3,9 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, User, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
+import { MapPin, User, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Apartment, UserPreferences } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
-import { DirectMessagingModal } from '@/components/DirectMessagingModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { UserProfile } from '@/components/LoginModal';
@@ -22,8 +21,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
-  const [isMessagingOpen, setIsMessagingOpen] = useState(false);
-  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const { renterMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
 
@@ -239,21 +236,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                     <div className="flex space-x-2">
                       <Button 
                         size="sm" 
-                        variant="outline"
-                        className="border-orange-300 text-orange-600 hover:bg-orange-50"
-                        onClick={() => {
-                          const match = renterMatches.find(m => m.properties?.id === apartment.id);
-                          if (match) {
-                            setSelectedMatchId(match.id);
-                            setIsMessagingOpen(true);
-                          }
-                        }}
-                      >
-                        <MessageCircle className="w-3 h-3 mr-1" />
-                        Message
-                      </Button>
-                      <Button 
-                        size="sm" 
                         className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
                         onClick={() => setSelectedApartment(apartment)}
                       >
@@ -275,15 +257,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
           onClose={() => setSelectedApartment(null)}
         />
       )}
-
-      <DirectMessagingModal
-        isOpen={isMessagingOpen}
-        onClose={() => {
-          setIsMessagingOpen(false);
-          setSelectedMatchId(null);
-        }}
-        initialMatchId={selectedMatchId}
-      />
     </div>
   );
 };
