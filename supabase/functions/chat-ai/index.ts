@@ -23,7 +23,8 @@ serve(async (req) => {
       userType, 
       hasPreferences: !!userPreferences,
       hasPropertyImages: !!propertyImages,
-      fullBody: JSON.stringify(requestBody).substring(0, 200)
+      propertyImagesType: typeof propertyImages,
+      propertyImagesLength: Array.isArray(propertyImages) ? propertyImages.length : 'not-array'
     });
 
     if (!message) {
@@ -97,7 +98,7 @@ When analyzing property images, ONLY use tags from the standard list above. Matc
 
 Provide creative, engaging, and professional content that stands out in the rental market.`;
 
-      if (propertyImages && propertyImages.length > 0) {
+      if (Array.isArray(propertyImages) && propertyImages.length > 0) {
         context += `\nProperty images provided: ${propertyImages.length} images to analyze for creating descriptions.`;
       }
     } else {
@@ -205,7 +206,7 @@ ${matchingProperties.slice(0, 5).map(p => `
 - Consider lifestyle activities when recommending neighborhoods`;
       }
 
-      if (propertyImages && propertyImages.length > 0) {
+      if (Array.isArray(propertyImages) && propertyImages.length > 0) {
         context += `\nProperty images provided: ${propertyImages.length} images to analyze for creating descriptions.`;
       }
     }

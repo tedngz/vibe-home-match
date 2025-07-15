@@ -7,7 +7,7 @@ import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { PropertyEditModal } from '@/components/PropertyEditModal';
 import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
-import { MessagingModal } from '@/components/MessagingModal';
+import { DirectMessagingModal } from '@/components/DirectMessagingModal';
 import { useProperties, Property } from '@/hooks/useProperties';
 import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -22,8 +22,9 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isMessagingOpen, setIsMessagingOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const { realtorProperties, isLoading, deleteProperty, isDeleting } = useProperties();
   const { realtorMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
@@ -265,10 +266,8 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                       <Button
                         size="sm"
                         onClick={() => {
-                          toast({
-                            title: "Contact Feature",
-                            description: "Messaging functionality will be available soon!",
-                          });
+                          setSelectedMatchId(match.id);
+                          setIsMessagingOpen(true);
                         }}
                         className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
                       >
@@ -307,7 +306,14 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
         property={selectedProperty}
       />
 
-      {/* Removed messaging modal as it's not implemented yet */}
+      <DirectMessagingModal
+        isOpen={isMessagingOpen}
+        onClose={() => {
+          setIsMessagingOpen(false);
+          setSelectedMatchId(null);
+        }}
+        initialMatchId={selectedMatchId}
+      />
     </div>
   );
 };

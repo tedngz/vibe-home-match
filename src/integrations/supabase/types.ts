@@ -73,6 +73,88 @@ export type Database = {
           },
         ]
       }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          deleted_by: string[] | null
+          id: string
+          match_id: string
+          metadata: Json | null
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deleted_by?: string[] | null
+          id?: string
+          match_id: string
+          metadata?: Json | null
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deleted_by?: string[] | null
+          id?: string
+          match_id?: string
+          metadata?: Json | null
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "property_matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          last_message_at: string | null
+          last_message_preview: string | null
+          match_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          match_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          match_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_conversations_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: true
+            referencedRelation: "property_matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

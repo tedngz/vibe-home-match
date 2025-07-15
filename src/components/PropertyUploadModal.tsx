@@ -121,14 +121,18 @@ export const PropertyUploadModal = ({ isOpen, onClose }: PropertyUploadModalProp
         setTitle(generated.title || `Beautiful ${size}m² Property in ${location.split(',')[0]}`);
         setDescription(generated.description || 'A wonderful space perfect for your next home.');
         
-        // Auto-select vibes based on AI analysis with better scoring
+        // Auto-select vibes based on AI analysis, ensuring only predefined options
         const aiVibes = [];
         if (analysis.modern > 6) aiVibes.push('Modern Minimalist');
         if (analysis.cozy > 6) aiVibes.push('Cozy Traditional');
         if (analysis.luxurious > 6) aiVibes.push('Luxury Executive');
         if (analysis.urban > 6) aiVibes.push('Urban Chic');
         if (analysis.spacious > 6) aiVibes.push('Family Friendly');
-        if (analysis.natural_light > 7) aiVibes.push('Bright & Airy');
+        
+        // Map other analysis values to existing vibe options
+        if (analysis.industrial > 6) aiVibes.push('Industrial Loft');
+        if (analysis.minimalist > 6) aiVibes.push('Modern Minimalist');
+        if (analysis.natural_light > 7) aiVibes.push('Scandinavian Clean');
         
         // Smart fallback vibes based on location and price
         if (aiVibes.length === 0) {
