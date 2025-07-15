@@ -43,7 +43,22 @@ export const calculateVibeScore = (apartment: Apartment, preferences: UserPrefer
 };
 
 const calculateStyleMatch = (apartment: Apartment, userStyles: string[]): number => {
+  // Map new vibe system to style keywords for matching
   const apartmentStyleMap: { [key: string]: string[] } = {
+    'Modern': ['modern', 'minimalist', 'clean', 'sleek', 'contemporary'],
+    'Cozy': ['cozy', 'traditional', 'warm', 'family', 'comfortable'],
+    'Industrial': ['industrial', 'modern', 'urban', 'edgy', 'loft'],
+    'Bohemian': ['bohemian', 'eclectic', 'colorful', 'artistic', 'creative'],
+    'Scandinavian': ['scandinavian', 'minimalist', 'clean', 'natural', 'light'],
+    'Minimalist': ['minimalist', 'clean', 'simple', 'modern', 'uncluttered'],
+    'Contemporary': ['contemporary', 'modern', 'current', 'stylish', 'updated'],
+    'Traditional': ['traditional', 'classic', 'timeless', 'conventional', 'cozy'],
+    'Rustic': ['rustic', 'natural', 'countryside', 'wood', 'earthy'],
+    'Luxury': ['luxury', 'upscale', 'premium', 'high-end', 'elegant'],
+    'Urban': ['urban', 'city', 'metropolitan', 'modern', 'contemporary'],
+    'Vintage': ['vintage', 'retro', 'classic', 'antique', 'period'],
+    
+    // Fallback for old vibe system (if any properties still use it)
     'Modern Minimalist': ['modern', 'minimalist', 'clean', 'sleek'],
     'Urban Sanctuary': ['modern', 'urban', 'sophisticated', 'industrial'],
     'Creative Haven': ['bohemian', 'eclectic', 'artistic', 'creative'],
@@ -58,21 +73,36 @@ const calculateStyleMatch = (apartment: Apartment, userStyles: string[]): number
   
   // Calculate matches between user preferences and apartment style
   userStyles.forEach(userStyle => {
-    if (apartmentStyles.includes(userStyle)) {
-      matchScore += 25; // Each match adds 25 points
+    if (apartmentStyles.includes(userStyle.toLowerCase())) {
+      matchScore += 20; // Each match adds 20 points
     }
   });
   
-  // Add base score based on vibe compatibility
-  if (apartmentStyles.length > 0) {
-    matchScore += 30; // Base compatibility score
+  // Add base score based on vibe compatibility - be more generous
+  if (apartmentStyles.length > 0 || apartment.vibe) {
+    matchScore += 50; // Higher base compatibility score
   }
   
   return Math.min(100, matchScore);
 };
 
 const calculateColorMatch = (apartment: Apartment, userColors: string[]): number => {
+  // Updated color mapping for new vibe system
   const apartmentColorMap: { [key: string]: string[] } = {
+    'Modern': ['neutral', 'cool', 'white', 'grey'],
+    'Cozy': ['warm', 'earth', 'brown', 'beige'],
+    'Industrial': ['neutral', 'cool', 'metal', 'grey'],
+    'Bohemian': ['warm', 'bold', 'colorful', 'earth'],
+    'Scandinavian': ['neutral', 'white', 'natural', 'light'],
+    'Minimalist': ['neutral', 'white', 'simple', 'clean'],
+    'Contemporary': ['neutral', 'cool', 'modern', 'sleek'],
+    'Traditional': ['warm', 'earth', 'classic', 'rich'],
+    'Rustic': ['earth', 'natural', 'wood', 'warm'],
+    'Luxury': ['rich', 'elegant', 'gold', 'sophisticated'],
+    'Urban': ['neutral', 'cool', 'modern', 'grey'],
+    'Vintage': ['classic', 'muted', 'antique', 'period'],
+    
+    // Fallback mappings
     'Modern Minimalist': ['neutral', 'cool', 'white'],
     'Urban Sanctuary': ['neutral', 'cool', 'grey'],
     'Creative Haven': ['warm', 'bold', 'colorful'],
@@ -86,21 +116,36 @@ const calculateColorMatch = (apartment: Apartment, userColors: string[]): number
   let matchScore = 0;
   
   userColors.forEach(userColor => {
-    if (apartmentColors.includes(userColor)) {
-      matchScore += 25; // Each match adds 25 points
+    if (apartmentColors.includes(userColor.toLowerCase())) {
+      matchScore += 20; // Each match adds 20 points
     }
   });
   
-  // Add base score
-  if (apartmentColors.length > 0) {
-    matchScore += 25; // Base color compatibility
+  // Add base score - be more generous
+  if (apartmentColors.length > 0 || apartment.vibe) {
+    matchScore += 50; // Higher base color compatibility
   }
   
   return Math.min(100, matchScore);
 };
 
 const calculateActivityMatch = (apartment: Apartment, userActivities: string[]): number => {
+  // Updated activity mapping for new vibe system
   const apartmentActivityMap: { [key: string]: string[] } = {
+    'Modern': ['working', 'reading', 'relaxing', 'entertaining'],
+    'Cozy': ['reading', 'relaxing', 'cooking', 'family time'],
+    'Industrial': ['working', 'entertaining', 'exercising', 'creating'],
+    'Bohemian': ['creating', 'entertaining', 'relaxing', 'artistic'],
+    'Scandinavian': ['relaxing', 'reading', 'meditating', 'family time'],
+    'Minimalist': ['relaxing', 'working', 'reading', 'meditating'],
+    'Contemporary': ['working', 'entertaining', 'relaxing', 'socializing'],
+    'Traditional': ['family time', 'cooking', 'reading', 'relaxing'],
+    'Rustic': ['relaxing', 'cooking', 'family time', 'outdoor activities'],
+    'Luxury': ['entertaining', 'relaxing', 'socializing', 'formal dining'],
+    'Urban': ['working', 'socializing', 'exercising', 'entertainment'],
+    'Vintage': ['collecting', 'reading', 'entertaining', 'crafting'],
+    
+    // Fallback mappings
     'Modern Minimalist': ['working', 'reading', 'relaxing'],
     'Urban Sanctuary': ['working', 'entertaining', 'exercising'],
     'Creative Haven': ['working', 'creating', 'entertaining'],
@@ -114,14 +159,14 @@ const calculateActivityMatch = (apartment: Apartment, userActivities: string[]):
   let matchScore = 0;
   
   userActivities.forEach(userActivity => {
-    if (apartmentActivities.includes(userActivity)) {
-      matchScore += 25; // Each match adds 25 points
+    if (apartmentActivities.includes(userActivity.toLowerCase())) {
+      matchScore += 20; // Each match adds 20 points
     }
   });
   
-  // Add base score
-  if (apartmentActivities.length > 0) {
-    matchScore += 25; // Base activity compatibility
+  // Add base score - be more generous
+  if (apartmentActivities.length > 0 || apartment.vibe) {
+    matchScore += 50; // Higher base activity compatibility
   }
   
   return Math.min(100, matchScore);

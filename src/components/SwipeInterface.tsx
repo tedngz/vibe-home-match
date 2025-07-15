@@ -54,17 +54,28 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     const allProperties = transformedRealProperties;
     
     const filteredApartments = allProperties.filter(apartment => {
-      const locationMatch = userPreferences.location.some(loc => 
-        apartment.location.toLowerCase().includes(loc.toLowerCase().split(',')[0])
-      );
+      console.log('Filtering apartment:', apartment.title, apartment.location, apartment.price);
+      
+      // Check location match - make it more flexible
+      const locationMatch = !userPreferences.location.length || 
+        userPreferences.location.some(loc => {
+          const locMatch = apartment.location.toLowerCase().includes(loc.toLowerCase().split(',')[0]);
+          console.log(`Location match for ${apartment.location} vs ${loc}: ${locMatch}`);
+          return locMatch;
+        });
       
       const vibeScore = calculateVibeScore(apartment, userPreferences);
-      const hasGoodVibeMatch = vibeScore.overall > 20; // Lowered threshold to show more properties
+      console.log(`Vibe score for ${apartment.title}: ${vibeScore.overall}`);
+      const hasGoodVibeMatch = vibeScore.overall > 10; // Further lowered threshold
       
       const [minPrice, maxPrice] = userPreferences.priceRange;
-      const priceInRange = apartment.price <= maxPrice * 1.5; // Increased price flexibility
+      const priceInRange = apartment.price <= maxPrice * 2; // Very flexible price range
+      console.log(`Price check for ${apartment.title}: ${apartment.price} <= ${maxPrice * 2} = ${priceInRange}`);
       
-      return locationMatch && hasGoodVibeMatch && priceInRange;
+      const passes = locationMatch && hasGoodVibeMatch && priceInRange;
+      console.log(`Property ${apartment.title} passes filters: location=${locationMatch}, vibe=${hasGoodVibeMatch}, price=${priceInRange}, overall=${passes}`);
+      
+      return passes;
     })
     .sort((a, b) => {
       const scoreA = calculateVibeScore(a, userPreferences).overall;
@@ -79,7 +90,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       return scoreB - scoreA;
     });
     
-    console.log(`Found ${filteredApartments.length} apartments matching preferences`);
+    console.log(`Found ${filteredApartments.length} apartments matching preferences out of ${allProperties.length} total properties`);
+    console.log('User preferences:', userPreferences);
     
     // Only update state if apartments array actually changed
     setApartments(prevApartments => {
