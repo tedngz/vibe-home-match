@@ -268,7 +268,7 @@ const Index = () => {
           />
         )}
 
-        {userType === 'renter' && (currentView === 'swipe' || currentView === 'matches') && (
+        {userType && (currentView === 'swipe' || currentView === 'matches' || currentView === 'dashboard') && (
           <FloatingAIButton onClick={() => setIsAIChatOpen(true)} />
         )}
 
@@ -276,7 +276,7 @@ const Index = () => {
           isOpen={isAIChatOpen}
           onClose={() => setIsAIChatOpen(false)}
           userPreferences={userPreferences}
-          userType={userType}
+          userType={userType || 'renter'}
         />
       </div>
     </CurrencyProvider>

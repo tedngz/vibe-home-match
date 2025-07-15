@@ -310,7 +310,7 @@ Current user message: ${message}`;
     }
 
     const openaiData = await openaiResponse.json();
-    console.log('OpenAI response received');
+    console.log('OpenAI response received, choices length:', openaiData.choices?.length);
     
     if (!openaiData.choices || !openaiData.choices[0] || !openaiData.choices[0].message) {
       console.error('Invalid OpenAI response structure:', openaiData);
