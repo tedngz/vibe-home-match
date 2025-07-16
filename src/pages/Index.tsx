@@ -11,6 +11,7 @@ import { AIChatAgent } from '@/components/AIChatAgent';
 import { FloatingAIButton } from '@/components/FloatingAIButton';
 import { Profile } from '@/components/Profile';
 import { RealtorProfile } from '@/components/RealtorProfile';
+import { SocialFeed } from '@/components/SocialFeed';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -58,7 +59,7 @@ const Index = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [userType, setUserType] = useState<'renter' | 'realtor' | null>(null);
-  const [currentView, setCurrentView] = useState<'onboarding' | 'swipe' | 'matches' | 'dashboard' | 'profile'>('onboarding');
+  const [currentView, setCurrentView] = useState<'onboarding' | 'swipe' | 'matches' | 'dashboard' | 'profile' | 'feed'>('onboarding');
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
   const [matches, setMatches] = useState<Apartment[]>([]);
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
@@ -221,6 +222,8 @@ const Index = () => {
             setCurrentView={(view) => {
               if (view === 'profile') {
                 setCurrentView('profile');
+              } else if (view === 'feed') {
+                setCurrentView('feed');
               } else {
                 setCurrentView(view as 'swipe' | 'matches');
               }
@@ -279,13 +282,17 @@ const Index = () => {
           )
         )}
 
+        {currentView === 'feed' && userType && (
+          <SocialFeed />
+        )}
+
         {userType === 'realtor' && currentView === 'dashboard' && (
           <RealtorDashboard 
             onSwitchUserType={switchUserType}
           />
         )}
 
-        {userType && (currentView === 'swipe' || currentView === 'matches' || currentView === 'dashboard' || currentView === 'profile') && (
+        {userType && (currentView === 'swipe' || currentView === 'matches' || currentView === 'dashboard' || currentView === 'profile' || currentView === 'feed') && (
           <FloatingAIButton onClick={() => setIsAIChatOpen(true)} />
         )}
 
