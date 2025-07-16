@@ -90,9 +90,6 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
           <div className="p-2 md:p-4 border-b flex-shrink-0">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-gray-900 text-sm md:text-base">Messages</h3>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="w-4 h-4" />
-              </Button>
             </div>
             <p className="text-xs md:text-sm text-gray-600">
               {conversations.length} active conversation{conversations.length !== 1 ? 's' : ''}

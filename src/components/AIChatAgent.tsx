@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { X, Send, MessageCircle, Bot, MapPin, Trash2 } from 'lucide-react';
+import { X, Send, MessageCircle, Bot, MapPin, ArrowLeft } from 'lucide-react';
 import { useChat } from '@/hooks/useChat';
 import { useDirectMessages } from '@/hooks/useDirectMessages';
 import { useMatches } from '@/hooks/useMatches';
@@ -231,104 +231,108 @@ export const AIChatAgent = ({
           </TabsContent>
 
           <TabsContent value="messages" className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-              <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col max-h-[40vh] md:max-h-none">
-                <div className="p-2 md:p-4 border-b bg-gray-50 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">Your Conversations</h3>
-                  <p className="text-xs md:text-sm text-gray-600">
-                    {matches.length} conversation{matches.length !== 1 ? 's' : ''}
-                  </p>
+            {matches.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center text-gray-500">
+                <div className="text-center p-4">
+                  <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg font-medium mb-2">No conversations yet</p>
+                  <p className="text-sm text-gray-400">Like properties to start conversations with realtors</p>
                 </div>
-                
-                <ScrollArea className="flex-1 overflow-y-auto">
-                  {matches.length === 0 ? (
-                    <div className="p-2 md:p-4 text-center text-gray-500">
-                      <MessageCircle className="w-6 md:w-8 h-6 md:h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-xs md:text-sm">No matches yet</p>
-                      <p className="text-xs text-gray-400 mt-1">Like properties to start conversations</p>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {!selectedMatch ? (
+                  <div className="flex-1 overflow-hidden">
+                    <div className="p-4 border-b bg-gray-50">
+                      <h3 className="font-semibold text-gray-900">Your Conversations</h3>
+                      <p className="text-sm text-gray-600">
+                        {matches.length} conversation{matches.length !== 1 ? 's' : ''}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="space-y-1 p-1 md:p-2">
-                      {matches.map((match) => {
-                        const isRealtor = userType === 'realtor';
-                        const otherUserName = isRealtor ? 'Interested Renter' : 'Property Owner';
-                        
-                        return (
-                          <div
-                            key={match.id}
-                            onClick={() => handleMatchSelect(match.id)}
-                            className={`p-2 md:p-3 cursor-pointer hover:bg-gray-50 transition-colors rounded-lg ${
-                              selectedMatch === match.id ? 'bg-orange-50 border border-orange-200' : 'border border-transparent'
-                            }`}
-                          >
-                            <div className="flex items-start space-x-2 md:space-x-3">
-                              <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 text-xs md:text-sm">
-                                {isRealtor ? 'R' : 'P'}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-xs md:text-sm text-gray-900 truncate">
-                                  {otherUserName}
-                                </p>
-                                <p className="text-xs text-gray-600 truncate">{match.properties?.title}</p>
-                                <div className="flex items-center mt-1">
-                                  <MapPin className="w-2 md:w-3 h-2 md:h-3 text-gray-400 mr-1" />
-                                  <span className="text-xs text-gray-500 truncate">{match.properties?.location}</span>
+                    
+                    <ScrollArea className="flex-1 p-4">
+                      <div className="space-y-3">
+                        {matches.map((match) => {
+                          const isRealtor = userType === 'realtor';
+                          const otherUserName = isRealtor ? 'Interested Renter' : 'Property Owner';
+                          
+                          return (
+                            <div
+                              key={match.id}
+                              onClick={() => handleMatchSelect(match.id)}
+                              className="p-4 cursor-pointer hover:bg-gray-50 transition-colors rounded-lg border border-gray-200 hover:border-orange-200"
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                                  {isRealtor ? 'R' : 'P'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-gray-900 mb-1">
+                                    {otherUserName}
+                                  </p>
+                                  <p className="text-sm text-gray-600 truncate mb-2">{match.properties?.title}</p>
+                                  <div className="flex items-center mb-2">
+                                    <MapPin className="w-3 h-3 text-gray-400 mr-1" />
+                                    <span className="text-xs text-gray-500 truncate">{match.properties?.location}</span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                      {formatPrice(match.properties?.price || 0)}/mo
+                                    </Badge>
+                                    <span className="text-xs text-gray-400">
+                                      {new Date(match.created_at).toLocaleDateString()}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="mt-1 md:mt-2 flex items-center justify-between">
-                              <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
-                                {formatPrice(match.properties?.price || 0)}/mo
-                              </Badge>
-                              <span className="text-xs text-gray-400">
-                                {new Date(match.created_at).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </ScrollArea>
-              </div>
-
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {selectedMatch ? (
-                  <>
-                    <div className="p-2 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 md:space-x-3">
-                          <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-xs md:text-sm">
-                            {userType === 'realtor' ? 'R' : 'P'}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-gray-900 text-sm md:text-base">
-                              {userType === 'realtor' ? 'Interested Renter' : 'Property Owner'}
-                            </h4>
-                            <button
-                              onClick={() => {
-                                // TODO: Open property detail modal
-                              }}
-                              className="text-xs md:text-sm text-blue-600 hover:text-blue-800 hover:underline text-left truncate max-w-full"
-                            >
-                              {matches.find(m => m.id === selectedMatch)?.properties?.title}
-                            </button>
-                          </div>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                ) : (
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <div className="p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
+                      <div className="flex items-center space-x-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedMatch(null)}
+                          className="hover:bg-white/50 p-1"
+                        >
+                          <ArrowLeft className="w-4 h-4" />
+                        </Button>
+                        <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          {userType === 'realtor' ? 'R' : 'P'}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            {userType === 'realtor' ? 'Interested Renter' : 'Property Owner'}
+                          </h4>
+                          <button
+                            onClick={() => {
+                              // TODO: Open property detail modal
+                            }}
+                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline text-left"
+                          >
+                            {matches.find(m => m.id === selectedMatch)?.properties?.title}
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <ScrollArea className="flex-1 p-2 md:p-4 overflow-y-auto">
+                    <ScrollArea className="flex-1 p-4 overflow-y-auto">
                       {directMessages.length === 0 ? (
                         <div className="flex items-center justify-center h-full text-gray-500">
                           <div className="text-center">
-                            <MessageCircle className="w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-4 opacity-50" />
-                            <p className="text-sm md:text-base">Start the conversation!</p>
-                            <p className="text-xs md:text-sm text-gray-400 mt-1">Send a message to connect</p>
+                            <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                            <p className="text-base">Start the conversation!</p>
+                            <p className="text-sm text-gray-400 mt-1">Send a message to connect</p>
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-3 md:space-y-4">
+                        <div className="space-y-4">
                           {directMessages.map((message) => {
                             const isOwnMessage = message.sender_id === user?.id;
                             const currentMatch = matches.find(m => m.id === selectedMatch);
@@ -347,13 +351,13 @@ export const AIChatAgent = ({
                                     {senderName}
                                   </p>
                                   <div
-                                    className={`max-w-[85%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-lg break-words ${
+                                    className={`max-w-[85%] md:max-w-xs lg:max-w-md px-4 py-2 rounded-lg break-words ${
                                       isOwnMessage
                                         ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
                                         : 'bg-gray-100 text-gray-900'
                                     }`}
                                   >
-                                    <p className="text-xs md:text-sm whitespace-pre-wrap">{message.content}</p>
+                                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                                     <p className={`text-xs mt-1 ${
                                       isOwnMessage ? 'text-white/70' : 'text-gray-500'
                                     }`}>
@@ -369,9 +373,10 @@ export const AIChatAgent = ({
                           })}
                         </div>
                       )}
+                      <div ref={messagesEndRef} />
                     </ScrollArea>
 
-                    <div className="p-2 md:p-4 border-t border-gray-200 flex-shrink-0">
+                    <div className="p-4 border-t border-gray-200 flex-shrink-0">
                       <div className="flex space-x-2">
                         <Input
                           value={inputMessage}
@@ -379,29 +384,21 @@ export const AIChatAgent = ({
                           placeholder="Type your message..."
                           onKeyPress={handleKeyPress}
                           disabled={isSendingDirectMessage}
-                          className="flex-1 text-sm md:text-base"
+                          className="flex-1"
                         />
                         <Button 
                           onClick={handleSendMessage}
                           disabled={!inputMessage.trim() || isSendingDirectMessage}
                           className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 flex-shrink-0"
-                          size="sm"
                         >
-                          <Send className="w-3 md:w-4 h-3 md:h-4" />
+                          <Send className="w-4 h-4" />
                         </Button>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex-1 flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <MessageCircle className="w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-4 opacity-50" />
-                      <p className="text-sm md:text-base">Select a match to start messaging</p>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </TabsContent>
         </Tabs>
       </DialogContent>
