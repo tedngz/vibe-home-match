@@ -7,7 +7,7 @@ import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { PropertyEditModal } from '@/components/PropertyEditModal';
 import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
-import { DirectMessagingModal } from '@/components/DirectMessagingModal';
+import { AIChatAgent } from '@/components/AIChatAgent';
 import { RenterProfileModal } from '@/components/RenterProfileModal';
 import { useProperties, Property } from '@/hooks/useProperties';
 import { useMatches, PropertyMatch } from '@/hooks/useMatches';
@@ -22,7 +22,7 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [isMessagingModalOpen, setIsMessagingModalOpen] = useState(false);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<PropertyMatch | null>(null);
@@ -56,7 +56,7 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
 
   const handleChat = (match: PropertyMatch) => {
     setSelectedMatch(match);
-    setIsMessagingModalOpen(true);
+    setIsChatModalOpen(true);
   };
 
   return (
@@ -325,13 +325,13 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
         property={selectedProperty}
       />
 
-      <DirectMessagingModal
-        isOpen={isMessagingModalOpen}
+      <AIChatAgent
+        isOpen={isChatModalOpen}
         onClose={() => {
-          setIsMessagingModalOpen(false);
+          setIsChatModalOpen(false);
           setSelectedMatch(null);
         }}
-        initialMatchId={selectedMatch?.id}
+        userType="realtor"
       />
 
       {selectedMatch && (
