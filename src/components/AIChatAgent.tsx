@@ -158,7 +158,7 @@ export const AIChatAgent = ({
           <TabsList className="grid w-full grid-cols-2 mx-2 md:mx-4 mb-0 flex-shrink-0 bg-gray-100">
             <TabsTrigger value="ai" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
               <Bot className="w-4 h-4 mr-2" />
-              AI Assistant
+              Hausto AI
             </TabsTrigger>
             <TabsTrigger value="messages" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
               <MessageCircle className="w-4 h-4 mr-2" />
@@ -230,7 +230,7 @@ export const AIChatAgent = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="messages" className="flex-1 flex flex-col m-0 overflow-hidden">
+          <TabsContent value="messages" className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
               <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col max-h-[40vh] md:max-h-none">
                 <div className="p-2 md:p-4 border-b bg-gray-50 flex-shrink-0">
