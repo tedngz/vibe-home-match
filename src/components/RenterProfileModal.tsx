@@ -116,12 +116,7 @@ export const RenterProfileModal = ({ userId, isOpen, onClose }: RenterProfileMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold">Renter Profile</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl font-bold">Renter Profile</DialogTitle>
         </DialogHeader>
 
         {profileLoading ? (

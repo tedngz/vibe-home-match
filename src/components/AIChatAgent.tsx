@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { X, Send, MessageCircle, Bot, MapPin } from 'lucide-react';
+import { X, Send, MessageCircle, Bot, MapPin, Trash2 } from 'lucide-react';
 import { useChat } from '@/hooks/useChat';
 import { useDirectMessages } from '@/hooks/useDirectMessages';
 import { useMatches } from '@/hooks/useMatches';
@@ -146,18 +146,24 @@ export const AIChatAgent = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-4xl h-[85vh] max-h-[85vh] p-0 flex flex-col bg-white overflow-hidden">
-        <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900">{getTitle()}</h2>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+      <DialogContent className="w-full max-w-4xl h-[90vh] max-h-[90vh] p-0 flex flex-col bg-white overflow-hidden sm:rounded-lg">
+        <div className="flex items-center justify-between p-3 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
+          <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">{getTitle()}</h2>
+          <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-white/50">
             <X className="w-4 h-4" />
           </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'ai' | 'messages')} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="grid w-full grid-cols-2 mx-2 md:mx-4 mb-0 flex-shrink-0">
-            <TabsTrigger value="ai" className="text-xs md:text-sm">AI Assistant</TabsTrigger>
-            <TabsTrigger value="messages" className="text-xs md:text-sm">Direct Messages</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mx-2 md:mx-4 mb-0 flex-shrink-0 bg-gray-100">
+            <TabsTrigger value="ai" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
+              <Bot className="w-4 h-4 mr-2" />
+              AI Assistant
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Messages
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="ai" className="flex-1 flex flex-col m-0 overflow-hidden">
@@ -225,12 +231,12 @@ export const AIChatAgent = ({
           </TabsContent>
 
           <TabsContent value="messages" className="flex-1 flex flex-col m-0 overflow-hidden">
-            <div className="flex-1 flex overflow-hidden">
-              <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col">
-                <div className="p-2 md:p-4 border-b border-gray-200 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">Your Matches</h3>
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              <div className="w-full md:w-1/3 border-r border-gray-200 flex flex-col max-h-[40vh] md:max-h-none">
+                <div className="p-2 md:p-4 border-b bg-gray-50 flex-shrink-0">
+                  <h3 className="font-semibold text-gray-900 text-sm md:text-base">Your Conversations</h3>
                   <p className="text-xs md:text-sm text-gray-600">
-                    {matches.length} match{matches.length !== 1 ? 'es' : ''}
+                    {matches.length} conversation{matches.length !== 1 ? 's' : ''}
                   </p>
                 </div>
                 
@@ -243,38 +249,44 @@ export const AIChatAgent = ({
                     </div>
                   ) : (
                     <div className="space-y-1 p-1 md:p-2">
-                      {matches.map((match) => (
-                        <div
-                          key={match.id}
-                          onClick={() => handleMatchSelect(match.id)}
-                          className={`p-2 md:p-3 cursor-pointer hover:bg-gray-50 transition-colors rounded-lg ${
-                            selectedMatch === match.id ? 'bg-orange-50 border border-orange-200' : ''
-                          }`}
-                        >
-                          <div className="flex items-start space-x-2 md:space-x-3">
-                            <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 text-xs md:text-sm">
-                              {match.properties?.title.charAt(0)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-xs md:text-sm text-gray-900 truncate">
-                                {match.properties?.title}
-                              </p>
-                              <div className="flex items-center mt-1">
-                                <MapPin className="w-2 md:w-3 h-2 md:h-3 text-gray-400 mr-1" />
-                                <span className="text-xs text-gray-500 truncate">{match.properties?.location}</span>
+                      {matches.map((match) => {
+                        const isRealtor = userType === 'realtor';
+                        const otherUserName = isRealtor ? 'Interested Renter' : 'Property Owner';
+                        
+                        return (
+                          <div
+                            key={match.id}
+                            onClick={() => handleMatchSelect(match.id)}
+                            className={`p-2 md:p-3 cursor-pointer hover:bg-gray-50 transition-colors rounded-lg ${
+                              selectedMatch === match.id ? 'bg-orange-50 border border-orange-200' : 'border border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-start space-x-2 md:space-x-3">
+                              <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 text-xs md:text-sm">
+                                {isRealtor ? 'R' : 'P'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-xs md:text-sm text-gray-900 truncate">
+                                  {otherUserName}
+                                </p>
+                                <p className="text-xs text-gray-600 truncate">{match.properties?.title}</p>
+                                <div className="flex items-center mt-1">
+                                  <MapPin className="w-2 md:w-3 h-2 md:h-3 text-gray-400 mr-1" />
+                                  <span className="text-xs text-gray-500 truncate">{match.properties?.location}</span>
+                                </div>
                               </div>
                             </div>
+                            <div className="mt-1 md:mt-2 flex items-center justify-between">
+                              <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-800">
+                                {formatPrice(match.properties?.price || 0)}/mo
+                              </Badge>
+                              <span className="text-xs text-gray-400">
+                                {new Date(match.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
                           </div>
-                          <div className="mt-1 md:mt-2 flex items-center justify-between">
-                            <Badge variant="secondary" className="text-xs">
-                              {formatPrice(match.properties?.price || 0)}/mo
-                            </Badge>
-                            <span className="text-xs text-gray-400">
-                              {new Date(match.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </ScrollArea>
@@ -283,17 +295,39 @@ export const AIChatAgent = ({
               <div className="flex-1 flex flex-col overflow-hidden">
                 {selectedMatch ? (
                   <>
-                    <div className="p-2 md:p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                      <div className="flex items-center space-x-2 md:space-x-3">
-                        <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-xs md:text-sm">
-                          R
+                    <div className="p-2 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 md:space-x-3">
+                          <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-xs md:text-sm">
+                            {userType === 'realtor' ? 'R' : 'P'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 text-sm md:text-base">
+                              {userType === 'realtor' ? 'Interested Renter' : 'Property Owner'}
+                            </h4>
+                            <button
+                              onClick={() => {
+                                // TODO: Open property detail modal
+                              }}
+                              className="text-xs md:text-sm text-blue-600 hover:text-blue-800 hover:underline text-left truncate max-w-full"
+                            >
+                              {matches.find(m => m.id === selectedMatch)?.properties?.title}
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 text-sm md:text-base">Property Owner</h4>
-                          <p className="text-xs md:text-sm text-gray-600 truncate">
-                            {matches.find(m => m.id === selectedMatch)?.properties?.title}
-                          </p>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            // TODO: Implement conversation deletion
+                            if (window.confirm('Delete this conversation? This action cannot be undone.')) {
+                              setSelectedMatch(null);
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
 
@@ -310,27 +344,38 @@ export const AIChatAgent = ({
                         <div className="space-y-3 md:space-y-4">
                           {directMessages.map((message) => {
                             const isOwnMessage = message.sender_id === user?.id;
+                            const currentMatch = matches.find(m => m.id === selectedMatch);
+                            const isRealtor = userType === 'realtor';
+                            const senderName = isOwnMessage 
+                              ? 'You' 
+                              : (isRealtor ? 'Renter' : 'Property Owner');
+                            
                             return (
                               <div
                                 key={message.id}
                                 className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                               >
-                                <div
-                                  className={`max-w-[85%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-lg break-words ${
-                                    isOwnMessage
-                                      ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
-                                      : 'bg-gray-100 text-gray-900'
-                                  }`}
-                                >
-                                  <p className="text-xs md:text-sm whitespace-pre-wrap">{message.content}</p>
-                                  <p className={`text-xs mt-1 ${
-                                    isOwnMessage ? 'text-white/70' : 'text-gray-500'
-                                  }`}>
-                                    {new Date(message.created_at).toLocaleTimeString([], { 
-                                      hour: '2-digit', 
-                                      minute: '2-digit' 
-                                    })}
+                                <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}>
+                                  <p className="text-xs text-gray-500 mb-1 px-1">
+                                    {senderName}
                                   </p>
+                                  <div
+                                    className={`max-w-[85%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-lg break-words ${
+                                      isOwnMessage
+                                        ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
+                                        : 'bg-gray-100 text-gray-900'
+                                    }`}
+                                  >
+                                    <p className="text-xs md:text-sm whitespace-pre-wrap">{message.content}</p>
+                                    <p className={`text-xs mt-1 ${
+                                      isOwnMessage ? 'text-white/70' : 'text-gray-500'
+                                    }`}>
+                                      {new Date(message.created_at).toLocaleTimeString([], { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' 
+                                      })}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             );
