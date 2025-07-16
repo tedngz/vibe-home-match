@@ -83,18 +83,18 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-5xl h-[80vh] bg-white flex">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 md:p-4">
+      <Card className="w-full max-w-5xl h-[90vh] md:h-[80vh] bg-white flex flex-col md:flex-row overflow-hidden">
         {/* Conversations Sidebar */}
-        <div className="w-1/3 border-r flex flex-col">
-          <div className="p-4 border-b">
+        <div className="w-full md:w-1/3 border-r md:border-r border-b md:border-b-0 flex flex-col max-h-[40vh] md:max-h-none">
+          <div className="p-2 md:p-4 border-b flex-shrink-0">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Messages</h3>
+              <h3 className="font-semibold text-gray-900 text-sm md:text-base">Messages</h3>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs md:text-sm text-gray-600">
               {conversations.length} active conversation{conversations.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -182,7 +182,14 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                       <h4 className="font-semibold text-gray-900">
                         {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
                       </h4>
-                      <p className="text-sm text-gray-600">{currentMatch.properties?.title}</p>
+                      <button
+                        onClick={() => {
+                          // TODO: Open property detail modal
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline text-left"
+                      >
+                        {currentMatch.properties?.title}
+                      </button>
                     </div>
                   </div>
                   <AlertDialog>
@@ -224,30 +231,40 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {messages.map((message) => {
                       const isOwnMessage = message.sender_id === user?.id;
+                      const isRealtor = user?.id === currentMatch?.realtor_id;
+                      const senderName = isOwnMessage 
+                        ? 'You' 
+                        : (isRealtor ? 'Renter' : 'Property Owner');
+                      
                       return (
                         <div
                           key={message.id}
                           className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                              isOwnMessage
-                                ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
-                                : 'bg-gray-100 text-gray-900'
-                            }`}
-                          >
-                            <p className="text-sm">{message.content}</p>
-                            <p className={`text-xs mt-1 ${
-                              isOwnMessage ? 'text-white/70' : 'text-gray-500'
-                            }`}>
-                              {new Date(message.created_at).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
+                          <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}>
+                            <p className="text-xs text-gray-500 mb-1 px-1">
+                              {senderName}
                             </p>
+                            <div
+                              className={`max-w-[85%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-lg break-words ${
+                                isOwnMessage
+                                  ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
+                                  : 'bg-gray-100 text-gray-900'
+                              }`}
+                            >
+                              <p className="text-xs md:text-sm whitespace-pre-wrap">{message.content}</p>
+                              <p className={`text-xs mt-1 ${
+                                isOwnMessage ? 'text-white/70' : 'text-gray-500'
+                              }`}>
+                                {new Date(message.created_at).toLocaleTimeString([], { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       );

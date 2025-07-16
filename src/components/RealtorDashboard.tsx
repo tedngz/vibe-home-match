@@ -7,10 +7,11 @@ import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { PropertyEditModal } from '@/components/PropertyEditModal';
 import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
+import { DirectMessagingModal } from '@/components/DirectMessagingModal';
+import { RenterProfileModal } from '@/components/RenterProfileModal';
 import { useProperties, Property } from '@/hooks/useProperties';
-import { useMatches } from '@/hooks/useMatches';
+import { useMatches, PropertyMatch } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { Match } from '@/pages/Index';
 import { useToast } from '@/hooks/use-toast';
 
 interface RealtorDashboardProps {
@@ -21,7 +22,10 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [isMessagingModalOpen, setIsMessagingModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedMatch, setSelectedMatch] = useState<PropertyMatch | null>(null);
   const { realtorProperties, isLoading, deleteProperty, isDeleting } = useProperties();
   const { realtorMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
@@ -43,6 +47,16 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
     if (window.confirm(`Are you sure you want to delete "${property.title}"? This action cannot be undone.`)) {
       deleteProperty(property.id);
     }
+  };
+
+  const handleViewProfile = (match: PropertyMatch) => {
+    setSelectedMatch(match);
+    setIsProfileModalOpen(true);
+  };
+
+  const handleChat = (match: PropertyMatch) => {
+    setSelectedMatch(match);
+    setIsMessagingModalOpen(true);
   };
 
   return (
@@ -265,6 +279,7 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                           size="sm"
                           variant="outline"
                           className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                          onClick={() => handleViewProfile(match)}
                         >
                           <User className="w-4 h-4 mr-1" />
                           View Profile
@@ -272,6 +287,7 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                         <Button
                           size="sm"
                           className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
+                          onClick={() => handleChat(match)}
                         >
                           <MessageSquare className="w-4 h-4 mr-1" />
                           Chat
@@ -308,6 +324,26 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
         }}
         property={selectedProperty}
       />
+
+      <DirectMessagingModal
+        isOpen={isMessagingModalOpen}
+        onClose={() => {
+          setIsMessagingModalOpen(false);
+          setSelectedMatch(null);
+        }}
+        initialMatchId={selectedMatch?.id}
+      />
+
+      {selectedMatch && (
+        <RenterProfileModal
+          userId={selectedMatch.renter_id}
+          isOpen={isProfileModalOpen}
+          onClose={() => {
+            setIsProfileModalOpen(false);
+            setSelectedMatch(null);
+          }}
+        />
+      )}
     </div>
   );
 };
