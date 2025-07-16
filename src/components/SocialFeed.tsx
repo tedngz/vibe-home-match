@@ -170,7 +170,7 @@ export const SocialFeed = () => {
                   </div>
                 </div>
                 <Textarea
-                  placeholder="What's happening in your property world?"
+                  placeholder="What's happening in your property world? Share updates, tips, or connect with your community..."
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
                   className="min-h-[120px] resize-none border-0 shadow-none text-base placeholder:text-gray-400 focus-visible:ring-0"
