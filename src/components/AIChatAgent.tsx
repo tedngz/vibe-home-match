@@ -60,13 +60,13 @@ export const AIChatAgent = ({
 
   useEffect(() => {
     if (isOpen && !currentConversationId && activeTab === 'ai') {
-      createConversation.mutate();
+      createConversation('New Conversation');
     }
   }, [isOpen, currentConversationId, activeTab]);
 
   useEffect(() => {
     if (currentConversationId && pendingMessage && activeTab === 'ai') {
-      sendMessage.mutate({
+      sendMessage({
         message: pendingMessage,
         conversationId: currentConversationId,
         userType,
@@ -86,7 +86,7 @@ export const AIChatAgent = ({
     
     if (activeTab === 'ai') {
       if (currentConversationId) {
-        sendMessage.mutate({
+        sendMessage({
           message: inputMessage.trim(),
           conversationId: currentConversationId,
           userType,
@@ -95,14 +95,14 @@ export const AIChatAgent = ({
         });
       } else {
         setPendingMessage(inputMessage.trim());
-        createConversation.mutate();
+        createConversation('New Conversation');
       }
     } else if (activeTab === 'messages' && selectedMatch) {
       const matches = userType === 'renter' ? renterMatches : realtorMatches;
       const match = matches.find(m => m.id === selectedMatch);
       if (match) {
         const receiverId = user?.id === match.realtor_id ? match.renter_id : match.realtor_id;
-        sendDirectMessage.mutate({
+        sendDirectMessage({
           matchId: selectedMatch,
           content: inputMessage.trim(),
           receiverId,
@@ -154,7 +154,7 @@ export const AIChatAgent = ({
           </Button>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'ai' | 'messages')} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="grid w-full grid-cols-2 mx-2 md:mx-4 mb-0 flex-shrink-0">
             <TabsTrigger value="ai" className="text-xs md:text-sm">AI Assistant</TabsTrigger>
             <TabsTrigger value="messages" className="text-xs md:text-sm">Direct Messages</TabsTrigger>
