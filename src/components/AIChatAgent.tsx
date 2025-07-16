@@ -230,7 +230,7 @@ export const AIChatAgent = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="messages" className="flex-1 flex flex-col overflow-hidden">
+          <TabsContent value="messages" className="flex-1 flex flex-col overflow-hidden m-0">
             {matches.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-gray-500">
                 <div className="text-center p-4">
@@ -243,14 +243,14 @@ export const AIChatAgent = ({
               <div className="flex-1 flex flex-col overflow-hidden">
                 {!selectedMatch ? (
                   <div className="flex-1 overflow-hidden">
-                    <div className="p-4 border-b bg-gray-50">
+                    <div className="p-3 border-b bg-gray-50">
                       <h3 className="font-semibold text-gray-900">Your Conversations</h3>
                       <p className="text-sm text-gray-600">
                         {matches.length} conversation{matches.length !== 1 ? 's' : ''}
                       </p>
                     </div>
                     
-                    <ScrollArea className="flex-1 p-4">
+                    <ScrollArea className="flex-1 p-3">
                       <div className="space-y-3">
                         {matches.map((match) => {
                           const isRealtor = userType === 'realtor';
