@@ -71,18 +71,6 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "" }: V
           </div>
           <span className="text-xs font-medium w-8 text-right">{score.breakdown.activities}%</span>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <DollarSign className="w-3 h-3 text-orange-500" />
-          <span className="text-xs text-gray-600 flex-1">Price</span>
-          <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${getProgressColor(score.breakdown.price)} transition-all duration-300`}
-              style={{ width: `${score.breakdown.price}%` }}
-            />
-          </div>
-          <span className="text-xs font-medium w-8 text-right">{score.breakdown.price}%</span>
-        </div>
       </div>
     </div>
   );

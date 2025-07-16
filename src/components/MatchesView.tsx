@@ -12,6 +12,7 @@ import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { UserProfile } from '@/components/LoginModal';
 import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { HighlightTags } from '@/components/HighlightTags';
 
 interface MatchesViewProps {
   userPreferences?: UserPreferences;
@@ -218,18 +219,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
 
                   {/* Key highlights */}
                   <div className="mb-4">
-                    <div className="flex flex-wrap gap-1">
-                      {apartment.highlights.slice(0, 3).map((highlight, index) => (
-                        <Badge key={index} variant="outline" className="text-xs bg-white/50">
-                          {highlight}
-                        </Badge>
-                      ))}
-                      {apartment.highlights.length > 3 && (
-                        <Badge variant="outline" className="text-xs bg-white/50">
-                          +{apartment.highlights.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
+                    <HighlightTags highlights={apartment.highlights} />
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200">

@@ -11,6 +11,7 @@ import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
+import { HighlightTags } from '@/components/HighlightTags';
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -371,6 +372,9 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                 {currentApartment.vibe}
               </Badge>
+              <Badge className="bg-primary text-primary-foreground font-semibold">
+                {formatPrice(currentApartment.price)}/mo
+              </Badge>
             </div>
 
 
@@ -402,17 +406,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               )}
             </div>
 
-            <div className="flex flex-wrap gap-1 mb-5">
-              {currentApartment.highlights.slice(0, 3).map((highlight, index) => (
-                <Badge key={index} variant="outline" className="text-xs bg-white/50">
-                  {highlight}
-                </Badge>
-              ))}
-              {currentApartment.highlights.length > 3 && (
-                <Badge variant="outline" className="text-xs bg-white/50">
-                  +{currentApartment.highlights.length - 3} more
-                </Badge>
-              )}
+            <div className="mb-5">
+              <HighlightTags highlights={currentApartment.highlights} />
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
