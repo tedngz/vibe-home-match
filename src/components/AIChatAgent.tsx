@@ -213,9 +213,9 @@ export const AIChatAgent = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl h-[600px] flex flex-col">
+      <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] h-[600px] flex flex-col p-4">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
+          <DialogTitle className="flex items-center space-x-2 text-base">
             <Bot className="w-5 h-5 text-blue-500" />
             <span>{getTitle()}</span>
           </DialogTitle>
@@ -324,10 +324,10 @@ export const AIChatAgent = ({
             </TabsContent>
             
             <TabsContent value="messages" className="flex-1 flex flex-col space-y-4">
-              <div className="flex-1 flex">
+              <div className="flex-1 flex flex-col md:flex-row">
                 {/* Match list */}
-                <div className="w-1/3 border-r pr-4">
-                  <h3 className="font-semibold mb-3">Your Matches</h3>
+                <div className="w-full md:w-1/3 border-r-0 md:border-r pr-0 md:pr-4 mb-4 md:mb-0">
+                  <h3 className="font-semibold mb-3 text-sm md:text-base">Your Matches</h3>
                   <div className="space-y-2">
                     {matches.length === 0 ? (
                       <div className="text-center py-8 text-gray-500">
@@ -380,7 +380,7 @@ export const AIChatAgent = ({
                 </div>
                 
                 {/* Messages */}
-                <div className="w-2/3 pl-4 flex flex-col">
+                <div className="w-full md:w-2/3 pl-0 md:pl-4 flex flex-col">
                   {selectedMatch ? (
                     <>
                       <ScrollArea className="flex-1 p-4 border rounded-lg">
@@ -476,19 +476,20 @@ export const AIChatAgent = ({
             </TabsContent>
           </Tabs>
           
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 p-3 md:p-4 border-t">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={getPlaceholder()}
               disabled={(activeTab === 'ai' && (isSendingMessage || !currentConversationId)) || (activeTab === 'messages' && (!selectedMatch || isSendingDirectMessage))}
-              className="flex-1"
+              className="flex-1 text-sm"
             />
             <Button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || (activeTab === 'ai' && isSendingMessage) || (activeTab === 'messages' && (!selectedMatch || isSendingDirectMessage))}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 p-2"
+              size="sm"
             >
               <Send className="w-4 h-4" />
             </Button>

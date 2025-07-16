@@ -117,7 +117,7 @@ const Index = () => {
     if (type === 'realtor') {
       setCurrentView('dashboard');
     } else {
-      // Check if user has saved preferences - auto skip quiz if completed before
+      // Auto skip to swipe if user has completed quiz before
       if (user) {
         const savedPreferences = localStorage.getItem(`userPreferences_${user.id}`);
         if (savedPreferences) {
@@ -126,13 +126,13 @@ const Index = () => {
             setCurrentView('swipe');
           } catch (error) {
             console.error('Error parsing saved preferences:', error);
-            setCurrentView('onboarding');
+            setCurrentView('swipe'); // Skip to swipe even if preferences are corrupted
           }
         } else {
-          setCurrentView('onboarding');
+          setCurrentView('swipe'); // Skip directly to swipe interface
         }
       } else {
-        setCurrentView('onboarding');
+        setCurrentView('swipe'); // Skip directly to swipe interface
       }
     }
   };

@@ -346,12 +346,18 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
           <div className="p-5">
             <div className="mb-2">
+              {/* Mobile: Title above vibe score */}
+              <div className="md:hidden mb-3">
+                <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
+              </div>
+              
               <div className="flex items-start justify-between mb-2">
-                <h2 className="text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
+                {/* Desktop: Title inline with vibe score */}
+                <h2 className="hidden md:block text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
                 <VibeScore score={vibeScore} size="sm" />
               </div>
               
-              {/* Detailed Score Breakdown */}
+              {/* Detailed Score Breakdown - Remove overall match text */}
               <div className="bg-gray-50 p-3 rounded-lg mb-3">
                 <VibeScoreBar score={vibeScore} showBreakdown={true} />
               </div>
@@ -364,9 +370,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
             <div className="flex items-center justify-between mb-4">
               <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
                 {currentApartment.vibe}
-              </Badge>
-              <Badge className="bg-primary text-primary-foreground font-semibold">
-                {formatPrice(currentApartment.price)}/mo
               </Badge>
             </div>
 

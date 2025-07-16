@@ -34,14 +34,6 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "" }: V
 
   return (
     <div className={`space-y-3 ${className}`}>
-      {/* Overall Score */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Overall Match</span>
-        <Badge className={`${getScoreColor(score.overall)}`}>
-          {score.overall}%
-        </Badge>
-      </div>
-
       {/* Breakdown */}
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
