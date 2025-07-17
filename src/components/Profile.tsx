@@ -368,7 +368,7 @@ export const Profile = ({ userType }: ProfileProps) => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div className="container mx-auto p-6 max-w-4xl pt-20">
       <div className="grid gap-6">
         {/* Header */}
         <Card>

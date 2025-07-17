@@ -169,11 +169,12 @@ export const SocialFeed = () => {
                   className="min-h-[120px] resize-none border-0 shadow-none text-base placeholder:text-gray-400 focus-visible:ring-0"
                   autoFocus
                 />
-                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                 <div className="flex items-center justify-between mt-4 pt-4 border-t">
                   <Button variant="ghost" size="sm" className="text-blue-500">
                     <ImageIcon className="h-5 w-5 mr-2" />
                     Photo
                   </Button>
+                  <span className="text-xs text-gray-500">{newPost.length}/280</span>
                 </div>
               </div>
             </div>
@@ -297,7 +298,7 @@ export const SocialFeed = () => {
                       </p>
                     )}
 
-                    {/* Add Comment */}
+                     {/* Add Comment */}
                     <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
                       <Avatar className="h-6 w-6">
                         <AvatarImage src="" />
@@ -310,6 +311,9 @@ export const SocialFeed = () => {
                         placeholder="Add a comment..."
                         className="flex-1 text-sm placeholder:text-gray-400 border-0 bg-transparent focus:outline-none"
                       />
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <Send className="h-3 w-3 text-blue-500" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -318,6 +322,14 @@ export const SocialFeed = () => {
           )}
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      <Button
+        onClick={() => setShowCreatePost(true)}
+        className="fixed bottom-20 right-4 w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg border-0 z-40"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
     </div>
   );
 };

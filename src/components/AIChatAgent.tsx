@@ -266,10 +266,72 @@ export const AIChatAgent = ({
                       <Bot className="w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-4 opacity-50" />
                       <p className="text-base md:text-lg font-medium mb-1 md:mb-2">{getWelcomeMessage()}</p>
                       <p className="text-xs md:text-sm">Ask me anything about properties, neighborhoods, or your search preferences!</p>
+                      
+                      {/* Quick Chat Suggestions */}
+                      <div className="mt-6 space-y-2">
+                        <p className="text-sm font-medium text-gray-700">Quick suggestions:</p>
+                        <div className="flex flex-col gap-2">
+                          {userType === 'realtor' ? (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("Help me write a compelling property description")}
+                                className="text-xs"
+                              >
+                                "Help me write a compelling property description"
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("Generate marketing content for my listing")}
+                                className="text-xs"
+                              >
+                                "Generate marketing content for my listing"
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("What are the current market trends?")}
+                                className="text-xs"
+                              >
+                                "What are the current market trends?"
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("Help me find properties in my budget")}
+                                className="text-xs"
+                              >
+                                "Help me find properties in my budget"
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("What should I look for when viewing a property?")}
+                                className="text-xs"
+                              >
+                                "What should I look for when viewing a property?"
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setInputMessage("Tell me about neighborhood amenities")}
+                                className="text-xs"
+                              >
+                                "Tell me about neighborhood amenities"
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                   {messages.map((message) => (
-                    <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                       <div className={`max-w-[85%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-lg break-words ${
                         message.role === 'user'
                           ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
