@@ -124,17 +124,10 @@ export const SocialFeed = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-md mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center">
             Hausto Feed
           </h1>
-          <Button 
-            onClick={() => setShowCreatePost(!showCreatePost)}
-            size="sm"
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -195,7 +188,14 @@ export const SocialFeed = () => {
                 <MessageCircle className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="font-semibold text-lg mb-2">No posts yet</h3>
-              <p className="text-gray-600 text-sm">Be the first to share something!</p>
+              <p className="text-gray-600 text-sm mb-4">Be the first to share something!</p>
+              <Button 
+                onClick={() => setShowCreatePost(true)}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Post
+              </Button>
             </div>
           ) : (
             posts.map((post, index) => {

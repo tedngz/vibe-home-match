@@ -35,27 +35,27 @@ export const Navigation = ({
           </div>
           
           <div className="flex items-center justify-center flex-1">
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-0.5 md:space-x-1">
               <Button
                 variant={currentView === 'swipe' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('swipe')}
-                className={currentView === 'swipe' ? 'bg-primary text-primary-foreground' : ''}
+                className={`text-xs md:text-sm px-2 md:px-3 ${currentView === 'swipe' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Heart className="w-4 h-4 mr-2" />
-                Discover
+                <Heart className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Discover</span>
               </Button>
               
               <Button
                 variant={currentView === 'matches' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('matches')}
-                className="relative"
+                className={`relative text-xs md:text-sm px-2 md:px-3 ${currentView === 'matches' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Matches
+                <MessageSquare className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Matches</span>
                 {matchCount > 0 && (
-                  <Badge className="ml-1 bg-primary text-primary-foreground text-xs h-5 min-w-5 flex items-center justify-center rounded-full">
+                  <Badge className="ml-1 bg-primary text-primary-foreground text-xs h-4 min-w-4 flex items-center justify-center rounded-full">
                     {matchCount}
                   </Badge>
                 )}
@@ -65,20 +65,30 @@ export const Navigation = ({
                 variant={currentView === 'feed' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('feed')}
-                className={currentView === 'feed' ? 'bg-primary text-primary-foreground' : ''}
+                className={`text-xs md:text-sm px-2 md:px-3 ${currentView === 'feed' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Users className="w-4 h-4 mr-2" />
-                Feed
+                <Users className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Feed</span>
               </Button>
               
               <Button
                 variant={currentView === 'profile' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setCurrentView('profile')}
-                className={currentView === 'profile' ? 'bg-primary text-primary-foreground' : ''}
+                className={`text-xs md:text-sm px-2 md:px-3 ${currentView === 'profile' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <User className="w-4 h-4 mr-2" />
-                Profile
+                <User className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Profile</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenAIChat}
+                className="text-xs md:text-sm px-2 md:px-3"
+              >
+                <MessageSquare className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Chat</span>
               </Button>
             </div>
           </div>
