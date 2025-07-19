@@ -87,8 +87,8 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
             </div>
           </div>
           {getSelectedCount() > 0 && (
-            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs sm:text-sm px-2 py-1">
-              {getSelectedCount()} selected
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 leading-tight">
+              {getSelectedCount()}
             </Badge>
           )}
         </div>
@@ -134,8 +134,8 @@ export const CityDistrictSelector = ({ value, onChange }: CityDistrictSelectorPr
         <p className="text-sm text-slate-600 mb-4">Choose your preferred location</p>
         {value.length > 0 && (
           <div className="mb-3">
-            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs sm:text-sm px-2 py-1">
-              {value.length} area{value.length !== 1 ? 's' : ''} selected
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 leading-tight">
+              {value.length} area{value.length !== 1 ? 's' : ''}
             </Badge>
           </div>
         )}

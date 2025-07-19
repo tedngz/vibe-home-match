@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -144,6 +144,10 @@ export const AIChatAgent = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-4xl h-[90vh] max-h-[90vh] p-0 flex flex-col bg-white overflow-hidden sm:rounded-lg">
+        <DialogTitle className="sr-only">Hausto Chat Assistant</DialogTitle>
+        <DialogDescription className="sr-only">
+          Chat with Hausto AI assistant for property recommendations and real estate help
+        </DialogDescription>
         <div className="p-3 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
           <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">Hausto Chat</h2>
         </div>
@@ -256,8 +260,8 @@ export const AIChatAgent = ({
                 </div>
               </div>
 
-              <ScrollArea className="flex-1 p-2 md:p-4 overflow-y-auto max-h-[50vh] sm:max-h-none" ref={messagesEndRef}>
-                <div className="space-y-3 md:space-y-4">
+              <div className="flex-1 overflow-y-auto" style={{ height: 'calc(90vh - 200px)' }}>
+                <div className="p-2 md:p-4 space-y-3 md:space-y-4" ref={messagesEndRef}>
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 py-4 md:py-8">
                       <Bot className="w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-4 opacity-50" />
@@ -357,7 +361,7 @@ export const AIChatAgent = ({
                     </div>
                   )}
                 </div>
-              </ScrollArea>
+              </div>
               
               <div className="p-2 md:p-4 border-t border-gray-200 flex-shrink-0">
                 <div className="flex space-x-2">
