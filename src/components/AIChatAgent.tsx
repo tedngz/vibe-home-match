@@ -256,7 +256,7 @@ export const AIChatAgent = ({
                 </div>
               </div>
 
-              <ScrollArea className="flex-1 p-2 md:p-4 overflow-y-auto" ref={messagesEndRef}>
+              <ScrollArea className="flex-1 p-2 md:p-4 overflow-y-auto max-h-[50vh] sm:max-h-none" ref={messagesEndRef}>
                 <div className="space-y-3 md:space-y-4">
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 py-4 md:py-8">

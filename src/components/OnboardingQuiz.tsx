@@ -186,7 +186,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
     {
       title: "Space to breathe! How much room do you need?",
       subtitle: "Some love cozy spaces, others need room to spread out. What feels like 'just right' for your lifestyle?",
-      type: "single-select" as const,
+      type: "multi-select" as const,
       key: "size" as keyof UserPreferences,
       icon: Ruler,
       options: [
