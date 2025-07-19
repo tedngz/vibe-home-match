@@ -113,37 +113,37 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
           id: 'modern', 
           label: 'Modern', 
           description: 'Clean lines, sleek vibes',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/56eaf19c-2080-4831-8b77-4d00dc7570c0.png'
         },
         { 
           id: 'cozy', 
           label: 'Cozy', 
           description: 'Warm hugs everywhere',
-          image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/dd1fb7df-2deb-4b9a-8627-316bf4fa3a0a.png'
         },
         { 
           id: 'industrial', 
           label: 'Industrial', 
           description: 'Raw, urban edge',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/bc78b489-f8ff-4c97-85ef-65446bfb59dd.png'
         },
         { 
           id: 'bohemian', 
           label: 'Bohemian', 
           description: 'Artistic, free spirit',
-          image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/5fee52da-6f45-4cbe-88a3-d3868ca23d6d.png'
         },
         { 
           id: 'scandinavian', 
           label: 'Scandinavian', 
           description: 'Light, airy perfection',
-          image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/f1a210c9-bdfa-4180-a680-983793a494d8.png'
         },
         { 
           id: 'minimalist', 
           label: 'Minimalist', 
           description: 'Less is more magic',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&auto=format'
+          image: '/lovable-uploads/de3ec921-af90-424b-9f8e-01c4368a5ae4.png'
         }
       ]
     },
@@ -255,7 +255,7 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
               {currentStepData.type === "multi-select" && (
                 <div className="w-full">
                   {currentStep === 0 ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {currentStepData.options?.map((option, index) => {
                         const isSelected = ((preferences[currentStepData.key] as string[]) || []).includes(option.id);
                         return (
@@ -266,26 +266,26 @@ export const OnboardingQuiz = ({ onComplete, onSkip }: OnboardingQuizProps) => {
                               isSelected ? 'ring-4 ring-orange-500 ring-offset-2' : ''
                             }`}
                           >
-                            <div className="aspect-[4/3] relative">
+                            <div className="aspect-[3/2] sm:aspect-[4/3] relative">
                               <img 
                                 src={option.image} 
                                 alt={option.label}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover object-center"
                               />
                               <div className={`absolute inset-0 transition-all duration-300 ${
                                 isSelected ? 'bg-orange-500/20' : 'bg-black/20 group-hover:bg-black/10'
                               }`}></div>
                               {isSelected && (
-                                <div className="absolute top-3 right-3">
-                                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                                    <span className="text-white text-sm font-bold">✓</span>
+                                <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
+                                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                                    <span className="text-white text-xs sm:text-sm font-bold">✓</span>
                                   </div>
                                 </div>
                               )}
                             </div>
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                              <h3 className="text-white font-bold text-lg">{option.label}</h3>
-                              <p className="text-white/90 text-sm">{option.description}</p>
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 sm:p-4">
+                              <h3 className="text-white font-bold text-base sm:text-lg">{option.label}</h3>
+                              <p className="text-white/90 text-xs sm:text-sm">{option.description}</p>
                             </div>
                           </div>
                         );
