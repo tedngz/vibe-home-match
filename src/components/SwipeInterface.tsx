@@ -348,13 +348,13 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
           <div className="p-5">
             <div className="mb-2">
               {/* Mobile: Title above vibe score */}
-              <div className="md:hidden mb-3">
+              <div className="block sm:hidden mb-3">
                 <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
               </div>
               
               <div className="flex items-start justify-between mb-2">
                 {/* Desktop: Title inline with vibe score */}
-                <h2 className="hidden md:block text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
+                <h2 className="hidden sm:block text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
                 <VibeScore score={vibeScore} size="sm" />
               </div>
               

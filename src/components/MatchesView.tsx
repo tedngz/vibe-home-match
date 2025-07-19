@@ -162,8 +162,14 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                 
                 <div className="p-5">
                   <div className="mb-3">
+                    {/* Mobile: Title above vibe score */}
+                    <div className="block sm:hidden mb-3">
+                      <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
+                    </div>
+                    
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
+                      {/* Desktop: Title inline with vibe score */}
+                      <h3 className="hidden sm:block font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
                       {vibeScore && <VibeScore score={vibeScore} size="sm" />}
                     </div>
                     

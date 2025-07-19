@@ -144,11 +144,8 @@ export const AIChatAgent = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-4xl h-[90vh] max-h-[90vh] p-0 flex flex-col bg-white overflow-hidden sm:rounded-lg">
-        <div className="flex items-center justify-between p-3 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
+        <div className="p-3 md:p-4 border-b bg-gradient-to-r from-orange-50 to-pink-50 flex-shrink-0">
           <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">Hausto Chat</h2>
-          <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-white/50">
-            <X className="w-4 h-4" />
-          </Button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
