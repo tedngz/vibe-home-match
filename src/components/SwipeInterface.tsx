@@ -364,11 +364,11 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               </div>
             </div>
             
-            <div className="flex items-center text-gray-600 text-sm mb-3">
-              <MapPin className="w-3 h-3 mr-1" />
-              {currentApartment.location}
-            </div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between text-sm mb-3">
+              <div className="flex items-center text-gray-600">
+                <MapPin className="w-3 h-3 mr-1" />
+                {currentApartment.location}
+              </div>
               <Badge className="bg-primary text-primary-foreground font-semibold">
                 {formatPrice(currentApartment.price)}/mo
               </Badge>

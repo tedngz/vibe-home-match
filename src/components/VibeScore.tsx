@@ -12,16 +12,16 @@ interface VibeScoreProps {
 
 export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeScoreProps) => {
   const getVibeLevel = (scoreValue: number) => {
-    if (scoreValue >= 85) return { level: 'Perfect Match', color: 'bg-emerald-500 text-white border-emerald-400', emoji: '🔥' };
-    if (scoreValue >= 70) return { level: 'Great Match', color: 'bg-blue-500 text-white border-blue-400', emoji: '✨' };
-    if (scoreValue >= 55) return { level: 'Good Match', color: 'bg-orange-500 text-white border-orange-400', emoji: '⭐' };
-    return { level: 'Okay Match', color: 'bg-gray-500 text-white border-gray-400', emoji: '💭' };
+    if (scoreValue >= 85) return { level: 'Perfect Vibe', color: 'bg-emerald-500 text-white border-emerald-400', emoji: '🔥' };
+    if (scoreValue >= 70) return { level: 'Strong Vibe', color: 'bg-blue-500 text-white border-blue-400', emoji: '✨' };
+    if (scoreValue >= 55) return { level: 'Good Vibe', color: 'bg-orange-500 text-white border-orange-400', emoji: '⭐' };
+    return { level: 'Vibe', color: 'bg-gray-500 text-white border-gray-400', emoji: '💭' };
   };
 
-  const getInteriorDesignTags = (styleScore: number, apartment: any) => {
-    // Mock interior design tags based on style score and apartment vibe
-    const tags = ['Modern', 'Minimalist', 'Cozy', 'Bright', 'Spacious'];
-    return tags.slice(0, Math.max(1, Math.floor(styleScore / 25)));
+  const getStyleTags = (styleScore: number, apartment: any) => {
+    // Mock style tags based on style score and apartment vibe
+    const tags = ['Modern', 'Minimalist', 'Cozy', 'Bright', 'Spacious', 'Industrial', 'Scandinavian'];
+    return tags.slice(0, Math.max(3, Math.min(4, Math.floor(styleScore / 20) + 3)));
   };
 
   const getColorPalette = (colorScore: number) => {
@@ -74,14 +74,14 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
       </Badge>
 
       {showBreakdown && (
-        <div className="space-y-3 text-xs bg-white/50 backdrop-blur-sm rounded-lg p-3 border border-gray-100">
+        <div className="space-y-3 text-xs">
           <div className="space-y-3">
             <div>
               <div className="flex items-center mb-2">
-                <span className="text-gray-600 font-medium">Interior Design</span>
+                <span className="text-gray-600 font-medium">Style</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {getInteriorDesignTags(roundedScore.breakdown.style, null).map((tag, index) => (
+                {getStyleTags(roundedScore.breakdown.style, null).map((tag, index) => (
                   <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
                     {tag}
                   </Badge>
@@ -91,7 +91,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
             
             <div>
               <div className="flex items-center mb-2">
-                <span className="text-gray-600 font-medium">Color Palette</span>
+                <span className="text-gray-600 font-medium">Color</span>
               </div>
               <div className="flex flex-wrap gap-1">
                 {getColorPalette(roundedScore.breakdown.color).map((color, index) => (
