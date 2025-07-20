@@ -11,18 +11,41 @@ interface VibeScoreProps {
 }
 
 export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeScoreProps) => {
-  const getScoreColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return 'bg-green-500 text-white border-green-400';
-    if (scoreValue >= 60) return 'bg-yellow-500 text-white border-yellow-400';
-    return 'bg-red-500 text-white border-red-400';
+  const getVibeLevel = (scoreValue: number) => {
+    if (scoreValue >= 85) return { level: 'Perfect Match', color: 'bg-emerald-500 text-white border-emerald-400', emoji: '🔥' };
+    if (scoreValue >= 70) return { level: 'Great Match', color: 'bg-blue-500 text-white border-blue-400', emoji: '✨' };
+    if (scoreValue >= 55) return { level: 'Good Match', color: 'bg-orange-500 text-white border-orange-400', emoji: '⭐' };
+    return { level: 'Okay Match', color: 'bg-gray-500 text-white border-gray-400', emoji: '💭' };
   };
 
-  const getScoreEmoji = (scoreValue: number) => {
-    if (scoreValue >= 90) return '🔥';
-    if (scoreValue >= 80) return '✨';
-    if (scoreValue >= 70) return '💫';
-    if (scoreValue >= 60) return '⭐';
-    return '💭';
+  const getInteriorDesignTags = (styleScore: number, apartment: any) => {
+    // Mock interior design tags based on style score and apartment vibe
+    const tags = ['Modern', 'Minimalist', 'Cozy', 'Bright', 'Spacious'];
+    return tags.slice(0, Math.max(1, Math.floor(styleScore / 25)));
+  };
+
+  const getColorPalette = (colorScore: number) => {
+    // Mock color palette based on color score
+    const palettes = [
+      ['Neutral Tones', 'Warm Whites', 'Soft Grays'],
+      ['Earth Tones', 'Natural Wood', 'Warm Beige'],
+      ['Cool Blues', 'Fresh Whites', 'Light Grays'],
+      ['Bold Accents', 'Vibrant Colors', 'Rich Textures']
+    ];
+    const paletteIndex = Math.min(3, Math.floor(colorScore / 25));
+    return palettes[paletteIndex] || palettes[0];
+  };
+
+  const getActivities = (activityScore: number) => {
+    // Mock activities based on activity score
+    const activities = [
+      ['Reading', 'Relaxing', 'Working'],
+      ['Cooking', 'Entertaining', 'Family Time'],
+      ['Creating', 'Exercising', 'Socializing'],
+      ['Meditating', 'Studying', 'Hosting']
+    ];
+    const activityIndex = Math.min(3, Math.floor(activityScore / 25));
+    return activities[activityIndex] || activities[0];
   };
 
   const sizeClasses = {
@@ -31,7 +54,6 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
     lg: 'text-base px-4 py-2.5'
   };
 
-  // Round all percentages
   const roundedScore = {
     overall: Math.round(score.overall),
     breakdown: {
@@ -42,43 +64,55 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
     }
   };
 
+  const vibeLevel = getVibeLevel(roundedScore.overall);
+
   return (
     <div className="space-y-2">
-      <Badge className={`${getScoreColor(roundedScore.overall)} ${sizeClasses[size]} font-semibold flex items-center gap-1 shadow-lg border`}>
+      <Badge className={`${vibeLevel.color} ${sizeClasses[size]} font-semibold flex items-center gap-1 shadow-lg border`}>
         <Sparkles className={size === 'sm' ? 'w-2.5 h-2.5' : 'w-3 h-3'} />
-        Vibe Score: {roundedScore.overall}%
+        {vibeLevel.emoji} {vibeLevel.level}
       </Badge>
 
       {showBreakdown && (
-        <div className="space-y-2 text-xs bg-white/50 backdrop-blur-sm rounded-lg p-3 border border-gray-100">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3 text-xs bg-white/50 backdrop-blur-sm rounded-lg p-3 border border-gray-100">
+          <div className="space-y-3">
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Style</span>
-                <span className="font-semibold text-primary">{roundedScore.breakdown.style}%</span>
+              <div className="flex items-center mb-2">
+                <span className="text-gray-600 font-medium">Interior Design</span>
               </div>
-              <Progress value={roundedScore.breakdown.style} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.style).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.style).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
+              <div className="flex flex-wrap gap-1">
+                {getInteriorDesignTags(roundedScore.breakdown.style, null).map((tag, index) => (
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </div>
+            
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Color</span>
-                <span className="font-semibold text-primary">{roundedScore.breakdown.color}%</span>
+              <div className="flex items-center mb-2">
+                <span className="text-gray-600 font-medium">Color Palette</span>
               </div>
-              <Progress value={roundedScore.breakdown.color} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.color).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.color).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
+              <div className="flex flex-wrap gap-1">
+                {getColorPalette(roundedScore.breakdown.color).map((color, index) => (
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 border-purple-200">
+                    {color}
+                  </Badge>
+                ))}
+              </div>
             </div>
+            
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Activity</span>
-                <span className="font-semibold text-primary">{roundedScore.breakdown.activities}%</span>
+              <div className="flex items-center mb-2">
+                <span className="text-gray-600 font-medium">Lifestyle Activities</span>
               </div>
-              <Progress value={roundedScore.breakdown.activities} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.activities).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.activities).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-gray-600 font-medium">Budget</span>
-                <span className="font-semibold text-primary">{roundedScore.breakdown.price}%</span>
+              <div className="flex flex-wrap gap-1">
+                {getActivities(roundedScore.breakdown.activities).map((activity, index) => (
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-green-50 text-green-700 border-green-200">
+                    {activity}
+                  </Badge>
+                ))}
               </div>
-              <Progress value={roundedScore.breakdown.price} className={`h-1.5 ${getScoreColor(roundedScore.breakdown.price).includes('green') ? '[&>div]:bg-green-500' : getScoreColor(roundedScore.breakdown.price).includes('yellow') ? '[&>div]:bg-yellow-500' : '[&>div]:bg-red-500'}`} />
             </div>
           </div>
         </div>

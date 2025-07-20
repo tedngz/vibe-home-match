@@ -186,9 +186,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                     {apartment.location}
                   </div>
                   <div className="flex items-center justify-between mb-4">
-                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                      {apartment.vibe}
-                    </Badge>
                     <Badge className="bg-primary text-primary-foreground font-semibold">
                       {formatPrice(apartment.price)}/mo
                     </Badge>
@@ -196,36 +193,9 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
 
 
                   <div className="mb-4">
-                    <div className={`text-gray-700 text-sm leading-relaxed ${
-                      isExpanded ? '' : 'line-clamp-3'
-                    }`}>
+                    <div className="text-gray-700 text-sm leading-relaxed">
                       {apartment.description}
                     </div>
-                    {apartment.description && apartment.description.length > 150 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-2"
-                        onClick={() => toggleDescription(apartment.id)}
-                      >
-                        {isExpanded ? (
-                          <>
-                            <ChevronUp className="w-3 h-3 mr-1" />
-                            Show less
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown className="w-3 h-3 mr-1" />
-                            Read more
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Key highlights */}
-                  <div className="mb-4">
-                    <HighlightTags highlights={apartment.highlights} />
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200">

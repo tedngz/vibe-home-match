@@ -369,9 +369,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               {currentApartment.location}
             </div>
             <div className="flex items-center justify-between mb-4">
-              <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                {currentApartment.vibe}
-              </Badge>
               <Badge className="bg-primary text-primary-foreground font-semibold">
                 {formatPrice(currentApartment.price)}/mo
               </Badge>
@@ -379,35 +376,9 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
 
             <div className="mb-4">
-              <div className={`text-gray-700 text-sm leading-relaxed ${
-                expandedDescription ? '' : 'line-clamp-3'
-              }`}>
+              <div className="text-gray-700 text-sm leading-relaxed">
                 {currentApartment.description}
               </div>
-              {currentApartment.description && currentApartment.description.length > 150 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-2"
-                  onClick={() => setExpandedDescription(!expandedDescription)}
-                >
-                  {expandedDescription ? (
-                    <>
-                      <ChevronUp className="w-3 h-3 mr-1" />
-                      Show less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-3 h-3 mr-1" />
-                      Read more
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-
-            <div className="mb-5">
-              <HighlightTags highlights={currentApartment.highlights} />
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">

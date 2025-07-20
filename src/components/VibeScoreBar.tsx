@@ -10,23 +10,35 @@ interface VibeScoreBarProps {
 }
 
 export const VibeScoreBar = ({ score, showBreakdown = false, className = "" }: VibeScoreBarProps) => {
-  const getScoreColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return 'text-green-600 bg-green-100';
-    if (scoreValue >= 60) return 'text-orange-600 bg-orange-100';
-    return 'text-red-600 bg-red-100';
+  const getVibeLevel = (scoreValue: number) => {
+    if (scoreValue >= 85) return { level: 'Perfect Match', color: 'text-emerald-600 bg-emerald-100', emoji: '🔥' };
+    if (scoreValue >= 70) return { level: 'Great Match', color: 'text-blue-600 bg-blue-100', emoji: '✨' };
+    if (scoreValue >= 55) return { level: 'Good Match', color: 'text-orange-600 bg-orange-100', emoji: '⭐' };
+    return { level: 'Okay Match', color: 'text-gray-600 bg-gray-100', emoji: '💭' };
   };
 
-  const getProgressColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return 'bg-green-500';
-    if (scoreValue >= 60) return 'bg-orange-500';
-    return 'bg-red-500';
+  const getInteriorDesignTags = (styleScore: number) => {
+    const tags = ['Modern', 'Minimalist', 'Cozy'];
+    return tags.slice(0, Math.max(1, Math.floor(styleScore / 30)));
   };
+
+  const getColorPalette = (colorScore: number) => {
+    const palettes = [['Neutral', 'Warm'], ['Earth', 'Natural'], ['Cool', 'Fresh']];
+    return palettes[Math.min(2, Math.floor(colorScore / 30))] || palettes[0];
+  };
+
+  const getActivities = (activityScore: number) => {
+    const activities = [['Reading', 'Relaxing'], ['Cooking', 'Family'], ['Creating', 'Social']];
+    return activities[Math.min(2, Math.floor(activityScore / 30))] || activities[0];
+  };
+
+  const vibeLevel = getVibeLevel(score.overall);
 
   if (!showBreakdown) {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
-        <Badge className={`text-xs font-medium ${getScoreColor(score.overall)}`}>
-          {score.overall}% Match
+        <Badge className={`text-xs font-medium ${vibeLevel.color}`}>
+          {vibeLevel.emoji} {vibeLevel.level}
         </Badge>
       </div>
     );
@@ -38,38 +50,38 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "" }: V
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
           <Home className="w-3 h-3 text-blue-500" />
-          <span className="text-xs text-gray-600 flex-1">Style</span>
-          <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${getProgressColor(score.breakdown.style)} transition-all duration-300`}
-              style={{ width: `${score.breakdown.style}%` }}
-            />
+          <span className="text-xs text-gray-600 flex-1">Interior Design</span>
+          <div className="flex flex-wrap gap-1">
+            {getInteriorDesignTags(score.breakdown.style).map((tag, index) => (
+              <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
+                {tag}
+              </Badge>
+            ))}
           </div>
-          <span className="text-xs font-medium w-8 text-right">{score.breakdown.style}%</span>
         </div>
 
         <div className="flex items-center space-x-2">
           <Palette className="w-3 h-3 text-purple-500" />
-          <span className="text-xs text-gray-600 flex-1">Color</span>
-          <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${getProgressColor(score.breakdown.color)} transition-all duration-300`}
-              style={{ width: `${score.breakdown.color}%` }}
-            />
+          <span className="text-xs text-gray-600 flex-1">Color Palette</span>
+          <div className="flex flex-wrap gap-1">
+            {getColorPalette(score.breakdown.color).map((color, index) => (
+              <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-purple-50 text-purple-700 border-purple-200">
+                {color}
+              </Badge>
+            ))}
           </div>
-          <span className="text-xs font-medium w-8 text-right">{score.breakdown.color}%</span>
         </div>
 
         <div className="flex items-center space-x-2">
           <Activity className="w-3 h-3 text-green-500" />
-          <span className="text-xs text-gray-600 flex-1">Activity</span>
-          <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${getProgressColor(score.breakdown.activities)} transition-all duration-300`}
-              style={{ width: `${score.breakdown.activities}%` }}
-            />
+          <span className="text-xs text-gray-600 flex-1">Activities</span>
+          <div className="flex flex-wrap gap-1">
+            {getActivities(score.breakdown.activities).map((activity, index) => (
+              <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 border-green-200">
+                {activity}
+              </Badge>
+            ))}
           </div>
-          <span className="text-xs font-medium w-8 text-right">{score.breakdown.activities}%</span>
         </div>
       </div>
     </div>
