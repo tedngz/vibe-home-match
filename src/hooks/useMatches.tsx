@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 export interface PropertyMatch {
   id: string;
@@ -21,6 +22,8 @@ export interface PropertyMatch {
 
 export const useMatches = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch matches for realtors
   const { data: realtorMatches = [], isLoading: isLoadingMatches } = useQuery({
@@ -82,9 +85,41 @@ export const useMatches = () => {
     enabled: !!user?.id,
   });
 
+  // Remove match mutation
+  const removeMatchMutation = useMutation({
+    mutationFn: async (matchId: string) => {
+      const { error } = await supabase
+        .from('property_matches')
+        .delete()
+        .eq('id', matchId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['renter-matches'] });
+      toast({
+        title: "Match removed",
+        description: "Property has been removed from your matches.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to remove match. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeMatch = (matchId: string) => {
+    removeMatchMutation.mutate(matchId);
+  };
+
   return {
     realtorMatches,
     renterMatches,
     isLoadingMatches: isLoadingMatches || isLoadingRenterMatches,
+    removeMatch,
+    isRemovingMatch: removeMatchMutation.isPending,
   };
 };

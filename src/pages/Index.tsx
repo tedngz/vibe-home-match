@@ -43,6 +43,7 @@ export type Apartment = {
     phone: string;
     email: string;
   };
+  matchId?: string; // Optional for property removal
 };
 
 export type Match = {

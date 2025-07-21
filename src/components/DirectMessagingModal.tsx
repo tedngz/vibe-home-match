@@ -144,7 +144,12 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                                {isRealtor ? 'Interested Renter' : 'Property Owner'}
                              </p>
                              <a 
-                               href={`#property-${property?.id}`}
+                               href="#"
+                               onClick={(e) => {
+                                 e.preventDefault();
+                                 // You can add property detail modal logic here
+                                 console.log('View property details:', property?.id);
+                               }}
                                className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
                              >
                                {property?.title}
@@ -181,7 +186,12 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                          {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
                        </h4>
                        <a 
-                         href={`#property-${currentMatch.properties?.id}`}
+                         href="#"
+                         onClick={(e) => {
+                           e.preventDefault();
+                           // You can add property detail modal logic here
+                           console.log('View property details:', currentMatch.properties?.id);
+                         }}
                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
                        >
                          {currentMatch.properties?.title}

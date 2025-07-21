@@ -84,7 +84,12 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                        <div className="flex-1 min-w-0">
                          <p className="font-medium text-sm text-gray-900 truncate">Interested Renter</p>
                          <a 
-                           href={`#property-${match.apartment.id}`}
+                           href="#"
+                           onClick={(e) => {
+                             e.preventDefault();
+                             // You can add property detail modal logic here
+                             console.log('View property details:', match.apartment.id);
+                           }}
                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
                          >
                            {match.apartment.title}
@@ -120,7 +125,12 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                    <div>
                      <h4 className="font-semibold text-gray-900">Interested Renter</h4>
                      <a 
-                       href={`#property-${activeMatch.apartment.id}`}
+                       href="#"
+                       onClick={(e) => {
+                         e.preventDefault();
+                         // You can add property detail modal logic here
+                         console.log('View property details:', activeMatch.apartment.id);
+                       }}
                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                      >
                        {activeMatch.apartment.title}

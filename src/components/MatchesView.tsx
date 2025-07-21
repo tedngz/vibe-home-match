@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, User, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, User, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Trash2, Eye } from 'lucide-react';
 import { Apartment, UserPreferences } from '@/pages/Index';
 import { ContactModal } from '@/components/ContactModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
@@ -13,6 +13,18 @@ import { UserProfile } from '@/components/LoginModal';
 import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { HighlightTags } from '@/components/HighlightTags';
+import { PropertyDetailModal } from '@/components/PropertyDetailModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface MatchesViewProps {
   userPreferences?: UserPreferences;
@@ -21,9 +33,10 @@ interface MatchesViewProps {
 
 export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) => {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(null);
+  const [detailModalApartment, setDetailModalApartment] = useState<Apartment | null>(null);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
-  const { renterMatches, isLoadingMatches } = useMatches();
+  const { renterMatches, isLoadingMatches, removeMatch, isRemovingMatch } = useMatches();
   const { formatPrice } = useCurrency();
 
   const nextImage = (apartmentId: string, totalImages: number) => {
@@ -67,11 +80,16 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
         name: 'Licensed Realtor',
         phone: '+1-234-567-8900',
         email: 'contact@realtor.com'
-      }
+      },
+      matchId: match.id // Add match ID for removal
     };
   };
 
   const apartments = renterMatches.map(transformMatchToApartment);
+
+  const handleRemoveMatch = (matchId: string) => {
+    removeMatch(matchId);
+  };
 
   if (isLoadingMatches) {
     return (
@@ -209,15 +227,55 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                       </div>
                     </div>
                     
-                    <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
-                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
-                        onClick={() => setSelectedApartment(apartment)}
-                      >
-                        Contact
-                      </Button>
-                    </div>
+                     <div className="flex space-x-2">
+                       <Button 
+                         size="sm" 
+                         variant="outline"
+                         onClick={() => setDetailModalApartment(apartment)}
+                         className="text-gray-600 hover:text-gray-800"
+                       >
+                         <Eye className="w-4 h-4 mr-1" />
+                         View Details
+                       </Button>
+                       <Button 
+                         size="sm" 
+                         className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
+                         onClick={() => setSelectedApartment(apartment)}
+                       >
+                         Contact
+                       </Button>
+                       {apartment.matchId && (
+                         <AlertDialog>
+                           <AlertDialogTrigger asChild>
+                             <Button 
+                               size="sm" 
+                               variant="outline"
+                               className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                               disabled={isRemovingMatch}
+                             >
+                               <Trash2 className="w-4 h-4" />
+                             </Button>
+                           </AlertDialogTrigger>
+                           <AlertDialogContent>
+                             <AlertDialogHeader>
+                               <AlertDialogTitle>Remove from matches?</AlertDialogTitle>
+                               <AlertDialogDescription>
+                                 This will remove "{apartment.title}" from your matches. You can always find it again by swiping.
+                               </AlertDialogDescription>
+                             </AlertDialogHeader>
+                             <AlertDialogFooter>
+                               <AlertDialogCancel>Cancel</AlertDialogCancel>
+                               <AlertDialogAction 
+                                 onClick={() => handleRemoveMatch(apartment.matchId!)}
+                                 className="bg-red-600 hover:bg-red-700"
+                               >
+                                 Remove
+                               </AlertDialogAction>
+                             </AlertDialogFooter>
+                           </AlertDialogContent>
+                         </AlertDialog>
+                       )}
+                     </div>
                   </div>
                 </div>
               </Card>
@@ -231,6 +289,15 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
           apartment={selectedApartment}
           userProfile={userProfile}
           onClose={() => setSelectedApartment(null)}
+        />
+      )}
+
+      {detailModalApartment && (
+        <PropertyDetailModal
+          apartment={detailModalApartment}
+          userPreferences={userPreferences}
+          isOpen={!!detailModalApartment}
+          onClose={() => setDetailModalApartment(null)}
         />
       )}
     </div>
