@@ -77,19 +77,24 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                       activeMatch?.id === match.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 truncate">Interested Renter</p>
-                        <p className="text-xs text-gray-600 truncate">{match.apartment.title}</p>
-                        <div className="flex items-center mt-1">
-                          <MapPin className="w-3 h-3 text-gray-400 mr-1" />
-                          <span className="text-xs text-gray-500">{match.apartment.location}</span>
-                        </div>
-                      </div>
-                    </div>
+                     <div className="flex items-center space-x-3">
+                       <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                         <User className="w-5 h-5 text-white" />
+                       </div>
+                       <div className="flex-1 min-w-0">
+                         <p className="font-medium text-sm text-gray-900 truncate">Interested Renter</p>
+                         <a 
+                           href={`#property-${match.apartment.id}`}
+                           className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
+                         >
+                           {match.apartment.title}
+                         </a>
+                         <div className="flex items-center mt-1">
+                           <MapPin className="w-3 h-3 text-gray-400 mr-1" />
+                           <span className="text-xs text-gray-500">{match.apartment.location}</span>
+                         </div>
+                       </div>
+                     </div>
                     <div className="mt-2">
                       <Badge variant="secondary" className="text-xs">
                         ${match.apartment.price}/mo
@@ -112,10 +117,15 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                   <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-white" />
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Interested Renter</h4>
-                    <p className="text-sm text-gray-600">{activeMatch.apartment.title}</p>
-                  </div>
+                   <div>
+                     <h4 className="font-semibold text-gray-900">Interested Renter</h4>
+                     <a 
+                       href={`#property-${activeMatch.apartment.id}`}
+                       className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                     >
+                       {activeMatch.apartment.title}
+                     </a>
+                   </div>
                 </div>
               </div>
 

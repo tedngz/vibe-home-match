@@ -139,17 +139,22 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                               {isRealtor ? 'R' : 'O'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm text-gray-900 truncate">
-                              {isRealtor ? 'Interested Renter' : 'Property Owner'}
-                            </p>
-                            <p className="text-xs text-gray-600 truncate">{property?.title}</p>
-                            {conversation.last_message_preview && (
-                              <p className="text-xs text-gray-400 mt-1 truncate">
-                                {conversation.last_message_preview}
-                              </p>
-                            )}
-                          </div>
+                           <div className="flex-1 min-w-0">
+                             <p className="font-medium text-sm text-gray-900 truncate">
+                               {isRealtor ? 'Interested Renter' : 'Property Owner'}
+                             </p>
+                             <a 
+                               href={`#property-${property?.id}`}
+                               className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
+                             >
+                               {property?.title}
+                             </a>
+                             {conversation.last_message_preview && (
+                               <p className="text-xs text-gray-400 mt-1 truncate">
+                                 {conversation.last_message_preview}
+                               </p>
+                             )}
+                           </div>
                         </div>
                       </div>
                     );
@@ -171,12 +176,17 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                         {user?.id === currentMatch.realtor_id ? 'R' : 'O'}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <h4 className="font-medium text-gray-900 text-sm">
-                        {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
-                      </h4>
-                      <p className="text-xs text-gray-600">{currentMatch.properties?.title}</p>
-                    </div>
+                     <div>
+                       <h4 className="font-medium text-gray-900 text-sm">
+                         {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
+                       </h4>
+                       <a 
+                         href={`#property-${currentMatch.properties?.id}`}
+                         className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                       >
+                         {currentMatch.properties?.title}
+                       </a>
+                     </div>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>

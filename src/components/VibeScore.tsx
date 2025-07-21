@@ -12,40 +12,71 @@ interface VibeScoreProps {
 
 export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeScoreProps) => {
   const getVibeLevel = (scoreValue: number) => {
-    if (scoreValue >= 85) return { level: 'Perfect Vibe', color: 'bg-emerald-500 text-white border-emerald-400', emoji: '🔥' };
-    if (scoreValue >= 70) return { level: 'Strong Vibe', color: 'bg-blue-500 text-white border-blue-400', emoji: '✨' };
-    if (scoreValue >= 55) return { level: 'Good Vibe', color: 'bg-orange-500 text-white border-orange-400', emoji: '⭐' };
-    return { level: 'Vibe', color: 'bg-gray-500 text-white border-gray-400', emoji: '💭' };
+    if (scoreValue >= 80) return { level: 'Perfect Vibe', color: 'bg-emerald-500 text-white border-emerald-400', emoji: '🔥' };
+    if (scoreValue >= 65) return { level: 'Strong Vibe', color: 'bg-blue-500 text-white border-blue-400', emoji: '✨' };
+    if (scoreValue >= 50) return { level: 'Good Vibe', color: 'bg-orange-500 text-white border-orange-400', emoji: '⭐' };
+    return { level: 'Casual Vibe', color: 'bg-gray-500 text-white border-gray-400', emoji: '💭' };
   };
 
   const getStyleTags = (styleScore: number, apartment: any) => {
-    // Mock style tags based on style score and apartment vibe
-    const tags = ['Modern', 'Minimalist', 'Cozy', 'Bright', 'Spacious', 'Industrial', 'Scandinavian'];
-    return tags.slice(0, Math.max(3, Math.min(4, Math.floor(styleScore / 20) + 3)));
+    // Get style tags based on apartment vibe
+    const styleMap: { [key: string]: string[] } = {
+      'Modern': ['Contemporary', 'Sleek', 'Minimalist', 'Clean Lines'],
+      'Cozy': ['Warm', 'Comfortable', 'Traditional', 'Homey'],
+      'Industrial': ['Edgy', 'Urban', 'Loft-style', 'Raw Materials'],
+      'Bohemian': ['Eclectic', 'Artistic', 'Colorful', 'Creative'],
+      'Scandinavian': ['Light', 'Natural', 'Functional', 'Simple'],
+      'Minimalist': ['Clean', 'Uncluttered', 'Simple', 'Functional'],
+      'Contemporary': ['Current', 'Stylish', 'Updated', 'Fresh'],
+      'Traditional': ['Classic', 'Timeless', 'Elegant', 'Refined'],
+      'Rustic': ['Natural', 'Countryside', 'Wood Elements', 'Earthy'],
+      'Luxury': ['Upscale', 'Premium', 'High-end', 'Sophisticated']
+    };
+    
+    // Default tags if vibe not found
+    const defaultTags = ['Modern', 'Clean', 'Bright', 'Spacious'];
+    const vibeKey = apartment?.vibe || 'Modern';
+    return styleMap[vibeKey] || defaultTags;
   };
 
-  const getColorPalette = (colorScore: number) => {
-    // Mock color palette based on color score
-    const palettes = [
-      ['Neutral Tones', 'Warm Whites', 'Soft Grays'],
-      ['Earth Tones', 'Natural Wood', 'Warm Beige'],
-      ['Cool Blues', 'Fresh Whites', 'Light Grays'],
-      ['Bold Accents', 'Vibrant Colors', 'Rich Textures']
-    ];
-    const paletteIndex = Math.min(3, Math.floor(colorScore / 25));
-    return palettes[paletteIndex] || palettes[0];
+  const getColorPalette = (colorScore: number, apartment: any) => {
+    // Get color palette based on apartment vibe
+    const colorMap: { [key: string]: string[] } = {
+      'Modern': ['Neutral Tones', 'Cool Grays', 'Clean Whites'],
+      'Cozy': ['Warm Earth', 'Rich Browns', 'Soft Beiges'],
+      'Industrial': ['Raw Metals', 'Cool Grays', 'Urban Blacks'],
+      'Bohemian': ['Vibrant Colors', 'Warm Oranges', 'Deep Reds'],
+      'Scandinavian': ['Pure Whites', 'Light Woods', 'Soft Blues'],
+      'Minimalist': ['Monochrome', 'Pure Whites', 'Simple Grays'],
+      'Contemporary': ['Modern Neutrals', 'Accent Colors', 'Fresh Tones'],
+      'Traditional': ['Classic Colors', 'Rich Tones', 'Timeless Hues'],
+      'Rustic': ['Natural Woods', 'Earth Tones', 'Organic Colors'],
+      'Luxury': ['Rich Golds', 'Deep Colors', 'Elegant Tones']
+    };
+    
+    const defaultColors = ['Neutral Tones', 'Warm Whites', 'Soft Grays'];
+    const vibeKey = apartment?.vibe || 'Modern';
+    return colorMap[vibeKey] || defaultColors;
   };
 
-  const getActivities = (activityScore: number) => {
-    // Mock activities based on activity score
-    const activities = [
-      ['Reading', 'Relaxing', 'Working'],
-      ['Cooking', 'Entertaining', 'Family Time'],
-      ['Creating', 'Exercising', 'Socializing'],
-      ['Meditating', 'Studying', 'Hosting']
-    ];
-    const activityIndex = Math.min(3, Math.floor(activityScore / 25));
-    return activities[activityIndex] || activities[0];
+  const getActivities = (activityScore: number, apartment: any) => {
+    // Get activities based on apartment vibe
+    const activityMap: { [key: string]: string[] } = {
+      'Modern': ['Working', 'Entertaining', 'Reading'],
+      'Cozy': ['Relaxing', 'Cooking', 'Family Time'],
+      'Industrial': ['Creating', 'Exercising', 'Socializing'],
+      'Bohemian': ['Artistic Work', 'Entertaining', 'Creative Time'],
+      'Scandinavian': ['Meditating', 'Reading', 'Quiet Time'],
+      'Minimalist': ['Focus Work', 'Meditation', 'Simple Living'],
+      'Contemporary': ['Socializing', 'Entertainment', 'Modern Living'],
+      'Traditional': ['Family Gathering', 'Cooking', 'Formal Dining'],
+      'Rustic': ['Outdoor Activities', 'Cooking', 'Relaxing'],
+      'Luxury': ['Entertaining', 'Formal Events', 'Leisure']
+    };
+    
+    const defaultActivities = ['Reading', 'Relaxing', 'Working'];
+    const vibeKey = apartment?.vibe || 'Modern';
+    return activityMap[vibeKey] || defaultActivities;
   };
 
   const sizeClasses = {
@@ -81,7 +112,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
                 <span className="text-gray-600 font-medium">Style</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {getStyleTags(roundedScore.breakdown.style, null).map((tag, index) => (
+                {getStyleTags(roundedScore.breakdown.style, score).map((tag, index) => (
                   <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
                     {tag}
                   </Badge>
@@ -94,7 +125,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
                 <span className="text-gray-600 font-medium">Color</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {getColorPalette(roundedScore.breakdown.color).map((color, index) => (
+                {getColorPalette(roundedScore.breakdown.color, score).map((color, index) => (
                   <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-purple-50 text-purple-700 border-purple-200">
                     {color}
                   </Badge>
@@ -107,7 +138,7 @@ export const VibeScore = ({ score, showBreakdown = false, size = 'md' }: VibeSco
                 <span className="text-gray-600 font-medium">Lifestyle Activities</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {getActivities(roundedScore.breakdown.activities).map((activity, index) => (
+                {getActivities(roundedScore.breakdown.activities, score).map((activity, index) => (
                   <Badge key={index} variant="outline" className="text-xs px-2 py-0.5 bg-green-50 text-green-700 border-green-200">
                     {activity}
                   </Badge>

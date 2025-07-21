@@ -11,10 +11,10 @@ interface VibeScoreBarProps {
 
 export const VibeScoreBar = ({ score, showBreakdown = false, className = "" }: VibeScoreBarProps) => {
   const getVibeLevel = (scoreValue: number) => {
-    if (scoreValue >= 85) return { level: 'Perfect Vibe', color: 'text-emerald-600 bg-emerald-100', emoji: '🔥' };
-    if (scoreValue >= 70) return { level: 'Strong Vibe', color: 'text-blue-600 bg-blue-100', emoji: '✨' };
-    if (scoreValue >= 55) return { level: 'Good Vibe', color: 'text-orange-600 bg-orange-100', emoji: '⭐' };
-    return { level: 'Vibe', color: 'text-gray-600 bg-gray-100', emoji: '💭' };
+    if (scoreValue >= 80) return { level: 'Perfect Vibe', color: 'text-emerald-600 bg-emerald-100', emoji: '🔥' };
+    if (scoreValue >= 65) return { level: 'Strong Vibe', color: 'text-blue-600 bg-blue-100', emoji: '✨' };
+    if (scoreValue >= 50) return { level: 'Good Vibe', color: 'text-orange-600 bg-orange-100', emoji: '⭐' };
+    return { level: 'Casual Vibe', color: 'text-gray-600 bg-gray-100', emoji: '💭' };
   };
 
   const getStyleTags = (styleScore: number) => {

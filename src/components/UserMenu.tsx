@@ -11,9 +11,10 @@ interface UserMenuProps {
   userType: 'renter' | 'realtor';
   onSwitchUserType: () => void;
   onRestartOnboarding?: () => void;
+  onViewProfile?: () => void;
 }
 
-export const UserMenu = ({ userType, onSwitchUserType, onRestartOnboarding }: UserMenuProps) => {
+export const UserMenu = ({ userType, onSwitchUserType, onRestartOnboarding, onViewProfile }: UserMenuProps) => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -34,6 +35,15 @@ export const UserMenu = ({ userType, onSwitchUserType, onRestartOnboarding }: Us
           <CurrencyDropdown />
         </div>
         <DropdownMenuSeparator />
+        {onViewProfile && (
+          <>
+            <DropdownMenuItem onClick={onViewProfile}>
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {onRestartOnboarding && (
           <>
             <DropdownMenuItem onClick={onRestartOnboarding}>
