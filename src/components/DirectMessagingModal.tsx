@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { X, Send, User, MapPin, Trash2, MessageCircle } from 'lucide-react';
 import { useDirectMessages } from '@/hooks/useDirectMessages';
 import { useAuth } from '@/hooks/useAuth';
+import { Apartment } from '@/pages/Index';
+import { PropertyDetailModal } from '@/components/PropertyDetailModal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -28,6 +30,7 @@ interface DirectMessagingModalProps {
 
 export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: DirectMessagingModalProps) => {
   const { user } = useAuth();
+  const [detailModalApartment, setDetailModalApartment] = useState<Apartment | null>(null);
   const {
     conversations,
     messages,
@@ -143,17 +146,33 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                              <p className="font-medium text-sm text-gray-900 truncate">
                                {isRealtor ? 'Interested Renter' : 'Property Owner'}
                              </p>
-                             <a 
-                               href="#"
-                               onClick={(e) => {
-                                 e.preventDefault();
-                                 // You can add property detail modal logic here
-                                 console.log('View property details:', property?.id);
-                               }}
-                               className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
-                             >
-                               {property?.title}
-                             </a>
+                              <button 
+                                onClick={() => {
+                                  if (property) {
+                                    const apartment = {
+                                      id: property.id,
+                                      images: property.images || [],
+                                      title: property.title,
+                                      location: property.location,
+                                      price: Number(property.price),
+                                      size: (property as any).size || '',
+                                      vibe: (property as any).vibe || '',
+                                      description: (property as any).description || '',
+                                      highlights: (property as any).highlights || [],
+                                      realtor: {
+                                        id: (property as any).realtor_id || '',
+                                        name: 'Licensed Realtor',
+                                        phone: '+1-234-567-8900',
+                                        email: 'contact@realtor.com'
+                                      }
+                                    };
+                                    setDetailModalApartment(apartment);
+                                  }
+                                }}
+                                className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block text-left"
+                              >
+                                {property?.title}
+                              </button>
                              {conversation.last_message_preview && (
                                <p className="text-xs text-gray-400 mt-1 truncate">
                                  {conversation.last_message_preview}
@@ -185,17 +204,33 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                        <h4 className="font-medium text-gray-900 text-sm">
                          {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
                        </h4>
-                       <a 
-                         href="#"
-                         onClick={(e) => {
-                           e.preventDefault();
-                           // You can add property detail modal logic here
-                           console.log('View property details:', currentMatch.properties?.id);
-                         }}
-                         className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
-                       >
-                         {currentMatch.properties?.title}
-                       </a>
+                          <button 
+                            onClick={() => {
+                              if (currentMatch.properties) {
+                                const apartment = {
+                                  id: currentMatch.properties.id,
+                                  images: currentMatch.properties.images || [],
+                                  title: currentMatch.properties.title,
+                                  location: currentMatch.properties.location,
+                                  price: Number(currentMatch.properties.price),
+                                   size: (currentMatch.properties as any).size || '',
+                                   vibe: (currentMatch.properties as any).vibe || '',
+                                   description: (currentMatch.properties as any).description || '',
+                                   highlights: (currentMatch.properties as any).highlights || [],
+                                  realtor: {
+                                    id: (currentMatch.properties as any).realtor_id || '',
+                                    name: 'Licensed Realtor',
+                                    phone: '+1-234-567-8900',
+                                    email: 'contact@realtor.com'
+                                  }
+                                };
+                                setDetailModalApartment(apartment);
+                              }
+                            }}
+                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline text-left"
+                          >
+                            {currentMatch.properties?.title}
+                          </button>
                      </div>
                   </div>
                   <AlertDialog>
@@ -300,6 +335,14 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
           </div>
         </div>
       </Card>
+      
+      {detailModalApartment && (
+        <PropertyDetailModal
+          apartment={detailModalApartment}
+          isOpen={!!detailModalApartment}
+          onClose={() => setDetailModalApartment(null)}
+        />
+      )}
     </div>
   );
 };

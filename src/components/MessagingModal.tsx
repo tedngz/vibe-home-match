@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { X, Send, User, MapPin } from 'lucide-react';
-import { Match } from '@/pages/Index';
+import { Match, Apartment } from '@/pages/Index';
+import { PropertyDetailModal } from '@/components/PropertyDetailModal';
 
 interface MessagingModalProps {
   matches: Match[];
@@ -23,6 +24,7 @@ interface Message {
 export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingModalProps) => {
   const [activeMatch, setActiveMatch] = useState<Match | null>(selectedMatch);
   const [message, setMessage] = useState('');
+  const [detailModalApartment, setDetailModalApartment] = useState<Apartment | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -83,17 +85,14 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                        </div>
                        <div className="flex-1 min-w-0">
                          <p className="font-medium text-sm text-gray-900 truncate">Interested Renter</p>
-                         <a 
-                           href="#"
-                           onClick={(e) => {
-                             e.preventDefault();
-                             // You can add property detail modal logic here
-                             console.log('View property details:', match.apartment.id);
-                           }}
-                           className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block"
-                         >
-                           {match.apartment.title}
-                         </a>
+                            <button 
+                              onClick={() => {
+                                setDetailModalApartment(match.apartment);
+                              }}
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block text-left"
+                            >
+                              {match.apartment.title}
+                            </button>
                          <div className="flex items-center mt-1">
                            <MapPin className="w-3 h-3 text-gray-400 mr-1" />
                            <span className="text-xs text-gray-500">{match.apartment.location}</span>
@@ -124,17 +123,14 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                   </div>
                    <div>
                      <h4 className="font-semibold text-gray-900">Interested Renter</h4>
-                     <a 
-                       href="#"
-                       onClick={(e) => {
-                         e.preventDefault();
-                         // You can add property detail modal logic here
-                         console.log('View property details:', activeMatch.apartment.id);
-                       }}
-                       className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                     >
-                       {activeMatch.apartment.title}
-                     </a>
+                      <button 
+                        onClick={() => {
+                          setDetailModalApartment(activeMatch.apartment);
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline text-left"
+                      >
+                        {activeMatch.apartment.title}
+                      </button>
                    </div>
                 </div>
               </div>
@@ -193,6 +189,14 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
           )}
         </div>
       </Card>
+      
+      {detailModalApartment && (
+        <PropertyDetailModal
+          apartment={detailModalApartment}
+          isOpen={!!detailModalApartment}
+          onClose={() => setDetailModalApartment(null)}
+        />
+      )}
     </div>
   );
 };

@@ -11,7 +11,34 @@ import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
-import { HighlightTags } from '@/components/HighlightTags';
+// Helper function to categorize highlights
+const categorizeHighlight = (highlight: string): 'style' | 'color' | 'activity' => {
+  const lowerHighlight = highlight.toLowerCase();
+  
+  // Style keywords
+  const styleKeywords = ['modern', 'traditional', 'minimalist', 'bohemian', 'industrial', 'scandinavian', 'contemporary', 'rustic', 'vintage', 'luxury', 'urban', 'cozy', 'sleek', 'elegant', 'chic'];
+  
+  // Color keywords  
+  const colorKeywords = ['warm', 'cool', 'neutral', 'bold', 'bright', 'dark', 'colorful', 'white', 'black', 'grey', 'beige', 'wood', 'natural', 'light'];
+  
+  // Activity keywords
+  const activityKeywords = ['working', 'entertaining', 'relaxing', 'cooking', 'exercising', 'reading', 'creating', 'dining', 'sleeping', 'studying', 'socializing'];
+  
+  for (const keyword of styleKeywords) {
+    if (lowerHighlight.includes(keyword)) return 'style';
+  }
+  
+  for (const keyword of colorKeywords) {
+    if (lowerHighlight.includes(keyword)) return 'color';
+  }
+  
+  for (const keyword of activityKeywords) {
+    if (lowerHighlight.includes(keyword)) return 'activity';
+  }
+  
+  // Default to style if no match
+  return 'style';
+};
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -380,9 +407,29 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
                 {currentApartment.description}
               </div>
               
-              {/* Property Highlights - aligned with realtor side */}
+              {/* Style/Color/Activity Tags from highlights */}
               {currentApartment.highlights && currentApartment.highlights.length > 0 && (
-                <HighlightTags highlights={currentApartment.highlights} maxWords={3} />
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {currentApartment.highlights.slice(0, 6).map((highlight, index) => {
+                      // Categorize highlights into style, color, or activity
+                      const category = categorizeHighlight(highlight);
+                      const colorClass = category === 'style' ? 'bg-blue-50 text-blue-700' :
+                                       category === 'color' ? 'bg-purple-50 text-purple-700' :
+                                       'bg-green-50 text-green-700';
+                      
+                      return (
+                        <Badge 
+                          key={index} 
+                          variant="secondary" 
+                          className={`text-xs ${colorClass}`}
+                        >
+                          {highlight.length > 15 ? highlight.slice(0, 15) + '...' : highlight}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
 
