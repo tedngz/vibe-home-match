@@ -10,6 +10,8 @@ import { useDirectMessages } from '@/hooks/useDirectMessages';
 import { useMatches } from '@/hooks/useMatches';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { PropertyDetailModal } from '@/components/PropertyDetailModal';
+import { Apartment } from '@/pages/Index';
 
 interface AIChatAgentProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ export const AIChatAgent = ({
   const [activeTab, setActiveTab] = useState<'ai' | 'messages'>('messages');
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [pendingMessage, setPendingMessage] = useState<string>('');
+  const [detailModalApartment, setDetailModalApartment] = useState<Apartment | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { formatPrice } = useCurrency();
@@ -406,7 +409,26 @@ export const AIChatAgent = ({
                     </h4>
                     <button
                       onClick={() => {
-                        // TODO: Open property detail modal
+                        const currentMatch = matches.find(m => m.id === selectedMatch);
+                        if (currentMatch) {
+                          setDetailModalApartment({
+                            id: currentMatch.properties.id,
+                            images: currentMatch.properties.images || [],
+                            title: currentMatch.properties.title,
+                            location: currentMatch.properties.location,
+                            price: Number(currentMatch.properties.price),
+                            size: '',
+                            vibe: currentMatch.properties.vibe || '',
+                            description: '',
+                            highlights: [],
+                            realtor: {
+                              id: currentMatch.realtor_id,
+                              name: 'Licensed Realtor',
+                              phone: '+1-234-567-8900',
+                              email: 'contact@realtor.com'
+                            }
+                          });
+                        }
                       }}
                       className="text-sm text-blue-600 hover:text-blue-800 hover:underline text-left"
                     >
@@ -416,7 +438,7 @@ export const AIChatAgent = ({
                 </div>
               </div>
 
-              <ScrollArea className="flex-1 p-4 overflow-y-auto">
+              <div className="flex-1 p-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
                 {directMessages.length === 0 ? (
                   <div className="flex items-center justify-center h-full text-gray-500">
                     <div className="text-center">
@@ -468,7 +490,7 @@ export const AIChatAgent = ({
                   </div>
                 )}
                 <div ref={messagesEndRef} />
-              </ScrollArea>
+              </div>
 
               <div className="p-4 border-t border-gray-200 flex-shrink-0">
                 <div className="flex space-x-2">
@@ -493,6 +515,15 @@ export const AIChatAgent = ({
             </div>
           )}
         </div>
+
+        {detailModalApartment && (
+          <PropertyDetailModal
+            apartment={detailModalApartment}
+            userPreferences={userPreferences}
+            isOpen={!!detailModalApartment}
+            onClose={() => setDetailModalApartment(null)}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

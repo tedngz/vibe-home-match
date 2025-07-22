@@ -212,8 +212,16 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
 
                   <div className="mb-4">
                     <div className="text-gray-700 text-sm leading-relaxed">
-                      {apartment.description}
+                      {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
                     </div>
+                    {apartment.description.length > 150 && (
+                      <button
+                        onClick={() => toggleDescription(apartment.id)}
+                        className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
+                      >
+                        {isExpanded ? 'Read less' : 'Read more'}
+                      </button>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200">
@@ -228,15 +236,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                     </div>
                     
                      <div className="flex space-x-2">
-                       <Button 
-                         size="sm" 
-                         variant="outline"
-                         onClick={() => setDetailModalApartment(apartment)}
-                         className="text-gray-600 hover:text-gray-800"
-                       >
-                         <Eye className="w-4 h-4 mr-1" />
-                         View Details
-                       </Button>
                        <Button 
                          size="sm" 
                          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
