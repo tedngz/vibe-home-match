@@ -376,9 +376,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
 
             <div className="mb-4">
-              <div className="text-gray-700 text-sm leading-relaxed">
+              <div className="text-gray-700 text-sm leading-relaxed mb-3">
                 {currentApartment.description}
               </div>
+              
+              {/* Property Highlights - aligned with realtor side */}
+              {currentApartment.highlights && currentApartment.highlights.length > 0 && (
+                <HighlightTags highlights={currentApartment.highlights} maxWords={3} />
+              )}
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
