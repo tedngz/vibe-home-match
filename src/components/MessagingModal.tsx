@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, Send, User, MapPin } from 'lucide-react';
 import { Match, Apartment } from '@/pages/Index';
 import { PropertyDetailModal } from '@/components/PropertyDetailModal';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MessagingModalProps {
   matches: Match[];
@@ -63,7 +64,7 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
             <p className="text-sm text-gray-600">{matches.length} interested renters</p>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
+          <ScrollArea className="flex-1">
             {matches.length === 0 ? (
               <div className="p-4 text-center text-gray-500">
                 <User className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -108,7 +109,7 @@ export const MessagingModal = ({ matches, selectedMatch, onClose }: MessagingMod
                 ))}
               </div>
             )}
-          </div>
+          </ScrollArea>
         </div>
 
         {/* Chat Area */}
