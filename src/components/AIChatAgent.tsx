@@ -263,8 +263,8 @@ export const AIChatAgent = ({
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto" style={{ height: 'calc(90vh - 200px)' }}>
-                <div className="p-2 md:p-4 space-y-3 md:space-y-4" ref={messagesEndRef}>
+              <ScrollArea className="flex-1">
+                <div className="p-2 md:p-4 space-y-3 md:space-y-4">
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 py-4 md:py-8">
                       <Bot className="w-8 md:w-12 h-8 md:h-12 mx-auto mb-2 md:mb-4 opacity-50" />
@@ -363,8 +363,9 @@ export const AIChatAgent = ({
                       </div>
                     </div>
                   )}
+                  <div ref={messagesEndRef} />
                 </div>
-              </div>
+              </ScrollArea>
               
               <div className="p-2 md:p-4 border-t border-gray-200 flex-shrink-0">
                 <div className="flex space-x-2">
