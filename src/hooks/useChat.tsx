@@ -123,13 +123,13 @@ export const useChat = () => {
 
       // Call edge function for AI response with enhanced context
       const { data, error } = await supabase.functions.invoke('chat-ai', {
-        body: { 
+        body: JSON.stringify({ 
           message, 
           conversationId,
           userType,
           userPreferences,
           propertyImages: Array.isArray(propertyImages) ? propertyImages : []
-        },
+        }),
         headers: {
           'Content-Type': 'application/json'
         }
