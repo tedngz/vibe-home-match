@@ -44,6 +44,7 @@ export type Apartment = {
     email: string;
   };
   matchId?: string; // Optional for property removal
+  vibe_analysis?: any; // AI-generated analysis data
 };
 
 export type Match = {

@@ -81,7 +81,8 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
         phone: '+1-234-567-8900',
         email: 'contact@realtor.com'
       },
-      matchId: match.id // Add match ID for removal
+      matchId: match.id, // Add match ID for removal
+      vibe_analysis: property.vibe_analysis // Pass through AI analysis data
     };
   };
 

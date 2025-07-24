@@ -74,7 +74,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
         name: 'Licensed Realtor',
         phone: '+1-234-567-8900',
         email: 'contact@realtor.com'
-      }
+      },
+      vibe_analysis: property.vibe_analysis // Pass through AI analysis data
     };
   };
 
@@ -407,30 +408,39 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
                 {currentApartment.description}
               </div>
               
-              {/* Style/Color/Activity Tags from highlights */}
-              {currentApartment.highlights && currentApartment.highlights.length > 0 && (
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-2">
-                    {currentApartment.highlights.slice(0, 6).map((highlight, index) => {
-                      // Categorize highlights into style, color, or activity
-                      const category = categorizeHighlight(highlight);
-                      const colorClass = category === 'style' ? 'bg-blue-50 text-blue-700' :
-                                       category === 'color' ? 'bg-purple-50 text-purple-700' :
-                                       'bg-green-50 text-green-700';
-                      
-                      return (
-                        <Badge 
-                          key={index} 
-                          variant="secondary" 
-                          className={`text-xs ${colorClass}`}
-                        >
-                          {highlight.length > 15 ? highlight.slice(0, 15) + '...' : highlight}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              {/* AI-Generated Highlights */}
+              {(() => {
+                // Get AI-generated highlights from vibe_analysis if available
+                const property = currentApartment as any;
+                const aiHighlights = property.vibe_analysis?.generated_content?.highlights || currentApartment.highlights || [];
+                
+                if (aiHighlights.length > 0) {
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-2">
+                        {aiHighlights.slice(0, 6).map((highlight: string, index: number) => {
+                          // Categorize highlights into style, color, or activity
+                          const category = categorizeHighlight(highlight);
+                          const colorClass = category === 'style' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                           category === 'color' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                           'bg-green-50 text-green-700 border-green-200';
+                          
+                          return (
+                            <Badge 
+                              key={index} 
+                              variant="outline" 
+                              className={`text-xs ${colorClass} font-medium`}
+                            >
+                              {highlight.length > 20 ? highlight.slice(0, 20) + '...' : highlight}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">

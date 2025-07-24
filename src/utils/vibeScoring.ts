@@ -43,87 +43,143 @@ export const calculateVibeScore = (apartment: Apartment, preferences: UserPrefer
 };
 
 const calculateStyleMatch = (apartment: Apartment, userStyles: string[]): number => {
-  // Map new vibe system to style keywords for matching
-  const apartmentStyleMap: { [key: string]: string[] } = {
-    'Modern': ['modern', 'minimalist', 'clean', 'sleek', 'contemporary'],
-    'Cozy': ['cozy', 'traditional', 'warm', 'family', 'comfortable'],
-    'Industrial': ['industrial', 'modern', 'urban', 'edgy', 'loft'],
-    'Bohemian': ['bohemian', 'eclectic', 'colorful', 'artistic', 'creative'],
-    'Scandinavian': ['scandinavian', 'minimalist', 'clean', 'natural', 'light'],
-    'Minimalist': ['minimalist', 'clean', 'simple', 'modern', 'uncluttered'],
-    'Contemporary': ['contemporary', 'modern', 'current', 'stylish', 'updated'],
-    'Traditional': ['traditional', 'classic', 'timeless', 'conventional', 'cozy'],
-    'Rustic': ['rustic', 'natural', 'countryside', 'wood', 'earthy'],
-    'Luxury': ['luxury', 'upscale', 'premium', 'high-end', 'elegant'],
-    'Urban': ['urban', 'city', 'metropolitan', 'modern', 'contemporary'],
-    'Vintage': ['vintage', 'retro', 'classic', 'antique', 'period'],
-    
-    // Fallback for old vibe system (if any properties still use it)
-    'Modern Minimalist': ['modern', 'minimalist', 'clean', 'sleek'],
-    'Urban Sanctuary': ['modern', 'urban', 'sophisticated', 'industrial'],
-    'Creative Haven': ['bohemian', 'eclectic', 'artistic', 'creative'],
-    'Cozy Traditional': ['cozy', 'traditional', 'warm', 'family'],
-    'Industrial Chic': ['industrial', 'modern', 'urban', 'edgy'],
-    'Bohemian Eclectic': ['bohemian', 'eclectic', 'colorful', 'artistic'],
-    'Zen Retreat': ['minimalist', 'peaceful', 'clean', 'serene']
-  };
-
-  const apartmentStyles = apartmentStyleMap[apartment.vibe] || [];
   let matchScore = 0;
   
-  // Calculate matches between user preferences and apartment style
-  userStyles.forEach(userStyle => {
-    if (apartmentStyles.includes(userStyle.toLowerCase())) {
-      matchScore += 20; // Each match adds 20 points
+  // First, try to use AI-detected style metrics from vibe_analysis
+  const vibeAnalysis = (apartment as any).vibe_analysis;
+  if (vibeAnalysis) {
+    // Map user style preferences to AI analysis metrics
+    const styleMap: { [key: string]: string[] } = {
+      'modern': ['modern', 'minimalist', 'contemporary'],
+      'minimalist': ['minimalist', 'modern', 'elegant'],
+      'cozy': ['cozy', 'rustic'],
+      'industrial': ['urban', 'modern'],
+      'bohemian': ['colorful'],
+      'scandinavian': ['minimalist', 'elegant', 'natural_light'],
+      'contemporary': ['modern', 'elegant'],
+      'traditional': ['cozy', 'rustic'],
+      'rustic': ['rustic', 'cozy'],
+      'luxury': ['luxurious', 'elegant', 'spacious'],
+      'urban': ['urban', 'modern'],
+      'vintage': ['rustic', 'cozy']
+    };
+    
+    userStyles.forEach(userStyle => {
+      const mappedMetrics = styleMap[userStyle.toLowerCase()] || [userStyle.toLowerCase()];
+      mappedMetrics.forEach(metric => {
+        if (vibeAnalysis[metric] && vibeAnalysis[metric] >= 7) {
+          matchScore += 25; // Higher score for AI-detected strong matches
+        } else if (vibeAnalysis[metric] && vibeAnalysis[metric] >= 5) {
+          matchScore += 15; // Moderate score for medium matches
+        }
+      });
+    });
+    
+    // Bonus for overall quality metrics
+    if (vibeAnalysis.elegant >= 7 || vibeAnalysis.spacious >= 7 || vibeAnalysis.natural_light >= 8) {
+      matchScore += 20;
     }
-  });
-  
-  // Add base score based on vibe compatibility - be more generous
-  if (apartmentStyles.length > 0 || apartment.vibe) {
-    matchScore += 50; // Higher base compatibility score
+  } else {
+    // Fallback to original logic if no AI analysis available
+    const apartmentStyleMap: { [key: string]: string[] } = {
+      'Modern': ['modern', 'minimalist', 'clean', 'sleek', 'contemporary'],
+      'Cozy': ['cozy', 'traditional', 'warm', 'family', 'comfortable'],
+      'Industrial': ['industrial', 'modern', 'urban', 'edgy', 'loft'],
+      'Bohemian': ['bohemian', 'eclectic', 'colorful', 'artistic', 'creative'],
+      'Scandinavian': ['scandinavian', 'minimalist', 'clean', 'natural', 'light'],
+      'Minimalist': ['minimalist', 'clean', 'simple', 'modern', 'uncluttered'],
+      'Contemporary': ['contemporary', 'modern', 'current', 'stylish', 'updated'],
+      'Traditional': ['traditional', 'classic', 'timeless', 'conventional', 'cozy'],
+      'Rustic': ['rustic', 'natural', 'countryside', 'wood', 'earthy'],
+      'Luxury': ['luxury', 'upscale', 'premium', 'high-end', 'elegant'],
+      'Urban': ['urban', 'city', 'metropolitan', 'modern', 'contemporary'],
+      'Vintage': ['vintage', 'retro', 'classic', 'antique', 'period']
+    };
+
+    const apartmentStyles = apartmentStyleMap[apartment.vibe] || [];
+    
+    userStyles.forEach(userStyle => {
+      if (apartmentStyles.includes(userStyle.toLowerCase())) {
+        matchScore += 20;
+      }
+    });
+    
+    if (apartmentStyles.length > 0 || apartment.vibe) {
+      matchScore += 50;
+    }
   }
   
   return Math.min(100, matchScore);
 };
 
 const calculateColorMatch = (apartment: Apartment, userColors: string[]): number => {
-  // Updated color mapping for new vibe system
-  const apartmentColorMap: { [key: string]: string[] } = {
-    'Modern': ['neutral', 'cool', 'white', 'grey'],
-    'Cozy': ['warm', 'earth', 'brown', 'beige'],
-    'Industrial': ['neutral', 'cool', 'metal', 'grey'],
-    'Bohemian': ['warm', 'bold', 'colorful', 'earth'],
-    'Scandinavian': ['neutral', 'white', 'natural', 'light'],
-    'Minimalist': ['neutral', 'white', 'simple', 'clean'],
-    'Contemporary': ['neutral', 'cool', 'modern', 'sleek'],
-    'Traditional': ['warm', 'earth', 'classic', 'rich'],
-    'Rustic': ['earth', 'natural', 'wood', 'warm'],
-    'Luxury': ['rich', 'elegant', 'gold', 'sophisticated'],
-    'Urban': ['neutral', 'cool', 'modern', 'grey'],
-    'Vintage': ['classic', 'muted', 'antique', 'period'],
-    
-    // Fallback mappings
-    'Modern Minimalist': ['neutral', 'cool', 'white'],
-    'Urban Sanctuary': ['neutral', 'cool', 'grey'],
-    'Creative Haven': ['warm', 'bold', 'colorful'],
-    'Cozy Traditional': ['warm', 'earth', 'brown'],
-    'Industrial Chic': ['neutral', 'cool', 'metal'],
-    'Bohemian Eclectic': ['warm', 'bold', 'colorful'],
-    'Zen Retreat': ['neutral', 'earth', 'natural']
-  };
-
-  const apartmentColors = apartmentColorMap[apartment.vibe] || [];
   let matchScore = 0;
   
-  userColors.forEach(userColor => {
-    if (apartmentColors.includes(userColor.toLowerCase())) {
-      matchScore += 20; // Each match adds 20 points
+  // First, try to use AI-detected color metrics from vibe_analysis
+  const vibeAnalysis = (apartment as any).vibe_analysis;
+  if (vibeAnalysis) {
+    // Map user color preferences to AI analysis metrics
+    const colorMap: { [key: string]: string[] } = {
+      'neutral': ['minimalist', 'elegant'],
+      'warm': ['cozy', 'rustic'],
+      'cool': ['modern', 'urban'],
+      'bright': ['colorful', 'natural_light'],
+      'dark': ['luxurious', 'elegant'],
+      'colorful': ['colorful'],
+      'natural': ['rustic', 'natural_light'],
+      'white': ['minimalist', 'modern', 'natural_light'],
+      'earth': ['rustic', 'cozy'],
+      'bold': ['colorful', 'modern']
+    };
+    
+    userColors.forEach(userColor => {
+      const mappedMetrics = colorMap[userColor.toLowerCase()] || [userColor.toLowerCase()];
+      mappedMetrics.forEach(metric => {
+        if (vibeAnalysis[metric] && vibeAnalysis[metric] >= 7) {
+          matchScore += 25; // Higher score for AI-detected strong color matches
+        } else if (vibeAnalysis[metric] && vibeAnalysis[metric] >= 5) {
+          matchScore += 15; // Moderate score for medium matches
+        }
+      });
+    });
+    
+    // Special bonus for natural light as it affects color perception
+    if (vibeAnalysis.natural_light >= 8) {
+      matchScore += 20;
     }
-  });
-  
-  // Add base score - be more generous
-  if (apartmentColors.length > 0 || apartment.vibe) {
-    matchScore += 50; // Higher base color compatibility
+    
+    // Bonus for colorful properties if user likes colorful spaces
+    if (userColors.includes('colorful') && vibeAnalysis.colorful >= 6) {
+      matchScore += 30;
+    }
+  } else {
+    // Fallback to original logic if no AI analysis available
+    const apartmentColorMap: { [key: string]: string[] } = {
+      'Modern': ['neutral', 'cool', 'white', 'grey'],
+      'Cozy': ['warm', 'earth', 'brown', 'beige'],
+      'Industrial': ['neutral', 'cool', 'metal', 'grey'],
+      'Bohemian': ['warm', 'bold', 'colorful', 'earth'],
+      'Scandinavian': ['neutral', 'white', 'natural', 'light'],
+      'Minimalist': ['neutral', 'white', 'simple', 'clean'],
+      'Contemporary': ['neutral', 'cool', 'modern', 'sleek'],
+      'Traditional': ['warm', 'earth', 'classic', 'rich'],
+      'Rustic': ['earth', 'natural', 'wood', 'warm'],
+      'Luxury': ['rich', 'elegant', 'gold', 'sophisticated'],
+      'Urban': ['neutral', 'cool', 'modern', 'grey'],
+      'Vintage': ['classic', 'muted', 'antique', 'period']
+    };
+
+    const apartmentColors = apartmentColorMap[apartment.vibe] || [];
+    
+    userColors.forEach(userColor => {
+      if (apartmentColors.includes(userColor.toLowerCase())) {
+        matchScore += 20;
+      }
+    });
+    
+    if (apartmentColors.length > 0 || apartment.vibe) {
+      matchScore += 50;
+    }
   }
   
   return Math.min(100, matchScore);
