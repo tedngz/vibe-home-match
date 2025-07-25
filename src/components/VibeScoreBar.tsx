@@ -18,28 +18,14 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
     return { level: 'Casual Vibe', color: 'text-gray-600 bg-gray-100', emoji: '💭' };
   };
 
-  const getStyleTags = (styleScore: number, vibeAnalysis?: any): string[] => {
-    const aiStyleTags: string[] = [];
-    
-    if (vibeAnalysis) {
-      // Add style characteristics based on AI analysis scores
-      if (vibeAnalysis.modern >= 7) aiStyleTags.push('Modern');
-      if (vibeAnalysis.cozy >= 7) aiStyleTags.push('Cozy');
-      if (vibeAnalysis.luxurious >= 7) aiStyleTags.push('Luxurious');
-      if (vibeAnalysis.minimalist >= 7) aiStyleTags.push('Minimalist');
-      if (vibeAnalysis.colorful >= 7) aiStyleTags.push('Colorful');
-      if (vibeAnalysis.spacious >= 7) aiStyleTags.push('Spacious');
-      if (vibeAnalysis.natural_light >= 8) aiStyleTags.push('Bright & Airy');
-      if (vibeAnalysis.urban >= 7) aiStyleTags.push('Urban');
-      if (vibeAnalysis.rustic >= 7) aiStyleTags.push('Rustic');
-      if (vibeAnalysis.elegant >= 7) aiStyleTags.push('Elegant');
-      
-      if (aiStyleTags.length > 0) return aiStyleTags.slice(0, 3);
+  const getStyleTags = (apartment?: any): string[] => {
+    // Use highlights from the apartment instead of AI characteristics
+    if (apartment?.highlights && Array.isArray(apartment.highlights)) {
+      return apartment.highlights.slice(0, 3);
     }
     
-    // Fallback based on score
-    const tags = ['Modern', 'Minimalist', 'Cozy', 'Bright', 'Spacious', 'Industrial', 'Scandinavian'];
-    return tags.slice(0, Math.max(3, Math.min(4, Math.floor(styleScore / 20) + 3)));
+    // Fallback if no highlights available
+    return ['Stylish', 'Modern', 'Comfortable'];
   };
 
   const getColorPalette = (colorScore: number) => {
@@ -73,7 +59,7 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
           <Home className="w-3 h-3 text-blue-500" />
           <span className="text-xs text-gray-600 flex-1">Style</span>
           <div className="flex flex-wrap gap-1">
-            {getStyleTags(score.breakdown.style, vibeAnalysis).map((tag, index) => (
+            {getStyleTags(apartment).map((tag, index) => (
               <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
                 {tag}
               </Badge>
