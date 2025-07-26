@@ -18,28 +18,68 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
     return { level: 'Casual Vibe', color: 'text-gray-600 bg-gray-100', emoji: '💭' };
   };
 
-  const getStyleTags = (apartment?: any): string[] => {
-    // Use highlights from the apartment instead of AI characteristics
-    if (apartment?.highlights && Array.isArray(apartment.highlights)) {
-      return apartment.highlights.slice(0, 3);
+  // Helper function to categorize highlights
+  const categorizeHighlight = (highlight: string): 'style' | 'color' | 'activity' => {
+    const lowerHighlight = highlight.toLowerCase();
+    
+    // Style keywords
+    const styleKeywords = ['modern', 'traditional', 'minimalist', 'bohemian', 'industrial', 'scandinavian', 'contemporary', 'rustic', 'vintage', 'luxury', 'urban', 'cozy', 'sleek', 'elegant', 'chic'];
+    
+    // Color keywords  
+    const colorKeywords = ['warm', 'cool', 'neutral', 'bold', 'bright', 'dark', 'colorful', 'white', 'black', 'grey', 'beige', 'wood', 'natural', 'light'];
+    
+    // Activity keywords
+    const activityKeywords = ['working', 'entertaining', 'relaxing', 'cooking', 'exercising', 'reading', 'creating', 'dining', 'sleeping', 'studying', 'socializing'];
+    
+    for (const keyword of styleKeywords) {
+      if (lowerHighlight.includes(keyword)) return 'style';
     }
     
-    // Fallback if no highlights available
-    return ['Stylish', 'Modern', 'Comfortable'];
+    for (const keyword of colorKeywords) {
+      if (lowerHighlight.includes(keyword)) return 'color';
+    }
+    
+    for (const keyword of activityKeywords) {
+      if (lowerHighlight.includes(keyword)) return 'activity';
+    }
+    
+    // Default to style if no match
+    return 'style';
   };
 
-  const getColorPalette = (colorScore: number) => {
-    const palettes = [['Neutral', 'Warm'], ['Earth', 'Natural'], ['Cool', 'Fresh']];
-    return palettes[Math.min(2, Math.floor(colorScore / 30))] || palettes[0];
-  };
+  const getCategorizedHighlights = (apartment?: any) => {
+    if (!apartment?.highlights || !Array.isArray(apartment.highlights)) {
+      return {
+        style: ['Stylish', 'Modern'],
+        color: ['Neutral', 'Warm'],
+        activity: ['Relaxing', 'Reading']
+      };
+    }
 
-  const getActivities = (activityScore: number) => {
-    const activities = [['Reading', 'Relaxing'], ['Cooking', 'Family'], ['Creating', 'Social']];
-    return activities[Math.min(2, Math.floor(activityScore / 30))] || activities[0];
+    const categorized = {
+      style: [] as string[],
+      color: [] as string[],
+      activity: [] as string[]
+    };
+
+    apartment.highlights.forEach((highlight: string) => {
+      const category = categorizeHighlight(highlight);
+      if (categorized[category].length < 2) {
+        categorized[category].push(highlight);
+      }
+    });
+
+    // Fill with fallbacks if categories are empty
+    if (categorized.style.length === 0) categorized.style = ['Stylish', 'Modern'];
+    if (categorized.color.length === 0) categorized.color = ['Neutral', 'Warm'];
+    if (categorized.activity.length === 0) categorized.activity = ['Relaxing', 'Comfortable'];
+
+    return categorized;
   };
 
   const vibeLevel = getVibeLevel(score.overall);
   const vibeAnalysis = apartment?.vibe_analysis;
+  const categorizedHighlights = getCategorizedHighlights(apartment);
 
   if (!showBreakdown) {
     return (
@@ -59,7 +99,7 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
           <Home className="w-3 h-3 text-blue-500" />
           <span className="text-xs text-gray-600 flex-1">Style</span>
           <div className="flex flex-wrap gap-1">
-            {getStyleTags(apartment).map((tag, index) => (
+            {categorizedHighlights.style.map((tag, index) => (
               <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 border-blue-200">
                 {tag}
               </Badge>
@@ -71,7 +111,7 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
           <Palette className="w-3 h-3 text-purple-500" />
           <span className="text-xs text-gray-600 flex-1">Color</span>
           <div className="flex flex-wrap gap-1">
-            {getColorPalette(score.breakdown.color).map((color, index) => (
+            {categorizedHighlights.color.map((color, index) => (
               <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-purple-50 text-purple-700 border-purple-200">
                 {color}
               </Badge>
@@ -83,7 +123,7 @@ export const VibeScoreBar = ({ score, showBreakdown = false, className = "", apa
           <Activity className="w-3 h-3 text-green-500" />
           <span className="text-xs text-gray-600 flex-1">Activities</span>
           <div className="flex flex-wrap gap-1">
-            {getActivities(score.breakdown.activities).map((activity, index) => (
+            {categorizedHighlights.activity.map((activity, index) => (
               <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 border-green-200">
                 {activity}
               </Badge>

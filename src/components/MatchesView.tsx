@@ -12,7 +12,7 @@ import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { UserProfile } from '@/components/LoginModal';
 import { useMatches } from '@/hooks/useMatches';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { HighlightTags } from '@/components/HighlightTags';
+
 import { PropertyDetailModal } from '@/components/PropertyDetailModal';
 import {
   AlertDialog,
@@ -179,7 +179,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
 
                 </div>
                 
-                <div className="p-5">
+                <div className="p-4">
                   <div className="mb-3">
                     {/* Mobile: Title above vibe score */}
                     <div className="block sm:hidden mb-3">
@@ -195,7 +195,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                     {/* Score Breakdown */}
                     {vibeScore && (
                       <div className="bg-gray-50 p-3 rounded-lg mb-2">
-                        <VibeScoreBar score={vibeScore} showBreakdown={true} />
+                        <VibeScoreBar score={vibeScore} showBreakdown={true} apartment={apartment} />
                       </div>
                     )}
                   </div>

@@ -67,7 +67,7 @@ export const PropertyCard = ({
   };
 
   return (
-    <Card className={`bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg overflow-hidden ${className}`}>
+    <Card className={`bg-white/70 backdrop-blur-md overflow-hidden ${className}`}>
       {/* Property Image */}
       <div className="relative h-48">
         <img
