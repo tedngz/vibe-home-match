@@ -114,7 +114,17 @@ export const useDirectMessages = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
+      // Update match conversation with latest message
+      await supabase
+        .from('match_conversations')
+        .upsert({
+          match_id: variables.matchId,
+          last_message_at: new Date().toISOString(),
+          last_message_preview: variables.content.substring(0, 100),
+          is_active: true
+        }, { onConflict: 'match_id' });
+
       queryClient.invalidateQueries({ queryKey: ['direct-messages', currentMatchId] });
       queryClient.invalidateQueries({ queryKey: ['match-conversations'] });
     },

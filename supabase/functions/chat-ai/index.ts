@@ -175,7 +175,7 @@ Primary Image: ${p.images?.[0] || 'No image available'}
   * Brief description (1-2 sentences max)
   * Overall vibe score
   * One property image
-  * Clickable link format: "🔗 [View Details](/property/${p.id})"
+  * Clickable link format: "🔗 [View Details](/property/PROPERTY_ID)" (replace PROPERTY_ID with actual ID)
 - Keep responses concise and focused
 - Format each property as a clean, compact card
 
