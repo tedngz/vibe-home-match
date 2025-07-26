@@ -49,8 +49,11 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
   useEffect(() => {
     if (initialMatchId && isOpen) {
       setCurrentMatchId(initialMatchId);
+    } else if (isOpen && conversations.length > 0 && !currentMatchId) {
+      // Auto-select first conversation if no match is selected
+      setCurrentMatchId(conversations[0].match_id);
     }
-  }, [initialMatchId, isOpen, setCurrentMatchId]);
+  }, [initialMatchId, isOpen, conversations, currentMatchId, setCurrentMatchId]);
 
   useEffect(() => {
     if (currentMatchId && messages.length > 0) {
