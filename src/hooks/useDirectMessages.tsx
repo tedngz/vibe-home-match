@@ -64,6 +64,7 @@ export const useDirectMessages = () => {
           )
         `)
         .eq('is_active', true)
+        .or(`property_matches.realtor_id.eq.${user.id},property_matches.renter_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
 
       if (error) throw error;
