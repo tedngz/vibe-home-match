@@ -49,7 +49,12 @@ export const useDirectMessages = () => {
   const { data: conversations = [], isLoading: loadingConversations } = useQuery({
     queryKey: ['match-conversations', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) {
+        console.log('No user ID found for conversations query, user:', user);
+        return [];
+      }
+      
+      console.log('Fetching conversations for user:', user.id);
       
       const { data, error } = await supabase
         .from('match_conversations')
@@ -67,7 +72,12 @@ export const useDirectMessages = () => {
         .or(`property_matches.realtor_id.eq.${user.id},property_matches.renter_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching conversations:', error);
+        throw error;
+      }
+      
+      console.log('Conversations fetched successfully:', data);
       return data as MatchConversation[];
     },
     enabled: !!user?.id,
