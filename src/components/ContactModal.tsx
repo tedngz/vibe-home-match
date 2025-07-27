@@ -71,6 +71,18 @@ export const ContactModal = ({ apartment, userProfile, onClose }: ContactModalPr
           });
 
         if (messageError) throw messageError;
+
+        // Create or update the match conversation to ensure it appears in chat
+        const { error: conversationError } = await supabase
+          .from('match_conversations')
+          .upsert({
+            match_id: matchId,
+            last_message_at: new Date().toISOString(),
+            last_message_preview: formData.message.substring(0, 100),
+            is_active: true
+          }, { onConflict: 'match_id' });
+
+        if (conversationError) throw conversationError;
       }
 
       toast({
