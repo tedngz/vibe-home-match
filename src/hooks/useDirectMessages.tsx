@@ -99,7 +99,12 @@ export const useDirectMessages = () => {
       content: string; 
       receiverId: string;
     }) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!user?.id) {
+        console.error('User not authenticated - user:', user);
+        throw new Error('User not authenticated');
+      }
+
+      console.log('Sending message:', { matchId, senderId: user.id, receiverId, content });
 
       const { data, error } = await supabase
         .from('direct_messages')
@@ -112,7 +117,12 @@ export const useDirectMessages = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error when sending message:', error);
+        throw error;
+      }
+      
+      console.log('Message sent successfully:', data);
       return data;
     },
     onSuccess: async (data, variables) => {
