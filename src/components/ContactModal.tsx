@@ -30,76 +30,115 @@ export const ContactModal = ({ apartment, userProfile, onClose }: ContactModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user?.id) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to send a message.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
-      // Create a match first
-      const { data: matchData, error: matchError } = await supabase
+      console.log('Starting conversation between user:', user.id, 'and realtor:', apartment.realtor.id, 'for property:', apartment.id);
+      
+      // Check if match already exists
+      const { data: existingMatch, error: checkError } = await supabase
         .from('property_matches')
+        .select('id')
+        .eq('property_id', apartment.id)
+        .eq('realtor_id', apartment.realtor.id)
+        .eq('renter_id', user.id)
+        .maybeSingle(); // Use maybeSingle to avoid errors when no match exists
+
+      if (checkError) {
+        console.error('Error checking existing match:', checkError);
+        throw checkError;
+      }
+
+      let matchId = existingMatch?.id;
+      
+      // Create new match if none exists
+      if (!matchId) {
+        console.log('Creating new property match...');
+        const { data: newMatch, error: matchError } = await supabase
+          .from('property_matches')
+          .insert({
+            property_id: apartment.id,
+            realtor_id: apartment.realtor.id,
+            renter_id: user.id
+          })
+          .select()
+          .single();
+
+        if (matchError) {
+          console.error('Error creating property match:', matchError);
+          throw matchError;
+        }
+        
+        matchId = newMatch.id;
+        console.log('Created new match with ID:', matchId);
+      } else {
+        console.log('Using existing match ID:', matchId);
+      }
+
+      if (!matchId) {
+        throw new Error('Failed to create or find property match');
+      }
+
+      // Send the initial message
+      console.log('Sending initial message...');
+      const { data: messageData, error: messageError } = await supabase
+        .from('direct_messages')
         .insert({
-          property_id: apartment.id,
-          realtor_id: apartment.realtor.id,
-          renter_id: user?.id
+          match_id: matchId,
+          sender_id: user.id,
+          receiver_id: apartment.realtor.id,
+          content: formData.message
         })
         .select()
         .single();
 
-      if (matchError && matchError.code !== '23505') { // Ignore duplicate key error
-        throw matchError;
+      if (messageError) {
+        console.error('Error sending message:', messageError);
+        throw messageError;
       }
+      
+      console.log('Message sent successfully:', messageData);
 
-      // Get the match ID (either from new insert or existing)
-      let matchId = matchData?.id;
-      if (!matchId) {
-        const { data: existingMatch } = await supabase
-          .from('property_matches')
-          .select('id')
-          .eq('property_id', apartment.id)
-          .eq('realtor_id', apartment.realtor.id)
-          .eq('renter_id', user?.id)
-          .single();
-        matchId = existingMatch?.id;
+      // Create or update the match conversation to ensure it appears in chat
+      console.log('Creating/updating match conversation...');
+      const { error: conversationError } = await supabase
+        .from('match_conversations')
+        .upsert({
+          match_id: matchId,
+          last_message_at: new Date().toISOString(),
+          last_message_preview: formData.message.substring(0, 100),
+          is_active: true
+        }, { onConflict: 'match_id' });
+
+      if (conversationError) {
+        console.error('Error creating/updating conversation:', conversationError);
+        throw conversationError;
       }
-
-      if (matchId) {
-        // Send the initial message
-        const { error: messageError } = await supabase
-          .from('direct_messages')
-          .insert({
-            match_id: matchId,
-            sender_id: user?.id,
-            receiver_id: apartment.realtor.id,
-            content: formData.message
-          });
-
-        if (messageError) throw messageError;
-
-        // Create or update the match conversation to ensure it appears in chat
-        const { error: conversationError } = await supabase
-          .from('match_conversations')
-          .upsert({
-            match_id: matchId,
-            last_message_at: new Date().toISOString(),
-            last_message_preview: formData.message.substring(0, 100),
-            is_active: true
-          }, { onConflict: 'match_id' });
-
-        if (conversationError) throw conversationError;
-      }
+      
+      console.log('Conversation created/updated successfully');
 
       toast({
         title: "Message sent!",
         description: `Your interest in "${apartment.title}" has been sent to the property owner.`,
         duration: 3000,
       });
+      
+      onClose();
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error in conversation initiation:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
     }
-    
-    onClose();
   };
 
   return (
