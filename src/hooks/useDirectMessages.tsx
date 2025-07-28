@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -83,6 +83,31 @@ export const useDirectMessages = () => {
     enabled: !!user?.id,
   });
 
+  // Set up real-time subscription for conversations
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel('match-conversations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'match_conversations'
+        },
+        () => {
+          console.log('Conversation updated, refetching...');
+          queryClient.invalidateQueries({ queryKey: ['match-conversations', user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
+
   // Fetch messages for current match
   const { data: messages = [], isLoading: loadingMessages } = useQuery({
     queryKey: ['direct-messages', currentMatchId],
@@ -110,6 +135,32 @@ export const useDirectMessages = () => {
     },
     enabled: !!currentMatchId && !!user?.id,
   });
+
+  // Set up real-time subscription for messages
+  useEffect(() => {
+    if (!currentMatchId || !user?.id) return;
+
+    const channel = supabase
+      .channel(`direct-messages-${currentMatchId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'direct_messages',
+          filter: `match_id=eq.${currentMatchId}`
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          queryClient.invalidateQueries({ queryKey: ['direct-messages', currentMatchId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentMatchId, user?.id, queryClient]);
 
   // Send message
   const sendMessageMutation = useMutation({
