@@ -87,16 +87,25 @@ export const useDirectMessages = () => {
   const { data: messages = [], isLoading: loadingMessages } = useQuery({
     queryKey: ['direct-messages', currentMatchId],
     queryFn: async () => {
-      if (!currentMatchId) return [];
+      if (!currentMatchId) {
+        console.log('No currentMatchId for messages query');
+        return [];
+      }
+      
+      console.log('Fetching messages for match:', currentMatchId, 'user:', user?.id);
       
       const { data, error } = await supabase
         .from('direct_messages')
         .select('*')
         .eq('match_id', currentMatchId)
-        .not('deleted_by', 'cs', `{${user?.id}}`)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching messages:', error);
+        throw error;
+      }
+      
+      console.log('Messages fetched successfully:', data);
       return data as DirectMessage[];
     },
     enabled: !!currentMatchId && !!user?.id,
