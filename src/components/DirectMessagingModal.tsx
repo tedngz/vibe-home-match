@@ -47,10 +47,14 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
   const [messageText, setMessageText] = useState('');
 
   useEffect(() => {
+    console.log('DirectMessagingModal useEffect - initialMatchId:', initialMatchId, 'isOpen:', isOpen, 'conversations.length:', conversations.length, 'currentMatchId:', currentMatchId);
+    
     if (initialMatchId && isOpen) {
+      console.log('Setting currentMatchId to initialMatchId:', initialMatchId);
       setCurrentMatchId(initialMatchId);
     } else if (isOpen && conversations.length > 0 && !currentMatchId) {
       // Auto-select first conversation if no match is selected
+      console.log('Auto-selecting first conversation:', conversations[0].match_id);
       setCurrentMatchId(conversations[0].match_id);
     }
   }, [initialMatchId, isOpen, conversations, currentMatchId, setCurrentMatchId]);

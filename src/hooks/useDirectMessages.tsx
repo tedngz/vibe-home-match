@@ -109,7 +109,7 @@ export const useDirectMessages = () => {
   }, [user?.id, queryClient]);
 
   // Fetch messages for current match
-  const { data: messages = [], isLoading: loadingMessages } = useQuery({
+  const { data: messages = [], isLoading: loadingMessages, refetch: refetchMessages } = useQuery({
     queryKey: ['direct-messages', currentMatchId],
     queryFn: async () => {
       if (!currentMatchId) {
@@ -119,21 +119,27 @@ export const useDirectMessages = () => {
       
       console.log('Fetching messages for match:', currentMatchId, 'user:', user?.id);
       
-      const { data, error } = await supabase
-        .from('direct_messages')
-        .select('*')
-        .eq('match_id', currentMatchId)
-        .order('created_at', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('direct_messages')
+          .select('*')
+          .eq('match_id', currentMatchId)
+          .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching messages:', error);
+        if (error) {
+          console.error('Error fetching messages:', error);
+          throw error;
+        }
+        
+        console.log('Messages fetched successfully for match', currentMatchId, ':', data);
+        return data as DirectMessage[];
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
         throw error;
       }
-      
-      console.log('Messages fetched successfully:', data);
-      return data as DirectMessage[];
     },
-    enabled: !!currentMatchId && !!user?.id,
+    enabled: !!currentMatchId,
+    refetchInterval: 3000, // Refetch every 3 seconds as fallback
   });
 
   // Set up real-time subscription for messages
@@ -196,6 +202,8 @@ export const useDirectMessages = () => {
       return data;
     },
     onSuccess: async (data, variables) => {
+      console.log('Message sent successfully, invalidating queries...');
+      
       // Update match conversation with latest message
       await supabase
         .from('match_conversations')
@@ -206,8 +214,12 @@ export const useDirectMessages = () => {
           is_active: true
         }, { onConflict: 'match_id' });
 
-      queryClient.invalidateQueries({ queryKey: ['direct-messages', currentMatchId] });
-      queryClient.invalidateQueries({ queryKey: ['match-conversations'] });
+      // Force immediate refetch of messages and conversations
+      await queryClient.invalidateQueries({ queryKey: ['direct-messages', currentMatchId] });
+      await queryClient.invalidateQueries({ queryKey: ['match-conversations'] });
+      
+      // Also manually refetch messages for immediate update
+      refetchMessages();
     },
     onError: (error) => {
       console.error('Error sending message:', error);
