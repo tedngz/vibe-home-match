@@ -69,7 +69,7 @@ export const useDirectMessages = () => {
           )
         `)
         .eq('is_active', true)
-        .or(`property_matches.realtor_id.eq.${user.id},property_matches.renter_id.eq.${user.id}`, { foreignTable: 'property_matches' })
+        .or(`realtor_id.eq.${user.id},renter_id.eq.${user.id}`, { foreignTable: 'property_matches' })
         .order('last_message_at', { ascending: false });
 
       if (error) {
