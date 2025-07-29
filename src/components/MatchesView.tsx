@@ -179,104 +179,124 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
 
                 </div>
                 
-                <div className="p-4">
-                  <div className="mb-3">
-                    {/* Mobile: Title above vibe score */}
-                    <div className="block sm:hidden mb-3">
-                      <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
-                    </div>
-                    
-                    <div className="flex items-start justify-between mb-2">
-                      {/* Desktop: Title inline with vibe score */}
-                      <h3 className="hidden sm:block font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
-                      {vibeScore && <VibeScore score={vibeScore} size="sm" />}
-                    </div>
-                    
-                    {/* Score Breakdown */}
-                    {vibeScore && (
-                      <div className="bg-gray-50 p-3 rounded-lg mb-2">
-                        <VibeScoreBar score={vibeScore} showBreakdown={true} apartment={apartment} />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm mb-3">
-                    <div className="flex items-center text-gray-600">
-                      <MapPin className="w-3 h-3 mr-1" />
-                      {apartment.location}
-                    </div>
-                    <Badge className="bg-primary text-primary-foreground font-semibold">
-                      {formatPrice(apartment.price)}/mo
-                    </Badge>
-                  </div>
-
-
-                  <div className="mb-4">
-                    <div className="text-gray-700 text-sm leading-relaxed">
-                      {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
-                    </div>
-                    {apartment.description.length > 150 && (
-                      <button
-                        onClick={() => toggleDescription(apartment.id)}
-                        className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
-                      >
-                        {isExpanded ? 'Read less' : 'Read more'}
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-gray-900">{apartment.realtor.name}</span>
-                        <p className="text-xs text-gray-500">Licensed Realtor</p>
-                      </div>
-                    </div>
-                    
-                     <div className="flex space-x-2">
-                       <Button 
-                         size="sm" 
-                         className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md"
-                         onClick={() => setSelectedApartment(apartment)}
-                       >
-                         Contact
-                       </Button>
-                       {apartment.matchId && (
-                         <AlertDialog>
-                           <AlertDialogTrigger asChild>
-                             <Button 
-                               size="sm" 
-                               variant="outline"
-                               className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                               disabled={isRemovingMatch}
-                             >
-                               <Trash2 className="w-4 h-4" />
-                             </Button>
-                           </AlertDialogTrigger>
-                           <AlertDialogContent>
-                             <AlertDialogHeader>
-                               <AlertDialogTitle>Remove from matches?</AlertDialogTitle>
-                               <AlertDialogDescription>
-                                 This will remove "{apartment.title}" from your matches. You can always find it again by swiping.
-                               </AlertDialogDescription>
-                             </AlertDialogHeader>
-                             <AlertDialogFooter>
-                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                               <AlertDialogAction 
-                                 onClick={() => handleRemoveMatch(apartment.matchId!)}
-                                 className="bg-red-600 hover:bg-red-700"
-                               >
-                                 Remove
-                               </AlertDialogAction>
-                             </AlertDialogFooter>
-                           </AlertDialogContent>
-                         </AlertDialog>
+                 <div className="p-4 sm:p-6">
+                   <div className="mb-3">
+                     {/* Mobile: Title above vibe score */}
+                     <div className="block sm:hidden mb-3">
+                       <h3 className="font-bold text-lg text-gray-900 line-clamp-2">{apartment.title}</h3>
+                     </div>
+                     
+                     <div className="flex items-start justify-between mb-2">
+                       {/* Desktop: Title inline with vibe score */}
+                       <h3 className="hidden sm:block font-bold text-lg text-gray-900 flex-1 mr-3 line-clamp-2">{apartment.title}</h3>
+                       {vibeScore && <VibeScore score={vibeScore} size="sm" />}
+                     </div>
+                     
+                     {/* Score Breakdown */}
+                     {vibeScore && (
+                       <div className="bg-gray-50 p-3 rounded-lg mb-2">
+                         <VibeScoreBar score={vibeScore} showBreakdown={true} apartment={apartment} />
+                       </div>
+                     )}
+                   </div>
+                   
+                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm mb-3 gap-2">
+                     <div className="flex items-center text-gray-600">
+                       <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                       <span className="line-clamp-1">{apartment.location}</span>
+                     </div>
+                     <div className="flex items-center gap-2">
+                       <Badge className="bg-primary text-primary-foreground font-semibold">
+                         {formatPrice(apartment.price)}/mo
+                       </Badge>
+                       {apartment.size && (
+                         <Badge variant="outline" className="text-xs">
+                           {apartment.size}
+                         </Badge>
                        )}
                      </div>
-                  </div>
+                   </div>
+
+                   {apartment.description && (
+                     <div className="mb-4">
+                       <div className="text-gray-700 text-sm leading-relaxed">
+                         {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
+                       </div>
+                       {apartment.description.length > 150 && (
+                         <button
+                           onClick={() => toggleDescription(apartment.id)}
+                           className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
+                         >
+                           {isExpanded ? 'Read less' : 'Read more'}
+                         </button>
+                       )}
+                     </div>
+                   )}
+
+                   {apartment.highlights && apartment.highlights.length > 0 && (
+                     <div className="mb-4">
+                       <div className="flex flex-wrap gap-1">
+                         {apartment.highlights.slice(0, 4).map((highlight, index) => (
+                           <Badge key={index} variant="secondary" className="text-xs px-2 py-1">
+                             {highlight}
+                           </Badge>
+                         ))}
+                       </div>
+                     </div>
+                   )}
+
+                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-200 gap-3">
+                     <div className="flex items-center space-x-2">
+                       <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                         <User className="w-4 h-4 text-white" />
+                       </div>
+                       <div>
+                         <span className="text-sm font-medium text-gray-900">{apartment.realtor.name}</span>
+                         <p className="text-xs text-gray-500">Licensed Realtor</p>
+                       </div>
+                     </div>
+                     
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md flex-1 sm:flex-none"
+                          onClick={() => setSelectedApartment(apartment)}
+                        >
+                          Contact
+                        </Button>
+                        {apartment.matchId && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="text-red-600 hover:text-red-800 hover:bg-red-50 flex-1 sm:flex-none"
+                                disabled={isRemovingMatch}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove from matches?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will remove "{apartment.title}" from your matches. You can always find it again by swiping.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleRemoveMatch(apartment.matchId!)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                   </div>
                 </div>
               </Card>
             );

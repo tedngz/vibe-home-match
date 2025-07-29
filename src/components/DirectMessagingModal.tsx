@@ -93,8 +93,8 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl h-[85vh] bg-white flex flex-col overflow-hidden animate-fade-in animate-scale-in">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <Card className="w-full max-w-6xl h-[95vh] sm:h-[85vh] bg-white flex flex-col overflow-hidden animate-fade-in animate-scale-in">
         {/* Header */}
         <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-pink-50 flex items-center justify-between">
           <div>
@@ -115,7 +115,7 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
 
         <div className="flex-1 flex overflow-hidden">
           {/* Conversations List */}
-          <div className="w-80 border-r flex flex-col">
+          <div className="w-full sm:w-80 border-r flex flex-col sm:flex-none">
             <ScrollArea className="flex-1">
               {loadingConversations ? (
                 <div className="p-4 text-center">
@@ -153,33 +153,33 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                              <p className="font-medium text-sm text-gray-900 truncate">
                                {isRealtor ? 'Interested Renter' : 'Property Owner'}
                              </p>
-                              <button 
-                                onClick={() => {
-                                  if (property) {
-                                    const apartment = {
-                                      id: property.id,
-                                      images: property.images || [],
-                                      title: property.title,
-                                      location: property.location,
-                                      price: Number(property.price),
-                                      size: (property as any).size || '',
-                                      vibe: (property as any).vibe || '',
-                                      description: (property as any).description || '',
-                                      highlights: (property as any).highlights || [],
-                                      realtor: {
-                                        id: (property as any).realtor_id || '',
-                                        name: 'Licensed Realtor',
-                                        phone: '+1-234-567-8900',
-                                        email: 'contact@realtor.com'
-                                      }
-                                    };
-                                    setDetailModalApartment(apartment);
-                                  }
-                                }}
-                                className="text-xs text-blue-600 hover:text-blue-800 hover:underline truncate block text-left"
-                              >
-                                {property?.title}
-                              </button>
+                               <button 
+                                 onClick={() => {
+                                   if (property) {
+                                     const apartment = {
+                                       id: property.id,
+                                       images: property.images || [],
+                                       title: property.title,
+                                       location: property.location,
+                                       price: Number(property.price),
+                                       size: (property as any).size || '',
+                                       vibe: (property as any).vibe || '',
+                                       description: (property as any).description || '',
+                                       highlights: (property as any).highlights || [],
+                                       realtor: {
+                                         id: (property as any).realtor_id || '',
+                                         name: 'Licensed Realtor',
+                                         phone: '+1-234-567-8900',
+                                         email: 'contact@realtor.com'
+                                       }
+                                     };
+                                     setDetailModalApartment(apartment);
+                                   }
+                                 }}
+                                 className="text-xs text-blue-600 hover:text-blue-800 hover:underline line-clamp-2 block text-left"
+                               >
+                                 {property?.title}
+                               </button>
                              {conversation.last_message_preview && (
                                <p className="text-xs text-gray-400 mt-1 truncate">
                                  {conversation.last_message_preview}
@@ -211,33 +211,33 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                        <h4 className="font-medium text-gray-900 text-sm">
                          {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
                        </h4>
-                          <button 
-                            onClick={() => {
-                              if (currentMatch.properties) {
-                                const apartment = {
-                                  id: currentMatch.properties.id,
-                                  images: currentMatch.properties.images || [],
-                                  title: currentMatch.properties.title,
-                                  location: currentMatch.properties.location,
-                                  price: Number(currentMatch.properties.price),
-                                   size: (currentMatch.properties as any).size || '',
-                                   vibe: (currentMatch.properties as any).vibe || '',
-                                   description: (currentMatch.properties as any).description || '',
-                                   highlights: (currentMatch.properties as any).highlights || [],
-                                  realtor: {
-                                    id: (currentMatch.properties as any).realtor_id || '',
-                                    name: 'Licensed Realtor',
-                                    phone: '+1-234-567-8900',
-                                    email: 'contact@realtor.com'
-                                  }
-                                };
-                                setDetailModalApartment(apartment);
-                              }
-                            }}
-                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline text-left"
-                          >
-                            {currentMatch.properties?.title}
-                          </button>
+                           <button 
+                             onClick={() => {
+                               if (currentMatch.properties) {
+                                 const apartment = {
+                                   id: currentMatch.properties.id,
+                                   images: currentMatch.properties.images || [],
+                                   title: currentMatch.properties.title,
+                                   location: currentMatch.properties.location,
+                                   price: Number(currentMatch.properties.price),
+                                    size: (currentMatch.properties as any).size || '',
+                                    vibe: (currentMatch.properties as any).vibe || '',
+                                    description: (currentMatch.properties as any).description || '',
+                                    highlights: (currentMatch.properties as any).highlights || [],
+                                   realtor: {
+                                     id: (currentMatch.properties as any).realtor_id || '',
+                                     name: 'Licensed Realtor',
+                                     phone: '+1-234-567-8900',
+                                     email: 'contact@realtor.com'
+                                   }
+                                 };
+                                 setDetailModalApartment(apartment);
+                               }
+                             }}
+                             className="text-xs text-blue-600 hover:text-blue-800 hover:underline text-left line-clamp-1"
+                           >
+                             {currentMatch.properties?.title}
+                           </button>
                      </div>
                   </div>
                   <AlertDialog>

@@ -113,16 +113,16 @@ export const PropertyCard = ({
         )}
       </div>
       
-      <div className="p-4">
+      <div className="p-4 sm:p-6">
         <div className="mb-3">
           {/* Mobile: Title above vibe score */}
           <div className="block sm:hidden mb-3">
-            <h3 className="font-bold text-lg text-gray-900">{apartment.title}</h3>
+            <h3 className="font-bold text-lg text-gray-900 line-clamp-2">{apartment.title}</h3>
           </div>
           
           <div className="flex items-start justify-between mb-2">
             {/* Desktop: Title inline with vibe score */}
-            <h3 className="hidden sm:block font-bold text-lg text-gray-900 flex-1 mr-3">{apartment.title}</h3>
+            <h3 className="hidden sm:block font-bold text-lg text-gray-900 flex-1 mr-3 line-clamp-2">{apartment.title}</h3>
             {vibeScore && <VibeScore score={vibeScore} size="sm" />}
           </div>
           
@@ -134,21 +134,42 @@ export const PropertyCard = ({
           )}
         </div>
         
-        <div className="flex items-center justify-between text-sm mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm mb-3 gap-2">
           <div className="flex items-center text-gray-600">
-            <MapPin className="w-3 h-3 mr-1" />
-            {apartment.location}
+            <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+            <span className="line-clamp-1">{apartment.location}</span>
           </div>
-          <Badge className="bg-primary text-primary-foreground font-semibold">
-            {formatPrice(apartment.price)}/mo
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-primary text-primary-foreground font-semibold">
+              {formatPrice(apartment.price)}/mo
+            </Badge>
+            {apartment.size && (
+              <Badge variant="outline" className="text-xs">
+                {apartment.size}
+              </Badge>
+            )}
+          </div>
         </div>
 
-        <div className="mb-4">
-          <div className="text-gray-700 text-sm leading-relaxed">
-            {apartment.description}
+        {apartment.description && (
+          <div className="mb-4">
+            <div className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+              {apartment.description}
+            </div>
           </div>
-        </div>
+        )}
+
+        {apartment.highlights && apartment.highlights.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-1">
+              {apartment.highlights.slice(0, 4).map((highlight, index) => (
+                <Badge key={index} variant="secondary" className="text-xs px-2 py-1">
+                  {highlight}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           <div className="flex items-center space-x-2">
