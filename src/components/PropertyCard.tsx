@@ -161,7 +161,6 @@ export const PropertyCard = ({
 
         {apartment.highlights && apartment.highlights.length > 0 && (
           <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-3">Perfect For</h4>
             {(() => {
               const categorizedHighlights = apartment.highlights.reduce((acc, highlight) => {
                 const category = categorizeHighlight(highlight);
