@@ -6,6 +6,7 @@ import { MapPin, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Apartment, UserPreferences } from '@/pages/Index';
 import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
+import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
@@ -17,34 +18,6 @@ interface PropertyCardProps {
   className?: string;
 }
 
-// Helper function to categorize highlights
-const categorizeHighlight = (highlight: string): 'style' | 'color' | 'activity' => {
-  const lowerHighlight = highlight.toLowerCase();
-  
-  // Style keywords
-  const styleKeywords = ['modern', 'traditional', 'minimalist', 'bohemian', 'industrial', 'scandinavian', 'contemporary', 'rustic', 'vintage', 'luxury', 'urban', 'cozy', 'sleek', 'elegant', 'chic'];
-  
-  // Color keywords  
-  const colorKeywords = ['warm', 'cool', 'neutral', 'bold', 'bright', 'dark', 'colorful', 'white', 'black', 'grey', 'beige', 'wood', 'natural', 'light'];
-  
-  // Activity keywords
-  const activityKeywords = ['working', 'entertaining', 'relaxing', 'cooking', 'exercising', 'reading', 'creating', 'dining', 'sleeping', 'studying', 'socializing'];
-  
-  for (const keyword of styleKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'style';
-  }
-  
-  for (const keyword of colorKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'color';
-  }
-  
-  for (const keyword of activityKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'activity';
-  }
-  
-  // Default to style if no match
-  return 'style';
-};
 
 export const PropertyCard = ({ 
   apartment, 
@@ -159,6 +132,11 @@ export const PropertyCard = ({
           </div>
         )}
 
+        {apartment.highlights && apartment.highlights.length > 0 && (
+          <div className="mb-4">
+            <PropertyHighlightTags apartment={apartment} maxTagsPerCategory={3} showIcons={false} />
+          </div>
+        )}
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           <div className="flex items-center space-x-2">

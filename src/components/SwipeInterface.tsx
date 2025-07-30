@@ -10,35 +10,8 @@ import { calculateVibeScore } from '@/utils/vibeScoring';
 import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { supabase } from '@/integrations/supabase/client';
-// Helper function to categorize highlights
-const categorizeHighlight = (highlight: string): 'style' | 'color' | 'activity' => {
-  const lowerHighlight = highlight.toLowerCase();
-  
-  // Style keywords
-  const styleKeywords = ['modern', 'traditional', 'minimalist', 'bohemian', 'industrial', 'scandinavian', 'contemporary', 'rustic', 'vintage', 'luxury', 'urban', 'cozy', 'sleek', 'elegant', 'chic'];
-  
-  // Color keywords  
-  const colorKeywords = ['warm', 'cool', 'neutral', 'bold', 'bright', 'dark', 'colorful', 'white', 'black', 'grey', 'beige', 'wood', 'natural', 'light'];
-  
-  // Activity keywords
-  const activityKeywords = ['working', 'entertaining', 'relaxing', 'cooking', 'exercising', 'reading', 'creating', 'dining', 'sleeping', 'studying', 'socializing'];
-  
-  for (const keyword of styleKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'style';
-  }
-  
-  for (const keyword of colorKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'color';
-  }
-  
-  for (const keyword of activityKeywords) {
-    if (lowerHighlight.includes(keyword)) return 'activity';
-  }
-  
-  // Default to style if no match
-  return 'style';
-};
 
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
@@ -408,6 +381,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
                 {currentApartment.description}
               </div>
                
+               <PropertyHighlightTags apartment={currentApartment} maxTagsPerCategory={2} />
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
