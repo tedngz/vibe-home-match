@@ -159,61 +159,6 @@ export const PropertyCard = ({
           </div>
         )}
 
-        {apartment.highlights && apartment.highlights.length > 0 && (
-          <div className="mb-4">
-            {(() => {
-              const categorizedHighlights = apartment.highlights.reduce((acc, highlight) => {
-                const category = categorizeHighlight(highlight);
-                if (!acc[category]) acc[category] = [];
-                acc[category].push(highlight);
-                return acc;
-              }, {} as Record<'style' | 'color' | 'activity', string[]>);
-
-              return (
-                <div className="space-y-3">
-                  {categorizedHighlights.style && categorizedHighlights.style.length > 0 && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-700 mb-1">Style</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {categorizedHighlights.style.slice(0, 3).map((highlight, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-2 py-1 bg-blue-50 text-blue-700 border-blue-200">
-                            {highlight}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {categorizedHighlights.color && categorizedHighlights.color.length > 0 && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-700 mb-1">Colors & Ambiance</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {categorizedHighlights.color.slice(0, 3).map((highlight, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-2 py-1 bg-green-50 text-green-700 border-green-200">
-                            {highlight}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {categorizedHighlights.activity && categorizedHighlights.activity.length > 0 && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-700 mb-1">Activities</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {categorizedHighlights.activity.slice(0, 3).map((highlight, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-2 py-1 bg-purple-50 text-purple-700 border-purple-200">
-                            {highlight}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
-        )}
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           <div className="flex items-center space-x-2">
