@@ -243,14 +243,6 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                        )}
                      </div>
                    )}
-
-                   {apartment.highlights && apartment.highlights.length > 0 && (
-                     <div className="mb-4">
-                       <PropertyHighlightTags apartment={apartment} maxTagsPerCategory={3} showIcons={false} />
-                     </div>
-                   )}
-
-
                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-200 gap-3">
                      <div className="flex items-center space-x-2">
                        <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
