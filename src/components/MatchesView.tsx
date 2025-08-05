@@ -219,30 +219,36 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                      </div>
                    </div>
 
-                     {apartment.description && (
-                       <div className="mb-4">
-                         <div className="text-gray-700 text-sm leading-relaxed">
-                           {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
-                         </div>
-                         {apartment.vibe_analysis?.generated_content?.highlights && (
-                           <div className="flex flex-wrap gap-1 mt-2">
-                             {apartment.vibe_analysis.generated_content.highlights.slice(0, 3).map((highlight, index) => (
-                               <Badge key={index} variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-                                 {highlight}
-                               </Badge>
-                             ))}
-                           </div>
-                         )}
-                         {apartment.description.length > 150 && (
-                           <button
-                             onClick={() => toggleDescription(apartment.id)}
-                             className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
-                           >
-                             {isExpanded ? 'Read less' : 'Read more'}
-                           </button>
-                         )}
+                   {apartment.description && (
+                     <div className="mb-4">
+                       <div className="text-gray-700 text-sm leading-relaxed">
+                         {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
                        </div>
-                     )}
+                       {apartment.vibe_analysis?.generated_content?.highlights && (
+                         <div className="flex flex-wrap gap-1 mt-2">
+                           {apartment.vibe_analysis.generated_content.highlights.slice(0, 3).map((highlight, index) => (
+                             <Badge key={index} variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                               {highlight}
+                             </Badge>
+                           ))}
+                         </div>
+                       )}
+                       {apartment.description.length > 150 && (
+                         <button
+                           onClick={() => toggleDescription(apartment.id)}
+                           className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
+                         >
+                           {isExpanded ? 'Read less' : 'Read more'}
+                         </button>
+                       )}
+                     </div>
+                   )}
+
+                   {apartment.highlights && apartment.highlights.length > 0 && (
+                     <div className="mb-4">
+                       <PropertyHighlightTags apartment={apartment} maxTagsPerCategory={3} showIcons={false} />
+                     </div>
+                   )}
 
 
                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-200 gap-3">
