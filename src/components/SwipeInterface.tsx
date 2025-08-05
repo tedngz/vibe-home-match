@@ -377,11 +377,14 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
 
             <div className="mb-4">
-              <div className="text-gray-700 text-sm leading-relaxed mb-3">
+              <div className="text-gray-700 text-sm leading-relaxed">
                 {currentApartment.description}
+                {currentApartment.vibe_analysis?.generated_content?.highlights && (
+                  <span className="block mt-2 text-xs text-gray-500 italic">
+                    AI highlights: {currentApartment.vibe_analysis.generated_content.highlights.slice(0, 3).join(', ')}
+                  </span>
+                )}
               </div>
-               
-               <PropertyHighlightTags apartment={currentApartment} maxTagsPerCategory={2} />
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">

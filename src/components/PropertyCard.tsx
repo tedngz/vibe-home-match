@@ -128,13 +128,12 @@ export const PropertyCard = ({
           <div className="mb-4">
             <div className="text-gray-700 text-sm leading-relaxed line-clamp-3">
               {apartment.description}
+              {apartment.vibe_analysis?.generated_content?.highlights && (
+                <span className="block mt-2 text-xs text-gray-500 italic">
+                  AI highlights: {apartment.vibe_analysis.generated_content.highlights.slice(0, 3).join(', ')}
+                </span>
+              )}
             </div>
-          </div>
-        )}
-
-        {apartment.highlights && apartment.highlights.length > 0 && (
-          <div className="mb-4">
-            <PropertyHighlightTags apartment={apartment} maxTagsPerCategory={3} showIcons={false} />
           </div>
         )}
 

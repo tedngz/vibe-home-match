@@ -219,25 +219,26 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                      </div>
                    </div>
 
-                    {apartment.description && (
-                      <div className="mb-4">
-                        <div className="text-gray-700 text-sm leading-relaxed">
-                          {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
-                        </div>
-                        {apartment.description.length > 150 && (
-                          <button
-                            onClick={() => toggleDescription(apartment.id)}
-                            className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
-                          >
-                            {isExpanded ? 'Read less' : 'Read more'}
-                          </button>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="mb-4">
-                      <PropertyHighlightTags apartment={apartment} maxTagsPerCategory={2} showIcons={false} />
-                    </div>
+                     {apartment.description && (
+                       <div className="mb-4">
+                         <div className="text-gray-700 text-sm leading-relaxed">
+                           {isExpanded ? apartment.description : `${apartment.description.slice(0, 150)}${apartment.description.length > 150 ? '...' : ''}`}
+                           {apartment.vibe_analysis?.generated_content?.highlights && (
+                             <span className="block mt-2 text-xs text-gray-500 italic">
+                               AI highlights: {apartment.vibe_analysis.generated_content.highlights.slice(0, 3).join(', ')}
+                             </span>
+                           )}
+                         </div>
+                         {apartment.description.length > 150 && (
+                           <button
+                             onClick={() => toggleDescription(apartment.id)}
+                             className="text-orange-600 hover:text-orange-800 text-sm font-medium mt-2"
+                           >
+                             {isExpanded ? 'Read less' : 'Read more'}
+                           </button>
+                         )}
+                       </div>
+                     )}
 
 
                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-200 gap-3">
