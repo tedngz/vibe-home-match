@@ -211,33 +211,34 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                        <h4 className="font-medium text-gray-900 text-sm">
                          {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
                        </h4>
-                           <button 
-                             onClick={() => {
-                               if (currentMatch.properties) {
-                                 const apartment = {
-                                   id: currentMatch.properties.id,
-                                   images: currentMatch.properties.images || [],
-                                   title: currentMatch.properties.title,
-                                   location: currentMatch.properties.location,
-                                   price: Number(currentMatch.properties.price),
+                            <button 
+                              onClick={() => {
+                                if (currentMatch.properties) {
+                                  const apartment = {
+                                    id: currentMatch.properties.id,
+                                    images: currentMatch.properties.images || [],
+                                    title: currentMatch.properties.title,
+                                    location: currentMatch.properties.location,
+                                    price: Number(currentMatch.properties.price),
                                     size: (currentMatch.properties as any).size || '',
                                     vibe: (currentMatch.properties as any).vibe || '',
                                     description: (currentMatch.properties as any).description || '',
                                     highlights: (currentMatch.properties as any).highlights || [],
-                                   realtor: {
-                                     id: (currentMatch.properties as any).realtor_id || '',
-                                     name: 'Licensed Realtor',
-                                     phone: '+1-234-567-8900',
-                                     email: 'contact@realtor.com'
-                                   }
-                                 };
-                                 setDetailModalApartment(apartment);
-                               }
-                             }}
-                             className="text-xs text-blue-600 hover:text-blue-800 hover:underline text-left line-clamp-1"
-                           >
-                             {currentMatch.properties?.title}
-                           </button>
+                                    vibe_analysis: (currentMatch.properties as any).vibe_analysis,
+                                    realtor: {
+                                      id: (currentMatch.properties as any).realtor_id || '',
+                                      name: 'Licensed Realtor',
+                                      phone: '+1-234-567-8900',
+                                      email: 'contact@realtor.com'
+                                    }
+                                  };
+                                  setDetailModalApartment(apartment);
+                                }
+                              }}
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:underline text-left line-clamp-1"
+                            >
+                              {currentMatch.properties?.title}
+                            </button>
                      </div>
                   </div>
                   <AlertDialog>
