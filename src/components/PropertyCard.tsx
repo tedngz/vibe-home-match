@@ -16,6 +16,9 @@ interface PropertyCardProps {
   onContact?: () => void;
   showContactButton?: boolean;
   className?: string;
+  showFullTitle?: boolean;
+  showFullDescription?: boolean;
+  showAllHighlights?: boolean;
 }
 
 
@@ -24,7 +27,10 @@ export const PropertyCard = ({
   userPreferences, 
   onContact, 
   showContactButton = true,
-  className = ""
+  className = "",
+  showFullTitle = false,
+  showFullDescription = false,
+  showAllHighlights = false
 }: PropertyCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { formatPrice } = useCurrency();
@@ -89,7 +95,7 @@ export const PropertyCard = ({
       <div className="p-4 sm:p-6">
         <div className="mb-3">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-bold text-lg text-gray-900 flex-1 mr-3 line-clamp-2">{apartment.title}</h3>
+            <h3 className={`font-bold text-lg text-gray-900 flex-1 mr-3 ${showFullTitle ? '' : 'line-clamp-2'}`}>{apartment.title}</h3>
             {vibeScore && <VibeScore score={vibeScore} size="sm" />}
           </div>
           
@@ -120,12 +126,12 @@ export const PropertyCard = ({
 
         {apartment.description && (
           <div className="mb-4">
-            <div className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+            <div className={`text-gray-700 text-sm leading-relaxed ${showFullDescription ? '' : 'line-clamp-3'}`}>
               {apartment.description}
             </div>
             {apartment.vibe_analysis?.generated_content?.highlights && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {apartment.vibe_analysis.generated_content.highlights.slice(0, 3).map((highlight, index) => (
+                {(showAllHighlights ? apartment.vibe_analysis.generated_content.highlights : apartment.vibe_analysis.generated_content.highlights.slice(0, 3)).map((highlight, index) => (
                   <Badge key={index} variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
                     {highlight}
                   </Badge>

@@ -93,6 +93,10 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
                 userPreferences={userPreferences}
                 onContact={() => setSelectedApartment(apartment)}
                 showContactButton={true}
+                showFullTitle={true}
+                showFullDescription={true}
+                showAllHighlights={true}
+                className="sm:h-auto"
               />
               {apartment.matchId && (
                 <div className="absolute top-4 right-4">
