@@ -365,21 +365,47 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
               </div>
             </div>
             
-            <div className="flex items-center justify-between text-sm mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm mb-3 gap-2">
               <div className="flex items-center text-gray-600">
-                <MapPin className="w-3 h-3 mr-1" />
-                {currentApartment.location}
+                <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                <span className="line-clamp-1">{currentApartment.location}</span>
               </div>
-              <Badge className="bg-primary text-primary-foreground font-semibold">
-                {formatPrice(currentApartment.price)}/mo
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-primary text-primary-foreground font-semibold">
+                  {formatPrice(currentApartment.price)}/mo
+                </Badge>
+                {currentApartment.size && (
+                  <Badge variant="outline" className="text-xs">
+                    {currentApartment.size}
+                  </Badge>
+                )}
+              </div>
             </div>
 
-
             <div className="mb-4">
-              <div className="text-gray-700 text-sm leading-relaxed">
+              <div className={`text-gray-700 text-sm leading-relaxed ${expandedDescription ? '' : 'line-clamp-3'}`}>
                 {currentApartment.description}
               </div>
+              {currentApartment.description && currentApartment.description.length > 150 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-1"
+                  onClick={() => setExpandedDescription(!expandedDescription)}
+                >
+                  {expandedDescription ? (
+                    <>
+                      <ChevronUp className="w-3 h-3 mr-1" />
+                      Read less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-3 h-3 mr-1" />
+                      Read more
+                    </>
+                  )}
+                </Button>
+              )}
               {currentApartment.vibe_analysis?.generated_content?.highlights && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {currentApartment.vibe_analysis.generated_content.highlights.slice(0, 3).map((highlight, index) => (

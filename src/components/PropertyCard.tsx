@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, User, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Apartment, UserPreferences } from '@/pages/Index';
 import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
@@ -33,6 +33,7 @@ export const PropertyCard = ({
   showAllHighlights = false
 }: PropertyCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [expandedDescription, setExpandedDescription] = useState(showFullDescription);
   const { formatPrice } = useCurrency();
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
@@ -132,9 +133,29 @@ export const PropertyCard = ({
 
         {apartment.description && (
           <div className="mb-4">
-            <div className={`text-gray-700 text-sm leading-relaxed ${showFullDescription ? '' : 'line-clamp-3'}`}>
+            <div className={`text-gray-700 text-sm leading-relaxed ${expandedDescription || showFullDescription ? '' : 'line-clamp-3'}`}>
               {apartment.description}
             </div>
+            {!showFullDescription && apartment.description && apartment.description.length > 150 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-1"
+                onClick={() => setExpandedDescription(!expandedDescription)}
+              >
+                {expandedDescription ? (
+                  <>
+                    <ChevronUp className="w-3 h-3 mr-1" />
+                    Read less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-3 h-3 mr-1" />
+                    Read more
+                  </>
+                )}
+              </Button>
+            )}
             {apartment.vibe_analysis?.generated_content?.highlights && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {(showAllHighlights ? apartment.vibe_analysis.generated_content.highlights : apartment.vibe_analysis.generated_content.highlights.slice(0, 3)).map((highlight, index) => (
