@@ -33,7 +33,7 @@ export const PropertyCard = ({
   showAllHighlights = false
 }: PropertyCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [expandedDescription, setExpandedDescription] = useState(showFullDescription);
+  const [expandedDescription, setExpandedDescription] = useState(false);
   const { formatPrice } = useCurrency();
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
@@ -133,10 +133,10 @@ export const PropertyCard = ({
 
         {apartment.description && (
           <div className="mb-4">
-            <div className={`text-gray-700 text-sm leading-relaxed ${expandedDescription || showFullDescription ? '' : 'line-clamp-3'}`}>
+            <div className={`text-gray-700 text-sm leading-relaxed ${expandedDescription ? '' : 'line-clamp-3'}`}>
               {apartment.description}
             </div>
-            {!showFullDescription && apartment.description && apartment.description.length > 150 && (
+            {apartment.description && apartment.description.length > 150 && (
               <Button
                 variant="ghost"
                 size="sm"
