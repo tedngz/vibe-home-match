@@ -30,6 +30,8 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
   const { renterMatches, isLoadingMatches, removeMatch, isRemovingMatch } = useMatches();
 
   const transformMatchToApartment = (match: any): Apartment => {
+    console.log('Transform match data:', match.properties);
+    console.log('Vibe analysis:', match.properties.vibe_analysis);
     return {
       id: match.properties.id,
       images: match.properties.images || [],
