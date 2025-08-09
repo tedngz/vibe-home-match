@@ -38,15 +38,6 @@ export const PropertyCard = ({
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
 
-  // Debug logging for highlights
-  console.log('PropertyCard highlights debug:', {
-    hasVibeAnalysis: !!apartment.vibe_analysis,
-    hasGeneratedContent: !!apartment.vibe_analysis?.generated_content,
-    hasHighlights: !!apartment.vibe_analysis?.generated_content?.highlights,
-    highlights: apartment.vibe_analysis?.generated_content?.highlights,
-    fallbackHighlights: apartment.highlights
-  });
-
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % apartment.images.length);
   };
@@ -165,12 +156,15 @@ export const PropertyCard = ({
                 )}
               </Button>
             )}
-            {/* Use PropertyHighlightTags for comprehensive highlights display */}
-            <PropertyHighlightTags 
-              apartment={apartment} 
-              maxTagsPerCategory={showAllHighlights ? undefined : 2}
-              showIcons={false}
-            />
+            {apartment.vibe_analysis?.generated_content?.highlights && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {(showAllHighlights ? apartment.vibe_analysis.generated_content.highlights : apartment.vibe_analysis.generated_content.highlights.slice(0, 3)).map((highlight, index) => (
+                  <Badge key={index} variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                    {highlight}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
