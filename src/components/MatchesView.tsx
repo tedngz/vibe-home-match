@@ -30,6 +30,11 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
   const { renterMatches, isLoadingMatches, removeMatch, isRemovingMatch } = useMatches();
 
   const transformMatchToApartment = (match: any): Apartment => {
+    const rawVA = match.properties?.vibe_analysis;
+    let parsedVA = rawVA;
+    if (rawVA && typeof rawVA === 'string') {
+      try { parsedVA = JSON.parse(rawVA); } catch { parsedVA = null; }
+    }
     return {
       id: match.properties.id,
       images: match.properties.images || [],
@@ -40,7 +45,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
       vibe: match.properties.vibe || '',
       description: match.properties.description || '',
       highlights: match.properties.highlights || [],
-      vibe_analysis: match.properties.vibe_analysis,
+      vibe_analysis: parsedVA,
       realtor: {
         id: match.properties.realtor_id || '',
         name: 'Licensed Realtor',

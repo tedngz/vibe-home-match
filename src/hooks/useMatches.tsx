@@ -41,7 +41,12 @@ export const useMatches = () => {
             location,
             price,
             vibe,
-            images
+            images,
+            description,
+            highlights,
+            size,
+            realtor_id,
+            vibe_analysis
           )
         `)
         .eq('realtor_id', user.id)
@@ -73,7 +78,8 @@ export const useMatches = () => {
             description,
             highlights,
             size,
-            realtor_id
+            realtor_id,
+            vibe_analysis
           )
         `)
         .eq('renter_id', user.id)
