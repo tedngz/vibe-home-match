@@ -52,8 +52,10 @@ export const AIChatAgent = ({
     sendMessage: sendDirectMessage,
     isSendingMessage: isSendingDirectMessage,
     messages: directMessages,
+    setCurrentMatchId,
+    loadingMessages: loadingDirectMessages,
+    markAsRead,
   } = useDirectMessages();
-
   const { realtorMatches, renterMatches } = useMatches();
 
   const scrollToBottom = () => {
@@ -82,6 +84,20 @@ export const AIChatAgent = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages, directMessages]);
+
+  // Sync selected match with direct messages hook
+  useEffect(() => {
+    if (activeTab !== 'ai') {
+      setCurrentMatchId(selectedMatch ?? null);
+    }
+  }, [selectedMatch, activeTab, setCurrentMatchId]);
+
+  // Mark messages as read when viewing a conversation and new messages arrive
+  useEffect(() => {
+    if (activeTab !== 'ai' && selectedMatch && directMessages.length > 0) {
+      markAsRead(selectedMatch);
+    }
+  }, [activeTab, selectedMatch, directMessages.length, markAsRead]);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
