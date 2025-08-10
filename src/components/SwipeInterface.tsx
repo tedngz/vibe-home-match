@@ -12,7 +12,7 @@ import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { supabase } from '@/integrations/supabase/client';
-
+import { useMatches } from '@/hooks/useMatches';
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
   onMatch: (apartment: Apartment) => void;
@@ -29,6 +29,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [expandedDescription, setExpandedDescription] = useState(false);
   const { formatPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
+  const { renterMatches, isLoadingMatches } = useMatches();
 
   // Transform Property to Apartment
   const transformPropertyToApartment = (property: Property): Apartment => {
@@ -55,8 +56,9 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   useEffect(() => {
     const transformedRealProperties = (realProperties || []).map(transformPropertyToApartment);
     const allProperties = transformedRealProperties;
-    
-    const filteredApartments = allProperties.filter(apartment => {
+
+    // First filter by user preferences (location, vibe score, price)
+    const preferredApartments = allProperties.filter(apartment => {
       console.log('Filtering apartment:', apartment.title, apartment.location, apartment.price);
       
       // Check location match - make it more flexible
@@ -71,7 +73,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       console.log(`Vibe score for ${apartment.title}: ${vibeScore.overall}`);
       const hasGoodVibeMatch = vibeScore.overall > 10; // Further lowered threshold
       
-      const [minPrice, maxPrice] = userPreferences.priceRange;
+      const [, maxPrice] = userPreferences.priceRange;
       const priceInRange = apartment.price <= maxPrice * 2; // Very flexible price range
       console.log(`Price check for ${apartment.title}: ${apartment.price} <= ${maxPrice * 2} = ${priceInRange}`);
       
@@ -79,23 +81,31 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       console.log(`Property ${apartment.title} passes filters: location=${locationMatch}, vibe=${hasGoodVibeMatch}, price=${priceInRange}, overall=${passes}`);
       
       return passes;
-    })
-    .sort((a, b) => {
-      const scoreA = calculateVibeScore(a, userPreferences).overall;
-      const scoreB = calculateVibeScore(b, userPreferences).overall;
-      
-      const aIsReal = realProperties?.some(p => p.id === a.id) || false;
-      const bIsReal = realProperties?.some(p => p.id === b.id) || false;
-      
-      if (aIsReal && !bIsReal) return -1;
-      if (!aIsReal && bIsReal) return 1;
-      
-      return scoreB - scoreA;
     });
+
+    // Exclude properties already matched by this renter (and ones liked in this session)
+    const matchedIds = new Set<string>([
+      ...(renterMatches || []).map(m => m.property_id),
+      ...likedApartmentIds,
+    ]);
+
+    const filteredApartments = preferredApartments
+      .filter(apartment => !matchedIds.has(apartment.id))
+      .sort((a, b) => {
+        const scoreA = calculateVibeScore(a, userPreferences).overall;
+        const scoreB = calculateVibeScore(b, userPreferences).overall;
+        
+        const aIsReal = realProperties?.some(p => p.id === a.id) || false;
+        const bIsReal = realProperties?.some(p => p.id === b.id) || false;
+        
+        if (aIsReal && !bIsReal) return -1;
+        if (!aIsReal && bIsReal) return 1;
+        
+        return scoreB - scoreA;
+      });
     
-    console.log(`Found ${filteredApartments.length} apartments matching preferences out of ${allProperties.length} total properties`);
-    console.log('User preferences:', userPreferences);
-    
+    console.log(`Preferred apartments: ${preferredApartments.length}, after excluding matched: ${filteredApartments.length}`);
+
     // Only update state if apartments array actually changed
     setApartments(prevApartments => {
       if (JSON.stringify(prevApartments.map(a => a.id)) === JSON.stringify(filteredApartments.map(a => a.id))) {
@@ -105,6 +115,12 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     });
     
     if (filteredApartments.length === 0) {
+      // If there are preferred apartments but all are already matched
+      if (preferredApartments.length > 0) {
+        setNoMatchReason('no-more-available');
+        return;
+      }
+
       if (!realProperties || realProperties.length === 0) {
         setNoMatchReason('limited-listings');
       } else if (!userPreferences.location.length) {
@@ -119,7 +135,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
         if (locationMatch.length === 0) {
           setNoMatchReason('no-location-match');
         } else {
-          const [minPrice, maxPrice] = userPreferences.priceRange;
+          const [, maxPrice] = userPreferences.priceRange;
           const budgetMatch = locationMatch.filter(apartment => 
             apartment.price <= maxPrice * 1.3
           );
@@ -132,7 +148,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
         }
       }
     }
-  }, [userPreferences, realProperties]);
+  }, [userPreferences, realProperties, renterMatches, likedApartmentIds]);
 
   const handleLike = async () => {
     if (apartments.length === 0) return;
@@ -190,6 +206,12 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
 
   const getNoMatchMessage = () => {
     switch (noMatchReason) {
+      case 'no-more-available':
+        return {
+          title: "No more properties available",
+          message: "You've already reviewed all properties that meet your preferences. New listings arrive regularly.",
+          suggestion: "Check back soon or adjust your preferences to expand your options."
+        };
       case 'no-more-matches':
         return {
           title: "You've seen all available matches!",
@@ -235,7 +257,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingMatches) {
     return (
       <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
         <Card className="p-8 text-center bg-white/70 backdrop-blur-md max-w-md">
