@@ -157,7 +157,7 @@ export const AIChatAgent = ({
 
         <div className="flex-1 flex flex-col overflow-hidden">
           {!selectedMatch && activeTab !== 'ai' ? (
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden">
               <div className="p-3 border-b bg-gray-50">
                 <h3 className="font-semibold text-gray-900">Your Conversations</h3>
                 <p className="text-sm text-gray-600">
