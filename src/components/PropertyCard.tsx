@@ -62,18 +62,13 @@ export const PropertyCard = ({
         {/* AI Highlights overlay on small image */}
         {apartment.vibe_analysis?.generated_content?.highlights && apartment.vibe_analysis.generated_content.highlights.length > 0 && (
           <div className="absolute top-2 left-2 z-10">
-            <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 max-w-[120px]">
-              <div className="flex flex-wrap gap-1">
-                {apartment.vibe_analysis.generated_content.highlights.slice(0, 2).map((highlight, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary" 
-                    className="text-xs bg-primary/20 text-primary-foreground border-primary/30"
-                  >
-                    {highlight}
-                  </Badge>
-                ))}
-              </div>
+            <div className="bg-black/60 backdrop-blur-sm rounded-md px-2 py-1 max-w-[160px]">
+              <Badge 
+                variant="secondary" 
+                className="text-[10px] leading-tight bg-primary/20 text-primary-foreground border-primary/30"
+              >
+                {apartment.vibe_analysis.generated_content.highlights[(currentImageIndex || 0) % apartment.vibe_analysis.generated_content.highlights.length]}
+              </Badge>
             </div>
           </div>
         )}

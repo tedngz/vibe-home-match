@@ -30,10 +30,11 @@ export const PropertyImageModal = ({
 
   // Get AI generated highlights for overlay
   const aiHighlights = apartment.vibe_analysis?.generated_content?.highlights || [];
+  const selectedHighlight = aiHighlights.length > 0 ? aiHighlights[currentImageIndex % aiHighlights.length] : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="w-[95vw] sm:max-w-4xl h-[85vh] sm:h-[90vh] p-0 overflow-hidden">
         <div className="relative w-full h-full bg-black">
           {/* Close button */}
           <DialogClose asChild>
@@ -55,21 +56,15 @@ export const PropertyImageModal = ({
             />
 
             {/* AI Highlights overlay */}
-            {aiHighlights.length > 0 && (
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3 max-w-xs">
-                  <h3 className="text-white text-sm font-medium mb-2">AI Detected Features</h3>
-                  <div className="flex flex-wrap gap-1">
-                    {aiHighlights.slice(0, 6).map((highlight, index) => (
-                      <Badge 
-                        key={index} 
-                        variant="secondary" 
-                        className="text-xs bg-primary/20 text-primary-foreground border-primary/30"
-                      >
-                        {highlight}
-                      </Badge>
-                    ))}
-                  </div>
+            {selectedHighlight && (
+              <div className="absolute top-3 left-3 z-10">
+                <div className="bg-black/60 backdrop-blur-sm rounded-md px-2 py-1 max-w-[180px]">
+                  <Badge 
+                    variant="secondary" 
+                    className="text-[10px] leading-tight bg-primary/20 text-primary-foreground border-primary/30"
+                  >
+                    {selectedHighlight}
+                  </Badge>
                 </div>
               </div>
             )}

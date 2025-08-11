@@ -13,6 +13,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { supabase } from '@/integrations/supabase/client';
 import { useMatches } from '@/hooks/useMatches';
+import { PropertyImageModal } from '@/components/PropertyImageModal';
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
   onMatch: (apartment: Apartment) => void;
@@ -30,6 +31,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const { formatPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
   const { renterMatches, isLoadingMatches } = useMatches();
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Transform Property to Apartment
   const transformPropertyToApartment = (property: Property): Apartment => {
@@ -321,7 +323,8 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
             <img
               src={currentApartment.images[currentImageIndex]}
               alt={currentApartment.title}
-              className="w-full h-64 object-cover"
+              className="w-full h-64 object-cover cursor-pointer"
+              onClick={() => setIsImageModalOpen(true)}
             />
             
             {isRealProperty && (
@@ -452,6 +455,13 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
             </div>
           </div>
         </Card>
+
+        <PropertyImageModal
+          apartment={currentApartment}
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+          initialImageIndex={currentImageIndex}
+        />
 
         <div className="flex justify-center space-x-4 mt-6">
           <Button variant="destructive" size="lg" className="w-24" onClick={handleDislike}>
