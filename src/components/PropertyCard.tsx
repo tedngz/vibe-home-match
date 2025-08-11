@@ -7,6 +7,7 @@ import { Apartment, UserPreferences } from '@/pages/Index';
 import { VibeScore } from '@/components/VibeScore';
 import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
+import { PropertyImageModal } from '@/components/PropertyImageModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
@@ -34,6 +35,7 @@ export const PropertyCard = ({
 }: PropertyCardProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [expandedDescription, setExpandedDescription] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const { formatPrice } = useCurrency();
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
@@ -53,8 +55,28 @@ export const PropertyCard = ({
         <img
           src={apartment.images[currentImageIndex] || '/placeholder-property.jpg'}
           alt={apartment.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+          onClick={() => setIsImageModalOpen(true)}
         />
+        
+        {/* AI Highlights overlay on small image */}
+        {apartment.vibe_analysis?.generated_content?.highlights && apartment.vibe_analysis.generated_content.highlights.length > 0 && (
+          <div className="absolute top-2 left-2 z-10">
+            <div className="bg-black/60 backdrop-blur-sm rounded-lg p-2 max-w-[120px]">
+              <div className="flex flex-wrap gap-1">
+                {apartment.vibe_analysis.generated_content.highlights.slice(0, 2).map((highlight, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary" 
+                    className="text-xs bg-primary/20 text-primary-foreground border-primary/30"
+                  >
+                    {highlight}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Image navigation */}
         {apartment.images.length > 1 && (
@@ -190,6 +212,14 @@ export const PropertyCard = ({
           )}
         </div>
       </div>
+
+      {/* Full-size image modal */}
+      <PropertyImageModal
+        apartment={apartment}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        initialImageIndex={currentImageIndex}
+      />
     </Card>
   );
 };
