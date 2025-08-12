@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Apartment } from '@/pages/Index';
 
 interface PropertyImageModalProps {
@@ -34,18 +34,8 @@ export const PropertyImageModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] sm:max-w-4xl h-[85vh] sm:h-[90vh] p-0 overflow-hidden">
-        <div className="relative w-full h-full bg-black">
-          {/* Close button */}
-          <DialogClose asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 p-0"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </DialogClose>
+      <DialogContent className="w-[95vw] sm:max-w-4xl h-[85vh] sm:h-[90vh] p-0 overflow-hidden bg-transparent border-none shadow-none">
+        <div className="relative w-full h-full bg-transparent">
 
           {/* Main image */}
           <div className="relative w-full h-full flex items-center justify-center">

@@ -431,13 +431,12 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
                   )}
                 </Button>
               )}
-              {currentApartment.vibe_analysis?.generated_content?.highlights && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {currentApartment.vibe_analysis.generated_content.highlights.slice(0, 3).map((highlight, index) => (
-                    <Badge key={index} variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-                      {highlight}
-                    </Badge>
-                  ))}
+              {expandedDescription && currentApartment.vibe_analysis?.generated_content?.highlights && currentApartment.vibe_analysis.generated_content.highlights.length > 0 && (
+                <div className="mt-3 rounded-md border border-border/50 bg-muted/30 p-3">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Highlights</p>
+                  <p className="text-sm leading-relaxed">
+                    {currentApartment.vibe_analysis.generated_content.highlights.slice(0, 6).join(' • ')}
+                  </p>
                 </div>
               )}
             </div>
