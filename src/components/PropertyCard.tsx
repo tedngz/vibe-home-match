@@ -40,6 +40,24 @@ export const PropertyCard = ({
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
 
+  // Highlight categorization and styling
+  const getHighlightCategory = (highlight: string): 'style' | 'color' | 'activity' => {
+    const h = highlight.toLowerCase();
+    const style = ['modern','traditional','minimalist','bohemian','industrial','scandinavian','contemporary','rustic','vintage','luxury','urban','cozy','sleek','elegant','chic'];
+    const color = ['warm','cool','neutral','bold','bright','dark','colorful','white','black','grey','beige','wood','natural','light'];
+    const activity = ['working','entertaining','relaxing','cooking','exercising','reading','creating','dining','sleeping','studying','socializing'];
+    if (style.some(k => h.includes(k))) return 'style';
+    if (color.some(k => h.includes(k))) return 'color';
+    if (activity.some(k => h.includes(k))) return 'activity';
+    return 'style';
+  };
+
+  const categoryClasses: Record<'style' | 'color' | 'activity', string> = {
+    style: 'border-primary/30 bg-primary/5',
+    color: 'border-accent/30 bg-accent/10',
+    activity: 'border-secondary/30 bg-secondary/10',
+  };
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % apartment.images.length);
   };
@@ -160,7 +178,7 @@ export const PropertyCard = ({
                 )}
               </Button>
             )}
-            {(apartment.vibe_analysis?.generated_content?.highlights?.length ?? 0) > 0 && (expandedDescription || showFullDescription) && (
+            {(apartment.vibe_analysis?.generated_content?.highlights?.length ?? 0) > 0 && (
               <div className="mt-3 rounded-md border border-border/50 bg-muted/30 p-3">
                 <p className="text-xs font-medium text-muted-foreground mb-1">Highlights</p>
                 <p className="text-sm leading-relaxed">

@@ -315,6 +315,24 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
   const isRealProperty = realProperties?.some(p => p.id === currentApartment.id) || false;
 
+  // Highlight categorization and styling (keep consistent with PropertyCard)
+  const getHighlightCategory = (highlight: string): 'style' | 'color' | 'activity' => {
+    const h = highlight.toLowerCase();
+    const style = ['modern','traditional','minimalist','bohemian','industrial','scandinavian','contemporary','rustic','vintage','luxury','urban','cozy','sleek','elegant','chic'];
+    const color = ['warm','cool','neutral','bold','bright','dark','colorful','white','black','grey','beige','wood','natural','light'];
+    const activity = ['working','entertaining','relaxing','cooking','exercising','reading','creating','dining','sleeping','studying','socializing'];
+    if (style.some(k => h.includes(k))) return 'style';
+    if (color.some(k => h.includes(k))) return 'color';
+    if (activity.some(k => h.includes(k))) return 'activity';
+    return 'style';
+  };
+
+  const categoryClasses: Record<'style' | 'color' | 'activity', string> = {
+    style: 'border-primary/30 bg-primary/5',
+    color: 'border-accent/30 bg-accent/10',
+    activity: 'border-secondary/30 bg-secondary/10',
+  };
+
   return (
     <div className="pt-20 px-4">
       <div className="max-w-md mx-auto">
