@@ -332,6 +332,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_matched_public_profiles: {
+        Args: { user_ids: string[] }
+        Returns: {
+          id: string
+          name: string
+        }[]
+      }
       get_public_profiles: {
         Args: { user_ids: string[] }
         Returns: {
