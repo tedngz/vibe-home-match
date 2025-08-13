@@ -26,33 +26,26 @@ interface RenterProfileModalProps {
   onClose: () => void;
 }
 
-interface UserProfile {
+interface PublicProfile {
   id: string;
   name: string;
-  email: string;
-  phone?: string;
-  bio?: string;
-  location?: string;
 }
 
 export const RenterProfileModal = ({ userId, isOpen, onClose }: RenterProfileModalProps) => {
   const { formatPrice } = useCurrency();
 
-  // Fetch user profile
+  // Fetch limited profile (only name) for matched users
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['renter-profile', userId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+        .rpc('get_matched_public_profiles', { user_ids: [userId] });
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
       
-      return data as UserProfile;
+      return data?.[0] || null;
     },
     enabled: !!userId && isOpen,
   });
@@ -149,49 +142,21 @@ export const RenterProfileModal = ({ userId, isOpen, onClose }: RenterProfileMod
               </CardHeader>
             </Card>
 
-            {/* Profile Information */}
+            {/* Profile Information - Limited for privacy */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Contact Information</CardTitle>
+                <CardTitle className="text-lg">Profile Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-4 h-4 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{profile?.email || 'Not provided'}</p>
-                    </div>
+              <CardContent>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                    <User className="w-8 h-8 text-blue-600" />
                   </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Phone</p>
-                      <p className="font-medium">{profile?.phone || 'Not provided'}</p>
-                    </div>
-                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{profile?.name || 'Anonymous User'}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    For privacy protection, contact details are only shared during direct communication.
+                  </p>
                 </div>
-                
-                {profile?.location && (
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium">{profile.location}</p>
-                    </div>
-                  </div>
-                )}
-
-                {profile?.bio && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-sm text-gray-500 mb-2">About</p>
-                      <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
-                    </div>
-                  </>
-                )}
               </CardContent>
             </Card>
 
