@@ -47,10 +47,10 @@ export const SocialFeed = () => {
 
       // Fetch user profiles for the posts
       const userIds = [...new Set(postsData?.map(post => post.user_id) || [])];
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, name')
-        .in('id', userIds);
+      const { data: profilesData, error: profilesError } = await supabase
+        .rpc('get_public_profiles', { user_ids: userIds });
+
+      if (profilesError) throw profilesError;
 
       // Merge posts with profile data
       const postsWithProfiles = postsData?.map(post => ({
