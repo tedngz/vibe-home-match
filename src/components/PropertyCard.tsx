@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,10 +33,19 @@ export const PropertyCard = ({
   showFullDescription = false,
   showAllHighlights = false
 }: PropertyCardProps) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [expandedDescription, setExpandedDescription] = useState(false);
+  // Use provided image index from SwipeInterface or maintain own state
+  const externalImageIndex = (apartment as any)._currentImageIndex;
+  const [currentImageIndex, setCurrentImageIndex] = useState(externalImageIndex || 0);
+  const [expandedDescription, setExpandedDescription] = useState(showFullDescription);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const { formatPrice } = useCurrency();
+  
+  // Update internal image index when external index changes (for SwipeInterface)
+  useEffect(() => {
+    if (externalImageIndex !== undefined) {
+      setCurrentImageIndex(externalImageIndex);
+    }
+  }, [externalImageIndex]);
   
   const vibeScore = userPreferences ? calculateVibeScore(apartment, userPreferences) : null;
 
@@ -180,10 +189,12 @@ export const PropertyCard = ({
             )}
             {(apartment.vibe_analysis?.generated_content?.highlights?.length ?? 0) > 0 && (
               <div className="mt-3 rounded-md border border-border/50 bg-muted/30 p-3">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Highlights</p>
-                <p className="text-sm leading-relaxed">
-                  {(showAllHighlights ? apartment.vibe_analysis!.generated_content!.highlights : apartment.vibe_analysis!.generated_content!.highlights.slice(0, 5)).join(' • ')}
-                </p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">Highlights</p>
+                <div className="space-y-1">
+                  {(showAllHighlights ? apartment.vibe_analysis!.generated_content!.highlights : apartment.vibe_analysis!.generated_content!.highlights.slice(0, 5)).map((highlight, index) => (
+                    <p key={index} className="text-sm leading-relaxed">• {highlight}</p>
+                  ))}
+                </div>
               </div>
             )}
           </div>

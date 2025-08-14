@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, X, MapPin, User, ChevronLeft, ChevronRight, RotateCcw, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, X, RotateCcw, MessageCircle } from 'lucide-react';
 import { UserPreferences, Apartment } from '@/pages/Index';
 import { UserProfile } from '@/components/LoginModal';
 import { useProperties, Property } from '@/hooks/useProperties';
 import { calculateVibeScore } from '@/utils/vibeScoring';
-import { VibeScore } from '@/components/VibeScore';
-import { VibeScoreBar } from '@/components/VibeScoreBar';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { supabase } from '@/integrations/supabase/client';
 import { useMatches } from '@/hooks/useMatches';
 import { PropertyImageModal } from '@/components/PropertyImageModal';
+import { PropertyCard } from '@/components/PropertyCard';
+import { Card } from '@/components/ui/card';
 interface SwipeInterfaceProps {
   userPreferences: UserPreferences;
   onMatch: (apartment: Apartment) => void;
@@ -27,7 +25,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const [likedApartmentIds, setLikedApartmentIds] = useState<string[]>([]);
   const [imageIndices, setImageIndices] = useState<Record<string, number>>({});
   const [noMatchReason, setNoMatchReason] = useState<string>('');
-  const [expandedDescription, setExpandedDescription] = useState(false);
   const { formatPrice } = useCurrency();
   const { properties: realProperties, isLoading } = useProperties();
   const { renterMatches, isLoadingMatches } = useMatches();
@@ -184,7 +181,6 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const nextApartment = () => {
     if (currentApartmentIndex < apartments.length - 1) {
       setCurrentApartmentIndex(currentApartmentIndex + 1);
-      setExpandedDescription(false);
     } else {
       setNoMatchReason('no-more-matches');
     }
@@ -315,181 +311,62 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
   const currentImageIndex = imageIndices[currentApartment.id] || 0;
   const isRealProperty = realProperties?.some(p => p.id === currentApartment.id) || false;
 
-  // Highlight categorization and styling (keep consistent with PropertyCard)
-  const getHighlightCategory = (highlight: string): 'style' | 'color' | 'activity' => {
-    const h = highlight.toLowerCase();
-    const style = ['modern','traditional','minimalist','bohemian','industrial','scandinavian','contemporary','rustic','vintage','luxury','urban','cozy','sleek','elegant','chic'];
-    const color = ['warm','cool','neutral','bold','bright','dark','colorful','white','black','grey','beige','wood','natural','light'];
-    const activity = ['working','entertaining','relaxing','cooking','exercising','reading','creating','dining','sleeping','studying','socializing'];
-    if (style.some(k => h.includes(k))) return 'style';
-    if (color.some(k => h.includes(k))) return 'color';
-    if (activity.some(k => h.includes(k))) return 'activity';
-    return 'style';
-  };
-
-  const categoryClasses: Record<'style' | 'color' | 'activity', string> = {
-    style: 'border-primary/30 bg-primary/5',
-    color: 'border-accent/30 bg-accent/10',
-    activity: 'border-secondary/30 bg-secondary/10',
+  // Create a modified apartment with current image index for consistent PropertyCard usage
+  const modifiedApartment = {
+    ...currentApartment,
+    _currentImageIndex: currentImageIndex
   };
 
   return (
     <div className="pt-20 px-4">
       <div className="max-w-md mx-auto">
-        <Card className="overflow-hidden bg-white/80 backdrop-blur-md">
-          <div className="relative">
-            <img
-              src={currentApartment.images[currentImageIndex]}
-              alt={currentApartment.title}
-              className="w-full h-64 object-cover cursor-pointer"
-              onClick={() => setIsImageModalOpen(true)}
-            />
-            
-            {isRealProperty && (
-              <div className="absolute top-3 left-3">
-                <Badge className="bg-green-500 text-white text-xs">
-                  ✓ Verified Listing
-                </Badge>
-              </div>
-            )}
-            
-            {currentApartment.images.length > 1 && (
-              <>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
-                  onClick={() => prevImage(currentApartment.id, currentApartment.images.length)}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
-                  onClick={() => nextImage(currentApartment.id, currentApartment.images.length)}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-
-            {currentApartment.images.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
-                {currentApartment.images.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-
-          </div>
-
-          <div className="p-5">
-            <div className="mb-2">
-              {/* Mobile: Title above vibe score */}
-              <div className="block sm:hidden mb-3">
-                <h2 className="text-xl font-semibold text-gray-900">{currentApartment.title}</h2>
-              </div>
-              
-              <div className="flex items-start justify-between mb-2">
-                {/* Desktop: Title inline with vibe score */}
-                <h2 className="hidden sm:block text-xl font-semibold text-gray-900 flex-1 mr-3">{currentApartment.title}</h2>
-                <VibeScore score={vibeScore} size="sm" />
-              </div>
-              
-              {/* Detailed Score Breakdown - Remove overall match text */}
-              <div className="bg-gray-50 p-3 rounded-lg mb-3">
-                <VibeScoreBar score={vibeScore} showBreakdown={true} />
-              </div>
+        {/* Verified Listing Badge - positioned over the PropertyCard */}
+        <div className="relative">
+          {isRealProperty && (
+            <div className="absolute top-4 left-4 z-10">
+              <Badge className="bg-green-500 text-white text-xs">
+                ✓ Verified Listing
+              </Badge>
             </div>
-            
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm mb-3 gap-2">
-              <div className="flex items-center text-gray-600">
-                <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
-                <span className="line-clamp-1">{currentApartment.location}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge className="bg-primary text-primary-foreground font-semibold">
-                  {formatPrice(currentApartment.price)}/mo
-                </Badge>
-                {currentApartment.size && (
-                  <Badge variant="outline" className="text-xs">
-                    {currentApartment.size}
-                  </Badge>
-                )}
-              </div>
-            </div>
+          )}
+          
+          <PropertyCard
+            apartment={modifiedApartment}
+            userPreferences={userPreferences}
+            showContactButton={false}
+            showFullTitle={true}
+            showFullDescription={false}
+            showAllHighlights={false}
+            className="mb-6"
+          />
+        </div>
 
-            <div className="mb-4">
-              <div className={`text-gray-700 text-sm leading-relaxed ${expandedDescription ? '' : 'line-clamp-3'}`}>
-                {currentApartment.description}
-              </div>
-              {currentApartment.description && currentApartment.description.length > 150 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-auto text-orange-600 hover:text-orange-700 mt-1"
-                  onClick={() => setExpandedDescription(!expandedDescription)}
-                >
-                  {expandedDescription ? (
-                    <>
-                      <ChevronUp className="w-3 h-3 mr-1" />
-                      Read less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-3 h-3 mr-1" />
-                      Read more
-                    </>
-                  )}
-                </Button>
-              )}
-              {expandedDescription && currentApartment.vibe_analysis?.generated_content?.highlights && currentApartment.vibe_analysis.generated_content.highlights.length > 0 && (
-                <div className="mt-3 rounded-md border border-border/50 bg-muted/30 p-3">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Highlights</p>
-                  <p className="text-sm leading-relaxed">
-                    {currentApartment.vibe_analysis.generated_content.highlights.slice(0, 6).join(' • ')}
-                  </p>
-                </div>
-              )}
-            </div>
+        {/* Action buttons */}
+        <div className="flex justify-center space-x-4">
+          <Button
+            size="lg"
+            variant="outline"
+            className="w-16 h-16 rounded-full border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400"
+            onClick={handleDislike}
+          >
+            <X className="w-8 h-8" />
+          </Button>
+          <Button
+            size="lg"
+            className="w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white"
+            onClick={handleLike}
+          >
+            <Heart className="w-8 h-8" />
+          </Button>
+        </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-gray-900">{currentApartment.realtor.name}</span>
-                  <p className="text-xs text-gray-500">Licensed Realtor</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-
+        {/* Full-size image modal */}
         <PropertyImageModal
           apartment={currentApartment}
           isOpen={isImageModalOpen}
           onClose={() => setIsImageModalOpen(false)}
           initialImageIndex={currentImageIndex}
         />
-
-        <div className="flex justify-center space-x-4 mt-6">
-          <Button variant="destructive" size="lg" className="w-24" onClick={handleDislike}>
-            <X className="w-5 h-5 mr-2" />
-            Pass
-          </Button>
-          <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-md w-24" size="lg" onClick={handleLike}>
-            <Heart className="w-5 h-5 mr-2" />
-            Like
-          </Button>
-        </div>
       </div>
     </div>
   );
