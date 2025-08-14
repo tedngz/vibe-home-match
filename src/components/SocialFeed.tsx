@@ -45,10 +45,10 @@ export const SocialFeed = () => {
 
       if (postsError) throw postsError;
 
-      // Fetch user profiles for the posts
+      // Fetch user profiles for the posts (secure function that requires authentication)
       const userIds = [...new Set(postsData?.map(post => post.user_id) || [])];
       const { data: profilesData, error: profilesError } = await supabase
-        .rpc('get_public_profiles', { user_ids: userIds });
+        .rpc('get_post_authors_profiles', { user_ids: userIds });
 
       if (profilesError) throw profilesError;
 
