@@ -30,7 +30,7 @@ export const PropertyImageModal = ({
 
   // Get AI generated highlights for overlay
   const aiHighlights = apartment.vibe_analysis?.generated_content?.highlights || [];
-  const selectedHighlight = aiHighlights.length === apartment.images.length ? aiHighlights[currentImageIndex] : null;
+  const selectedHighlight = aiHighlights.length > 0 ? aiHighlights[currentImageIndex % aiHighlights.length] : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
