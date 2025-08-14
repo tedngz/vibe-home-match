@@ -346,6 +346,15 @@ export type Database = {
           name: string
         }[]
       }
+      get_realtor_matched_renter_contact: {
+        Args: { renter_id: string }
+        Returns: {
+          email: string
+          id: string
+          name: string
+          phone: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

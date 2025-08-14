@@ -56,23 +56,47 @@ export const RealtorProfile = ({ userId }: RealtorProfileProps) => {
   const profileId = userId || user?.id;
   const isOwnProfile = profileId === user?.id;
 
-  // Fetch user profile
+  // Fetch user profile - only for own profile due to RLS policies
   const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile', profileId],
+    queryKey: ['profile', profileId, isOwnProfile],
     queryFn: async () => {
       if (!profileId) return null;
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', profileId)
-        .single();
+      if (isOwnProfile) {
+        // Can fetch full profile data for own profile
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', profileId)
+          .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+        if (error) {
+          console.error('Error fetching own profile:', error);
+          throw error;
+        }
+        
+        return data as UserProfile;
+      } else {
+        // For other users, only return basic public info
+        // Use the secure function to get limited public data
+        const { data, error } = await supabase
+          .rpc('get_matched_public_profiles', { user_ids: [profileId] });
+
+        if (error) {
+          console.error('Error fetching public profile:', error);
+          return null; // Don't throw, just return null for other users
+        }
+
+        // Return limited profile structure
+        return data?.[0] ? {
+          id: data[0].id,
+          name: data[0].name,
+          email: '', // Hidden for privacy
+          phone: '', // Hidden for privacy
+          bio: '', // Hidden for privacy
+          location: '' // Hidden for privacy
+        } as UserProfile : null;
       }
-      
-      return data as UserProfile;
     },
     enabled: !!profileId,
   });
@@ -308,25 +332,39 @@ export const RealtorProfile = ({ userId }: RealtorProfileProps) => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="w-4 h-4 text-gray-500" />
-                        <div>
-                          <p className="text-sm text-gray-500">Email</p>
-                          <p className="font-medium">{profile?.email || 'Not provided'}</p>
+                    {isOwnProfile ? (
+                      // Show full details for own profile
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-3">
+                          <Mail className="w-4 h-4 text-gray-500" />
+                          <div>
+                            <p className="text-sm text-gray-500">Email</p>
+                            <p className="font-medium">{profile?.email || 'Not provided'}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <Phone className="w-4 h-4 text-gray-500" />
+                          <div>
+                            <p className="text-sm text-gray-500">Phone</p>
+                            <p className="font-medium">{profile?.phone || 'Not provided'}</p>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <Phone className="w-4 h-4 text-gray-500" />
-                        <div>
-                          <p className="text-sm text-gray-500">Phone</p>
-                          <p className="font-medium">{profile?.phone || 'Not provided'}</p>
+                    ) : (
+                      // Show privacy message for other users' profiles
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                          <User className="w-8 h-8 text-blue-600" />
                         </div>
+                        <h3 className="text-lg font-semibold mb-2">{profile?.name || 'Anonymous User'}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          For privacy protection, contact details are only shared during direct communication.
+                        </p>
                       </div>
-                    </div>
+                    )}
                     
-                    {profile?.location && (
+                    {isOwnProfile && profile?.location && (
                       <div className="flex items-center space-x-3">
                         <MapPin className="w-4 h-4 text-gray-500" />
                         <div>
@@ -336,7 +374,7 @@ export const RealtorProfile = ({ userId }: RealtorProfileProps) => {
                       </div>
                     )}
                     
-                    {profile?.bio && (
+                    {isOwnProfile && profile?.bio && (
                       <div>
                         <p className="text-sm text-gray-500 mb-2">About Me</p>
                         <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
