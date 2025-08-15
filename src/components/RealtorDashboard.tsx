@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2, Eye, MoreVertical, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { PropertyEditModal } from '@/components/PropertyEditModal';
 import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
@@ -31,8 +34,15 @@ export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDas
   const { realtorMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   const unreadMatches = realtorMatches.filter(match => new Date(match.created_at).getTime() > Date.now() - 86400000);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
 
   const handleEdit = (property: Property) => {
     setSelectedProperty(property);
@@ -79,34 +89,39 @@ export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDas
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <Button 
-              onClick={() => setIsUploadModalOpen(true)}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg text-sm px-3 py-2"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Property
-            </Button>
-            {onViewProfile && (
-              <Button
-                variant="outline"
-                onClick={onViewProfile}
-                className="border-slate-300 hover:bg-slate-50 text-sm px-3 py-2"
-              >
-                <User className="w-4 h-4 mr-2" />
-                My Profile
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="border-slate-300 hover:bg-slate-50">
+                <MoreVertical className="w-4 h-4 mr-2" />
+                Menu
               </Button>
-            )}
-            <Button
-              variant="outline"
-              onClick={onSwitchUserType}
-              className="border-slate-300 hover:bg-slate-50 text-sm px-3 py-2"
-            >
-              <ArrowLeftRight className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Switch to Renter</span>
-              <span className="sm:hidden">Switch</span>
-            </Button>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setIsUploadModalOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Property
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {onViewProfile && (
+                <>
+                  <DropdownMenuItem onClick={onViewProfile}>
+                    <User className="w-4 h-4 mr-2" />
+                    My Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem onClick={onSwitchUserType}>
+                <ArrowLeftRight className="w-4 h-4 mr-2" />
+                Switch to Renter
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Stats */}
