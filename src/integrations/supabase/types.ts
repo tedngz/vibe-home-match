@@ -219,6 +219,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          allow_contact_sharing: boolean | null
+          bio: string | null
           created_at: string
           email: string
           id: string
@@ -227,6 +229,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          allow_contact_sharing?: boolean | null
+          bio?: string | null
           created_at?: string
           email: string
           id: string
@@ -235,6 +239,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          allow_contact_sharing?: boolean | null
+          bio?: string | null
           created_at?: string
           email?: string
           id?: string
