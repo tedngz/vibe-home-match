@@ -91,12 +91,11 @@ export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDas
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="border-slate-300 hover:bg-slate-50">
-                <MoreVertical className="w-4 h-4 mr-2" />
-                Menu
+              <Button variant="ghost" size="sm" className="p-2">
+                <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-48 bg-white border shadow-lg z-50">
               <DropdownMenuItem onClick={() => setIsUploadModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Property

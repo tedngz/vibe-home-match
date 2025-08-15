@@ -238,30 +238,17 @@ const Index = () => {
           />
         )}
         
-        {((!userType || currentView === 'onboarding' || currentView === 'dashboard') || (userType === 'realtor' && currentView === 'profile')) && (
+        {userType === 'realtor' && currentView === 'profile' && (
           <div className="absolute top-4 right-4 z-50">
-            <div className="flex items-center space-x-2">
-              {userType === 'realtor' && currentView === 'profile' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentView('dashboard')}
-                  className="bg-white/80 backdrop-blur-sm"
-                >
-                  <Building className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSignOut}
-                className="bg-white/80 backdrop-blur-sm"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentView('dashboard')}
+              className="bg-white/80 backdrop-blur-sm"
+            >
+              <Building className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
           </div>
         )}
         
