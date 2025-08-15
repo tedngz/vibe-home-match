@@ -16,7 +16,6 @@ import { SocialFeed } from '@/components/SocialFeed';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
-import { Button } from '@/components/ui/button';
 import { Loader2, LogOut, Building } from 'lucide-react';
 
 export type UserPreferences = {
