@@ -16,9 +16,10 @@ import { useToast } from '@/hooks/use-toast';
 
 interface RealtorDashboardProps {
   onSwitchUserType: () => void;
+  onViewProfile?: () => void;
 }
 
-export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) => {
+export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDashboardProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -61,44 +62,55 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-6xl mx-auto p-4 md:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0">
           <div className="flex items-center space-x-4">
             <img 
               src="/lovable-uploads/e6e36f1b-c1ac-4aa8-a584-dac48543e870.png" 
               alt="Hausto Logo" 
-              className="w-10 h-10"
+              className="w-8 h-8 md:w-10 md:h-10"
             />
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                 Realtor Dashboard
               </h1>
-              <p className="text-slate-600">Manage your properties and connect with renters</p>
+              <p className="text-sm md:text-base text-slate-600">Manage your properties and connect with renters</p>
             </div>
           </div>
           
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <Button 
               onClick={() => setIsUploadModalOpen(true)}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg text-sm px-3 py-2"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Property
             </Button>
+            {onViewProfile && (
+              <Button
+                variant="outline"
+                onClick={onViewProfile}
+                className="border-slate-300 hover:bg-slate-50 text-sm px-3 py-2"
+              >
+                <User className="w-4 h-4 mr-2" />
+                My Profile
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={onSwitchUserType}
-              className="border-slate-300 hover:bg-slate-50"
+              className="border-slate-300 hover:bg-slate-50 text-sm px-3 py-2"
             >
               <ArrowLeftRight className="w-4 h-4 mr-2" />
-              Switch to Renter
+              <span className="hidden sm:inline">Switch to Renter</span>
+              <span className="sm:hidden">Switch</span>
             </Button>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           <Card className="p-6 bg-white/90 backdrop-blur-sm border-slate-200 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
@@ -155,7 +167,7 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                 <p className="text-slate-600">Upload your first property to start getting matches!</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {realtorProperties.map((property) => (
                   <Card key={property.id} className="overflow-hidden border border-slate-200 hover:shadow-lg transition-shadow">
                     {property.images && property.images.length > 0 && (
@@ -183,33 +195,35 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                           {property.vibe}
                         </Badge>
                       )}
-                      <div className="flex justify-between items-center">
-                        <div className="flex space-x-1">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+                        <div className="flex flex-wrap gap-1">
                           <Button 
                             size="sm" 
                             variant="outline"
                             onClick={() => handlePreview(property)}
+                            className="text-xs px-2 py-1"
                           >
                             <Eye className="w-3 h-3 mr-1" />
-                            Preview
+                            <span className="hidden sm:inline">Preview</span>
                           </Button>
                           <Button 
                             size="sm" 
                             variant="outline"
                             onClick={() => handleEdit(property)}
+                            className="text-xs px-2 py-1"
                           >
                             <Edit className="w-3 h-3 mr-1" />
-                            Edit
+                            <span className="hidden sm:inline">Edit</span>
                           </Button>
                           <Button 
                             size="sm" 
                             variant="outline"
                             onClick={() => handleDelete(property)}
                             disabled={isDeleting}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs px-2 py-1"
                           >
                             <Trash2 className="w-3 h-3 mr-1" />
-                            Delete
+                            <span className="hidden sm:inline">Delete</span>
                           </Button>
                         </div>
                       </div>
@@ -242,31 +256,31 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
             ) : (
               <div className="space-y-4">
                 {realtorMatches.map((match) => (
-                  <div key={match.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+                  <div key={match.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors space-y-3 lg:space-y-0">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center text-white font-semibold text-sm lg:text-base">
                         R
                       </div>
-                      <div>
-                        <h3 className="font-medium text-slate-900">Interested Renter</h3>
-                        <p className="text-sm text-slate-600">{match.properties?.title}</p>
-                        <div className="flex items-center text-sm text-slate-600 mt-1">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-slate-900 text-sm lg:text-base">Interested Renter</h3>
+                        <p className="text-xs lg:text-sm text-slate-600">{match.properties?.title}</p>
+                        <div className="flex items-center text-xs lg:text-sm text-slate-600 mt-1">
                           <MapPin className="w-3 h-3 mr-1" />
                           {match.properties?.location}
                         </div>
                         <div className="flex items-center space-x-2 mt-2">
-                          <Badge variant="secondary" className="bg-slate-100 text-slate-700">
+                          <Badge variant="secondary" className="bg-slate-100 text-slate-700 text-xs">
                             {formatPrice(match.properties?.price || 0)}/mo
                           </Badge>
-                          <Badge className="bg-primary/10 text-primary">
+                          <Badge className="bg-primary/10 text-primary text-xs">
                             {match.properties?.vibe}
                           </Badge>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-3">
-                      <div className="text-right">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                      <div className="text-left sm:text-right">
                         <p className="text-xs text-slate-500">
                           {new Date(match.created_at).toLocaleDateString()}
                         </p>
@@ -274,22 +288,22 @@ export const RealtorDashboard = ({ onSwitchUserType }: RealtorDashboardProps) =>
                           {new Date(match.created_at).toLocaleTimeString()}
                         </p>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                          className="border-blue-200 text-blue-600 hover:bg-blue-50 text-xs px-2 py-1"
                           onClick={() => handleViewProfile(match)}
                         >
-                          <User className="w-4 h-4 mr-1" />
+                          <User className="w-3 h-3 mr-1" />
                           View Profile
                         </Button>
                         <Button
                           size="sm"
-                          className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white"
+                          className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg text-white text-xs px-2 py-1"
                           onClick={() => handleChat(match)}
                         >
-                          <MessageSquare className="w-4 h-4 mr-1" />
+                          <MessageSquare className="w-3 h-3 mr-1" />
                           Chat
                         </Button>
                       </div>

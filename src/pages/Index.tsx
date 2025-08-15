@@ -15,7 +15,7 @@ import { SocialFeed } from '@/components/SocialFeed';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogOut } from 'lucide-react';
+import { Loader2, LogOut, Building } from 'lucide-react';
 
 export type UserPreferences = {
   styles: string[];
@@ -218,7 +218,7 @@ const Index = () => {
   return (
     <CurrencyProvider>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-        {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && (
+        {userType && currentView !== 'onboarding' && currentView !== 'dashboard' && !(userType === 'realtor' && currentView === 'profile') && (
           <Navigation 
             currentView={currentView === 'profile' ? 'profile' : currentView} 
             setCurrentView={(view) => {
@@ -238,17 +238,30 @@ const Index = () => {
           />
         )}
         
-        {(!userType || currentView === 'onboarding' || currentView === 'dashboard') && (
+        {((!userType || currentView === 'onboarding' || currentView === 'dashboard') || (userType === 'realtor' && currentView === 'profile')) && (
           <div className="absolute top-4 right-4 z-50">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              className="bg-white/80 backdrop-blur-sm"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="flex items-center space-x-2">
+              {userType === 'realtor' && currentView === 'profile' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentView('dashboard')}
+                  className="bg-white/80 backdrop-blur-sm"
+                >
+                  <Building className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="bg-white/80 backdrop-blur-sm"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         )}
         
@@ -291,6 +304,7 @@ const Index = () => {
         {userType === 'realtor' && currentView === 'dashboard' && (
           <RealtorDashboard 
             onSwitchUserType={switchUserType}
+            onViewProfile={() => setCurrentView('profile')}
           />
         )}
 
