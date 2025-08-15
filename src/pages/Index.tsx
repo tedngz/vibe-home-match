@@ -6,6 +6,7 @@ import { SwipeInterface } from '@/components/SwipeInterface';
 import { MatchesView } from '@/components/MatchesView';
 import { Navigation } from '@/components/Navigation';
 import { RealtorDashboard } from '@/components/RealtorDashboard';
+import { RealtorNavigation } from '@/components/RealtorNavigation';
 import { UserTypeSelector } from '@/components/UserTypeSelector';
 import { AIChatAgent } from '@/components/AIChatAgent';
 import { FloatingAIButton } from '@/components/FloatingAIButton';
@@ -14,6 +15,7 @@ import { RealtorProfile } from '@/components/RealtorProfile';
 import { SocialFeed } from '@/components/SocialFeed';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
+import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { Button } from '@/components/ui/button';
 import { Loader2, LogOut, Building } from 'lucide-react';
 
@@ -67,6 +69,7 @@ const Index = () => {
   const [realtorMatches, setRealtorMatches] = useState<Match[]>([]);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   // Load saved preferences from localStorage
   useEffect(() => {
@@ -237,19 +240,16 @@ const Index = () => {
             onRestartOnboarding={userType === 'renter' ? handleRestartOnboarding : undefined}
           />
         )}
-        
-        {userType === 'realtor' && currentView === 'profile' && (
-          <div className="absolute top-4 right-4 z-50">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentView('dashboard')}
-              className="bg-white/80 backdrop-blur-sm"
-            >
-              <Building className="w-4 h-4 mr-2" />
-              Dashboard
-            </Button>
-          </div>
+
+        {userType === 'realtor' && (currentView === 'dashboard' || currentView === 'profile') && (
+          <RealtorNavigation
+            currentView={currentView as 'dashboard' | 'profile'}
+            setCurrentView={(view) => setCurrentView(view)}
+            matchCount={realtorMatches.length}
+            onSwitchUserType={switchUserType}
+            onOpenAIChat={() => setIsAIChatOpen(true)}
+            onAddProperty={() => setIsUploadModalOpen(true)}
+          />
         )}
         
         {!userType && (
@@ -292,6 +292,7 @@ const Index = () => {
           <RealtorDashboard 
             onSwitchUserType={switchUserType}
             onViewProfile={() => setCurrentView('profile')}
+            onOpenUploadModal={() => setIsUploadModalOpen(true)}
           />
         )}
 
@@ -304,6 +305,11 @@ const Index = () => {
           onClose={() => setIsAIChatOpen(false)}
           userPreferences={userPreferences}
           userType={userType || 'renter'}
+        />
+
+        <PropertyUploadModal 
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
         />
       </div>
     </CurrencyProvider>

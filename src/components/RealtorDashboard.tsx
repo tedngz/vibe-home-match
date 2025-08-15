@@ -3,10 +3,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MessageSquare, User, MapPin, ArrowLeftRight, Upload, Edit, Trash2, Eye, MoreVertical, LogOut } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Plus, MessageSquare, User, MapPin, Upload, Edit, Trash2, Eye } from 'lucide-react';
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
 import { PropertyEditModal } from '@/components/PropertyEditModal';
 import { PropertyPreviewModal } from '@/components/PropertyPreviewModal';
@@ -20,9 +17,10 @@ import { useToast } from '@/hooks/use-toast';
 interface RealtorDashboardProps {
   onSwitchUserType: () => void;
   onViewProfile?: () => void;
+  onOpenUploadModal?: () => void;
 }
 
-export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDashboardProps) => {
+export const RealtorDashboard = ({ onSwitchUserType, onViewProfile, onOpenUploadModal }: RealtorDashboardProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -34,15 +32,8 @@ export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDas
   const { realtorMatches, isLoadingMatches } = useMatches();
   const { formatPrice } = useCurrency();
   const { toast } = useToast();
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
 
   const unreadMatches = realtorMatches.filter(match => new Date(match.created_at).getTime() > Date.now() - 86400000);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
 
   const handleEdit = (property: Property) => {
     setSelectedProperty(property);
@@ -71,58 +62,8 @@ export const RealtorDashboard = ({ onSwitchUserType, onViewProfile }: RealtorDas
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-16">
       <div className="max-w-6xl mx-auto p-4 md:p-6">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 space-y-4 lg:space-y-0">
-          <div className="flex items-center space-x-4">
-            <img 
-              src="/lovable-uploads/e6e36f1b-c1ac-4aa8-a584-dac48543e870.png" 
-              alt="Hausto Logo" 
-              className="w-8 h-8 md:w-10 md:h-10"
-            />
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                Realtor Dashboard
-              </h1>
-              <p className="text-sm md:text-base text-slate-600">Manage your properties and connect with renters</p>
-            </div>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-2">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-white border shadow-lg z-50">
-              <DropdownMenuItem onClick={() => setIsUploadModalOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Property
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {onViewProfile && (
-                <>
-                  <DropdownMenuItem onClick={onViewProfile}>
-                    <User className="w-4 h-4 mr-2" />
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem onClick={onSwitchUserType}>
-                <ArrowLeftRight className="w-4 h-4 mr-2" />
-                Switch to Renter
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           <Card className="p-6 bg-white/90 backdrop-blur-sm border-slate-200 shadow-lg">
