@@ -48,7 +48,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
       vibe_analysis: parsedVA,
       realtor: {
         id: match.properties.realtor_id || '',
-        name: 'Licensed Realtor',
+        name: match.properties.profiles?.name || 'Licensed Realtor',
         phone: '+1-234-567-8900',
         email: 'contact@realtor.com'
       },
@@ -83,7 +83,7 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pt-20">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Matches</h2>
         <p className="text-gray-600">Properties that match your preferences</p>
@@ -93,16 +93,16 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
         {apartments.map((apartment) => {
           return (
             <div key={apartment.id} className="relative">
-              <PropertyCard
-                apartment={apartment}
-                userPreferences={userPreferences}
-                onContact={() => setSelectedApartment(apartment)}
-                showContactButton={true}
-                showFullTitle={true}
-                showFullDescription={true}
-                showAllHighlights={true}
-                className="sm:h-auto"
-              />
+                <PropertyCard
+                  apartment={apartment}
+                  userPreferences={userPreferences}
+                  onContact={() => setSelectedApartment(apartment)}
+                  showContactButton={true}
+                  showFullTitle={true}
+                  showFullDescription={false}
+                  showAllHighlights={true}
+                  className="sm:h-auto"
+                />
               {apartment.matchId && (
                 <div className="absolute top-4 right-4">
                   <AlertDialog>
