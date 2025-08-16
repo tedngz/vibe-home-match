@@ -116,8 +116,8 @@ export const PropertyDetailModal = ({
                       <div key={index} className="space-y-3">
                         {associatedHighlight && (
                           <Badge 
-                            variant="secondary" 
-                            className="text-sm bg-primary/10 text-primary border-primary/20"
+                            variant="outline" 
+                            className="text-sm text-primary border-primary/20 bg-transparent"
                           >
                             {associatedHighlight}
                           </Badge>

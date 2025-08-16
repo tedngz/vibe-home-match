@@ -164,8 +164,8 @@ export const PropertyCard = ({
                       <div key={index} className="space-y-2">
                         {associatedHighlight && (
                           <Badge 
-                            variant="secondary" 
-                            className="text-xs bg-primary/10 text-primary border-primary/20"
+                            variant="outline" 
+                            className="text-xs text-primary border-primary/20 bg-transparent"
                           >
                             {associatedHighlight}
                           </Badge>
