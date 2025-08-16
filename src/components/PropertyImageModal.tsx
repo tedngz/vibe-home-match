@@ -48,12 +48,9 @@ export const PropertyImageModal = ({
             {/* AI Highlights overlay */}
             {selectedHighlight && (
               <div className="absolute top-3 left-3 z-10">
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs bg-primary/90 text-primary-foreground border-primary/30 px-2 py-1"
-                >
+                <span className="text-sm text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded">
                   {selectedHighlight}
-                </Badge>
+                </span>
               </div>
             )}
 
