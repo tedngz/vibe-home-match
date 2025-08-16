@@ -16,6 +16,7 @@ import { SocialFeed } from '@/components/SocialFeed';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
 import { PropertyUploadModal } from '@/components/PropertyUploadModal';
+import { DirectMessagingModal } from '@/components/DirectMessagingModal';
 import { Loader2, LogOut, Building } from 'lucide-react';
 
 export type UserPreferences = {
@@ -69,6 +70,7 @@ const Index = () => {
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isMessagingOpen, setIsMessagingOpen] = useState(false);
 
   // Load saved preferences from localStorage
   useEffect(() => {
@@ -237,6 +239,7 @@ const Index = () => {
             onSwitchUserType={switchUserType}
             onOpenAIChat={() => setIsAIChatOpen(true)}
             onRestartOnboarding={userType === 'renter' ? handleRestartOnboarding : undefined}
+            onOpenMessaging={() => setIsMessagingOpen(true)}
           />
         )}
 
@@ -309,6 +312,11 @@ const Index = () => {
         <PropertyUploadModal 
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
+        />
+
+        <DirectMessagingModal 
+          isOpen={isMessagingOpen}
+          onClose={() => setIsMessagingOpen(false)}
         />
       </div>
     </CurrencyProvider>

@@ -151,7 +151,7 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                           </Avatar>
                            <div className="flex-1 min-w-0">
                              <p className="font-medium text-sm text-gray-900 truncate">
-                               {isRealtor ? 'Interested Renter' : 'Property Owner'}
+                               {isRealtor ? 'Interested Renter' : ((property as any)?.profiles?.name || 'Property Owner')}
                              </p>
                                <button 
                                  onClick={() => {
@@ -166,12 +166,12 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                                        vibe: (property as any).vibe || '',
                                        description: (property as any).description || '',
                                        highlights: (property as any).highlights || [],
-                                       realtor: {
-                                         id: (property as any).realtor_id || '',
-                                         name: 'Licensed Realtor',
-                                         phone: '+1-234-567-8900',
-                                         email: 'contact@realtor.com'
-                                       }
+                               realtor: {
+                                 id: (property as any).realtor_id || '',
+                                 name: (property as any)?.profiles?.name || 'Licensed Realtor',
+                                 phone: '+1-234-567-8900',
+                                 email: 'contact@realtor.com'
+                               }
                                      };
                                      setDetailModalApartment(apartment);
                                    }
@@ -209,7 +209,7 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                     </Avatar>
                      <div>
                        <h4 className="font-medium text-gray-900 text-sm">
-                         {user?.id === currentMatch.realtor_id ? 'Interested Renter' : 'Property Owner'}
+                         {user?.id === currentMatch.realtor_id ? 'Interested Renter' : ((currentMatch.properties as any)?.profiles?.name || 'Property Owner')}
                        </h4>
                             <button 
                               onClick={() => {
@@ -225,12 +225,12 @@ export const DirectMessagingModal = ({ isOpen, onClose, initialMatchId }: Direct
                                     description: (currentMatch.properties as any).description || '',
                                     highlights: (currentMatch.properties as any).highlights || [],
                                     vibe_analysis: (currentMatch.properties as any).vibe_analysis,
-                                    realtor: {
-                                      id: (currentMatch.properties as any).realtor_id || '',
-                                      name: 'Licensed Realtor',
-                                      phone: '+1-234-567-8900',
-                                      email: 'contact@realtor.com'
-                                    }
+                                      realtor: {
+                                        id: (currentMatch.properties as any).realtor_id || '',
+                                        name: (currentMatch.properties as any)?.profiles?.name || 'Licensed Realtor',
+                                        phone: '+1-234-567-8900',
+                                        email: 'contact@realtor.com'
+                                      }
                                   };
                                   setDetailModalApartment(apartment);
                                 }
