@@ -66,47 +66,13 @@ export const PropertyDetailModal = ({
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Image Gallery */}
+          {/* Representative Property Image */}
           <div className="relative">
             <img
-              src={apartment.images[currentImageIndex]}
+              src={apartment.images[0] || '/placeholder-property.jpg'}
               alt={apartment.title}
               className="w-full h-64 object-cover rounded-lg"
             />
-            
-            {apartment.images.length > 1 && (
-              <>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
-                  onClick={prevImage}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white p-0"
-                  onClick={nextImage}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-
-            {apartment.images.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
-                {apartment.images.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
 
             <div className="absolute top-3 right-3">
               <Badge className="bg-white/90 text-gray-800 font-semibold">
@@ -136,6 +102,37 @@ export const PropertyDetailModal = ({
             <p className="text-gray-700 text-sm leading-relaxed">
               {apartment.description}
             </p>
+
+            {/* Additional Images with Highlights */}
+            {apartment.images.length > 1 && (
+              <div className="space-y-3">
+                <h4 className="font-medium text-gray-900">More Photos</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {apartment.images.slice(1).map((image, index) => {
+                    const highlights = apartment.vibe_analysis?.generated_content?.highlights || [];
+                    const associatedHighlight = highlights[index % highlights.length];
+                    
+                    return (
+                      <div key={index} className="relative group">
+                        <img
+                          src={image}
+                          alt={`${apartment.title} - Image ${index + 2}`}
+                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => setCurrentImageIndex(index + 1)}
+                        />
+                        {associatedHighlight && (
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center p-3">
+                            <p className="text-white text-sm text-center font-medium">
+                              {associatedHighlight}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <h4 className="font-medium text-gray-900">Key Features</h4>
