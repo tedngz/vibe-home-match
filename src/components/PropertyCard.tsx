@@ -163,12 +163,9 @@ export const PropertyCard = ({
                     return (
                       <div key={index} className="space-y-2">
                         {associatedHighlight && (
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs text-primary border-primary/20 bg-transparent"
-                          >
-                            {associatedHighlight}
-                          </Badge>
+                        <span className="text-xs text-primary">
+                          {associatedHighlight}
+                        </span>
                         )}
                         <div className="relative h-48">
                           <img

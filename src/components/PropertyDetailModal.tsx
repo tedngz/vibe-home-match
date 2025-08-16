@@ -115,12 +115,9 @@ export const PropertyDetailModal = ({
                     return (
                       <div key={index} className="space-y-3">
                         {associatedHighlight && (
-                          <Badge 
-                            variant="outline" 
-                            className="text-sm text-primary border-primary/20 bg-transparent"
-                          >
+                          <span className="text-sm text-primary">
                             {associatedHighlight}
-                          </Badge>
+                          </span>
                         )}
                         <div className="relative">
                           <img
