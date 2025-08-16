@@ -155,29 +155,32 @@ export const PropertyCard = ({
             {apartment.images.length > 1 && (
               <div className="mt-4 space-y-3">
                 <p className="text-xs font-medium text-muted-foreground">More Photos</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-4">
                   {apartment.images.slice(1).map((image, index) => {
                     const highlights = apartment.vibe_analysis?.generated_content?.highlights || [];
                     const associatedHighlight = highlights[index % highlights.length];
                     
                     return (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`${apartment.title} - Image ${index + 2}`}
-                          className="w-full h-24 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform duration-200"
-                          onClick={() => {
-                            setCurrentImageIndex(index + 1);
-                            setIsImageModalOpen(true);
-                          }}
-                        />
+                      <div key={index} className="space-y-2">
                         {associatedHighlight && (
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md flex items-center justify-center p-2">
-                            <p className="text-white text-xs text-center font-medium">
-                              {associatedHighlight}
-                            </p>
-                          </div>
+                          <Badge 
+                            variant="secondary" 
+                            className="text-xs bg-primary/10 text-primary border-primary/20"
+                          >
+                            {associatedHighlight}
+                          </Badge>
                         )}
+                        <div className="relative h-48">
+                          <img
+                            src={image}
+                            alt={`${apartment.title} - Image ${index + 2}`}
+                            className="w-full h-full object-cover rounded-md cursor-pointer hover:scale-105 transition-transform duration-200"
+                            onClick={() => {
+                              setCurrentImageIndex(index + 1);
+                              setIsImageModalOpen(true);
+                            }}
+                          />
+                        </div>
                       </div>
                     );
                   })}

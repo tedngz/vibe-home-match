@@ -105,28 +105,31 @@ export const PropertyDetailModal = ({
 
             {/* Additional Images with Highlights */}
             {apartment.images.length > 1 && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <h4 className="font-medium text-gray-900">More Photos</h4>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-6">
                   {apartment.images.slice(1).map((image, index) => {
                     const highlights = apartment.vibe_analysis?.generated_content?.highlights || [];
                     const associatedHighlight = highlights[index % highlights.length];
                     
                     return (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`${apartment.title} - Image ${index + 2}`}
-                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200"
-                          onClick={() => setCurrentImageIndex(index + 1)}
-                        />
+                      <div key={index} className="space-y-3">
                         {associatedHighlight && (
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center p-3">
-                            <p className="text-white text-sm text-center font-medium">
-                              {associatedHighlight}
-                            </p>
-                          </div>
+                          <Badge 
+                            variant="secondary" 
+                            className="text-sm bg-primary/10 text-primary border-primary/20"
+                          >
+                            {associatedHighlight}
+                          </Badge>
                         )}
+                        <div className="relative">
+                          <img
+                            src={image}
+                            alt={`${apartment.title} - Image ${index + 2}`}
+                            className="w-full h-64 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200"
+                            onClick={() => setCurrentImageIndex(index + 1)}
+                          />
+                        </div>
                       </div>
                     );
                   })}
