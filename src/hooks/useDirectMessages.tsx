@@ -65,16 +65,7 @@ export const useDirectMessages = () => {
             property_id,
             realtor_id,
             renter_id,
-            properties(
-              id, 
-              title, 
-              location, 
-              price, 
-              images,
-              profiles:realtor_id (
-                name
-              )
-            )
+            properties(id, title, location, price, images)
           )
         `)
         .eq('is_active', true)

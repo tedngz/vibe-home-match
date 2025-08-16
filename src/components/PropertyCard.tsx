@@ -10,7 +10,6 @@ import { PropertyHighlightTags } from '@/components/PropertyHighlightTags';
 import { PropertyImageModal } from '@/components/PropertyImageModal';
 import { calculateVibeScore } from '@/utils/vibeScoring';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { UserProfileModal } from '@/components/UserProfileModal';
 
 interface PropertyCardProps {
   apartment: Apartment;
@@ -39,7 +38,6 @@ export const PropertyCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(externalImageIndex || 0);
   const [expandedDescription, setExpandedDescription] = useState(showFullDescription);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { formatPrice } = useCurrency();
   
   // Update internal image index when external index changes (for SwipeInterface)
@@ -203,10 +201,7 @@ export const PropertyCard = ({
         )}
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
-            onClick={() => setIsProfileModalOpen(true)}
-          >
+          <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
@@ -234,18 +229,6 @@ export const PropertyCard = ({
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
         initialImageIndex={currentImageIndex}
-      />
-
-      {/* Realtor profile modal */}
-      <UserProfileModal
-        userId={apartment.realtor.id}
-        userType="realtor"
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        onMessage={() => {
-          setIsProfileModalOpen(false);
-          onContact?.();
-        }}
       />
     </Card>
   );

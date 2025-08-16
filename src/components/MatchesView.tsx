@@ -49,8 +49,8 @@ export const MatchesView = ({ userPreferences, userProfile }: MatchesViewProps) 
       realtor: {
         id: match.properties.realtor_id || '',
         name: match.properties.profiles?.name || 'Licensed Realtor',
-        phone: '',
-        email: ''
+        phone: '+1-234-567-8900',
+        email: 'contact@realtor.com'
       },
       matchId: match.id
     };

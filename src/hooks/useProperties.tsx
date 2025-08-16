@@ -29,15 +29,10 @@ export const useProperties = () => {
   const { data: properties = [], isLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
-    const { data, error } = await supabase
-      .from('properties')
-      .select(`
-        *,
-        profiles:realtor_id (
-          name
-        )
-      `)
-      .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Property[];

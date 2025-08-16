@@ -44,7 +44,7 @@ export const SwipeInterface = ({ userPreferences, onMatch, userProfile, onRestar
       highlights: property.highlights || [],
       realtor: {
         id: property.realtor_id,
-        name: (property as any).profiles?.name || 'Licensed Realtor',
+        name: 'Licensed Realtor',
         phone: '+1-234-567-8900',
         email: 'contact@realtor.com'
       },
