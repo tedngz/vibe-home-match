@@ -36,17 +36,10 @@ export const useMatches = () => {
         .select(`
           *,
           properties:property_id (
-            id,
-            title,
-            location,
-            price,
-            vibe,
-            images,
-            description,
-            highlights,
-            size,
-            realtor_id,
-            vibe_analysis
+            *,
+            profiles:realtor_id (
+              name
+            )
           )
         `)
         .eq('realtor_id', user.id)
@@ -58,7 +51,7 @@ export const useMatches = () => {
     enabled: !!user?.id,
   });
 
-  // Fetch matches for renters
+  // Fetch matches for renters  
   const { data: renterMatches = [], isLoading: isLoadingRenterMatches } = useQuery({
     queryKey: ['renter-matches', user?.id],
     queryFn: async () => {
@@ -69,17 +62,10 @@ export const useMatches = () => {
         .select(`
           *,
           properties:property_id (
-            id,
-            title,
-            location,
-            price,
-            vibe,
-            images,
-            description,
-            highlights,
-            size,
-            realtor_id,
-            vibe_analysis
+            *,
+            profiles:realtor_id (
+              name
+            )
           )
         `)
         .eq('renter_id', user.id)
